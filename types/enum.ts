@@ -1,3 +1,4 @@
+// Video Enums
 export enum VideoContentStyle {
   Educational = 'Educational',
   Entertainment = 'Entertainment',
@@ -44,7 +45,6 @@ export enum VideoLength {
   TenToTwentyMin = '10-20 min',
   TwentyPlusMin = '20+ min'
 }
-
 
 export enum ExperienceLevel {
   Beginner = 'beginner',
@@ -133,4 +133,75 @@ export enum VideoType {
   ToolComparison = 'Tool Comparison',
   SuccessStory = 'Success Story',
   Troubleshooting = 'Troubleshooting'
+}
+
+// Script Enums
+export enum ScriptTone {
+  Formal = 'Formal',
+  Informal = 'Informal',
+  Playful = 'Playful',
+  Serious = 'Serious',
+  Inspirational = 'Inspirational',
+  Humorous = 'Humorous',
+  Dramatic = 'Dramatic',
+  Neutral = 'Neutral'
+}
+
+export enum ScriptVerbosity {
+  Short = 'Short',
+  Medium = 'Medium',
+  Long = 'Long',
+  VeryLong = 'Very Long'
+}
+
+export enum ScriptTarget {
+  Children = 'Children',
+  Teenagers = 'Teenagers',
+  YoungAdults = 'Young Adults',
+  Adults = 'Adults',
+  Professionals = 'Professionals',
+  General = 'General'
+}
+
+export enum ScriptType {
+  Educational = 'Educational',
+  Promotional = 'Promotional',
+  Storytelling = 'Storytelling',
+  Tutorial = 'Tutorial',
+  Review = 'Review',
+  News = 'News',
+  Interview = 'Interview',
+  Debate = 'Debate',
+  Motivational = 'Motivational',
+  Comedy = 'Comedy',
+}
+
+export enum ScriptDuration {
+  min_2 = '2 minutes',
+  min_5 = '5 minutes',
+  min_10 = '10 minutes',
+  min_15 = '15 minutes',
+  min_20 = '20 minutes',
+  min_30 = '30 minutes'
+}
+
+export enum ScriptPersona {
+  Expert = 'Expert',
+  Friend = 'Friend',
+  Coach = 'Coach',
+  Comedian = 'Comedian',
+  Journalist = 'Journalist',
+  Robot = 'Robot',
+  Teacher = 'Teacher',
+  Influencer = 'Influencer'
+}
+
+export enum ScriptStructure {
+  hook_then_content = 'Hook then Content',
+  chronological = 'chronological',
+  problem_solution = 'Problem-Solution',
+  question_answer = 'Question-Answer',
+  listicle = 'Listicle',
+  case_study = 'Case Study',
+  before_after_bridge = 'Before-After Bridge',
 }

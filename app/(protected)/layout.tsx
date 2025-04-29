@@ -2,6 +2,7 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import React from 'react'
 import ProtectedSidebar from '@/components/blocks/(protected)/sidebar'
+import { Toaster } from '@/components/ui/toaster'
 
 const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 
@@ -14,6 +15,7 @@ const ProtectedLayout = ({ children }: { children: React.ReactNode }) => {
 				</div>
 				{children}
 			</main>
+			<Toaster />
 		</SidebarProvider>
 	)
 }

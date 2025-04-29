@@ -65,3 +65,15 @@ export interface Sponsorship {
 	description: string;
 	url?: string;
 }
+
+export type ScriptBoxProps = {
+	idea_id: string;
+	content: string;
+	tone: string;
+	verbosity: string;
+	target: string;
+	type: string;
+	duration: string;
+	persona: string;
+	structure: string;
+}

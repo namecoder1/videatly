@@ -1,9 +1,12 @@
 import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
 import { Info, Coins } from 'lucide-react'
+import { useTokens } from '@/hooks/use-tokens'
 import React from 'react'
 
-const TokenViewer = ({ tokens }: { tokens: any }) => {
+const TokenViewer = () => {
+	const { tokens } = useTokens()
+
 	// Verifica che tokens sia un array
 	const tokenArray = Array.isArray(tokens) ? tokens : [];
 
@@ -21,7 +24,7 @@ const TokenViewer = ({ tokens }: { tokens: any }) => {
 	const totalTokens = ideasTotal + scriptsTotal;
 
 	return (
-		<div className='rounded-3xl border border-neutral-200 bg-white transition-all duration-200 p-4 flex items-center justify-between gap-2 group-data-[collapsible=icon]:p-2'>
+		<div className='rounded-3xl border border-neutral-200 bg-white transition-all duration-200 p-4 flex items-center justify-between gap-2 group-data-[collapsible=icon]:hidden'>
 			<div className='flex items-center gap-3'>
 				<div className='rounded-full p-1.5 group-data-[collapsible=icon]:hidden border border-neutral-300'>
 					<Coins className='w-4 h-4 text-black' />
@@ -30,7 +33,6 @@ const TokenViewer = ({ tokens }: { tokens: any }) => {
 					<span className='text-xs text-neutral-500 font-medium'>Available Tokens</span>
 					<span className='text-base font-bold text-neutral-800'>{totalTokens}</span>
 				</div>
-				<span className='text-base font-bold text-neutral-800 group-data-[collapsible=icon]:block pl-0.5 hidden'>{totalTokens}</span>
 			</div>
 			
 			<DropdownMenu>

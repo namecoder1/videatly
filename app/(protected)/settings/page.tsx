@@ -20,8 +20,9 @@ const SettingsPage = () => {
 	const [userProfile, setUserProfile] = useState<any>(null)
 	const [isEditing, setIsEditing] = useState(false)
 	const [newName, setNewName] = useState('')
-	const [language, setLanguage] = useState('it')
+	const [language, setLanguage] = useState<string>('en')
 	const { toast } = useToast()
+
 	useEffect(() => {
 		const fetchUser = async () => {
 			const { data: { user } } = await supabase.auth.getUser()
@@ -45,6 +46,12 @@ const SettingsPage = () => {
 		fetchUserProfile()
 	}, [user])
 
+	useEffect(() => {
+		if (userProfile?.spoken_language) {
+			setLanguage(userProfile.spoken_language)
+		}
+	}, [userProfile])
+
 	const handleUpdateName = async () => {
 		if (user?.id && newName.trim()) {
 			const { error } = await supabase
@@ -67,6 +74,7 @@ const SettingsPage = () => {
 			.eq('auth_user_id', user.id)
 		if (!error) {
 			setLanguage(value)
+			setUserProfile({ ...userProfile, spoken_language: value })
 			toast({
 				title: 'Language updated',
 				description: 'Your language has been updated',
@@ -116,11 +124,16 @@ const SettingsPage = () => {
 					</Card>
 
 					<Card className="h-fit order-[2] lg:order-none">
-						<CardHeader>
+						<CardHeader className='flex flex-row items-center justify-between gap-2'>
 							<CardTitle className="text-xl flex items-center gap-2">
 								<User className="w-5 h-5" />
 								Personal Information
 							</CardTitle>
+							<div>
+								<p className='text-sm text-muted-foreground'>
+									{renderLanguage(userProfile?.spoken_language || 'en')}
+								</p>
+							</div>
 						</CardHeader>
 						<CardContent>
 							<div className="grid gap-6">
@@ -304,6 +317,22 @@ const DeleteCard = ({ isMobile }: { isMobile: boolean }) => {
 			</CardContent>
 		</Card>
 	)
+}
+
+
+function renderLanguage(language: string) {
+	switch (language) {
+		case 'en':
+			return '🇺🇸 English'
+		case 'it':
+			return '🇮🇹 Italian'
+		case 'es':
+			return '🇪🇸 Spanish'
+		case 'fr':
+			return '🇫🇷 French'
+		default:
+			return '🇺🇸 English'
+	}
 }
 
 export default SettingsPage

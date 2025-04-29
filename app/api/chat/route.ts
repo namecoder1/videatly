@@ -2,25 +2,126 @@ import { openai } from '@ai-sdk/openai';
 import { generateText, streamText, convertToCoreMessages } from 'ai';
 import { createClient } from '@supabase/supabase-js';
 import { extractField, extractListField } from '@/utils/supabase/utils';
-import { encoding_for_model } from 'tiktoken';
+import { encode, decode } from 'gpt-tokenizer/model/gpt-3.5-turbo-0125'
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
-const tokenizer = encoding_for_model('gpt-3.5-turbo');
 
 export async function POST(req: Request) {
 	const { messages, profile, ideaData } = await req.json();
 
+	console.log(profile.name)
+
+	// Find the last complete idea in the chat
+	const findLastCompleteIdea = (messages: any[]) => {
+		for (let i = messages.length - 1; i >= 0; i--) {
+			const message = messages[i];
+			if (message.role === 'assistant') {
+				// Check for the completion tag
+				if (message.content.includes('<data value="idea-complete" hidden>true</data>')) {
+					return message.content;
+				}
+			}
+		}
+		return null;
+	};
+
 	// Add a flag to the last message to check if it's a save request
 	const lastMessage = messages[messages.length - 1];
-	const isSaveRequest = lastMessage.content.toLowerCase().includes('save this idea') && 
-						 messages[messages.length - 2]?.role === 'assistant';
+	const isSaveRequest = lastMessage.content.toLowerCase().includes('save this idea');
 
 	if (isSaveRequest) {
 		try {
-			const assistantMessage = messages[messages.length - 2].content;
+			const lastCompleteIdea = findLastCompleteIdea(messages);
+			if (!lastCompleteIdea) {
+				return new Response(JSON.stringify({
+					role: 'assistant',
+					content: 'No complete idea found to save.'
+				}), {
+					headers: { 'Content-Type': 'application/json' }
+				});
+			}
 
-			// Extract only the fields based on subscription level
+			// Extract fields using regex patterns that match the markdown structure
+			const extractField = (content: string, pattern: RegExp): string => {
+				const match = content.match(pattern);
+				console.log('Extracting field with pattern:', pattern);
+				console.log('Match result:', match);
+
+				// Fallback method if regex fails
+				if (!match) {
+					console.log('Trying fallback method');
+					const lines = content.split('\n');
+					for (let i = 0; i < lines.length; i++) {
+						const line = lines[i];
+						if (pattern.source.includes(line.match(/\*\*([^*]+)\*\*/)?.[1] || '')) {
+							const nextLine = lines[i + 1];
+							if (nextLine) {
+								console.log('Fallback found:', nextLine.trim());
+								return nextLine.trim();
+							}
+						}
+					}
+				}
+
+				return match ? match[1].trim() : '';
+			};
+
+			const extractListField = (content: string, pattern: RegExp): string[] => {
+				const match = content.match(pattern);
+				console.log('Extracting list field with pattern:', pattern);
+				console.log('Match result:', match);
+
+				// Fallback method if regex fails
+				if (!match) {
+					console.log('Trying fallback method for list');
+					const lines = content.split('\n');
+					const items: string[] = [];
+					let isInSection = false;
+
+					for (const line of lines) {
+						if (pattern.source.includes(line.match(/\*\*([^*]+)\*\*/)?.[1] || '')) {
+							isInSection = true;
+							continue;
+						}
+						if (isInSection && line.trim().startsWith('•')) {
+							items.push(line.trim().substring(1).trim());
+						}
+						if (isInSection && line.match(/\*\*[^*]+\*\*/)) {
+							break;
+						}
+					}
+
+					if (items.length > 0) {
+						console.log('Fallback list items:', items);
+						return items;
+					}
+				}
+
+				if (!match) return [];
+				
+				const items = match[1].split('\n')
+					.map(item => item.trim())
+					.filter(item => item.startsWith('•'))
+					.map(item => item.substring(1).trim());
+				
+				return items;
+			};
+
+			// Define regex patterns that match the markdown structure
+			const titlePattern = /\*\*📝[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const descriptionPattern = /\*\*📋[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const metaDescriptionPattern = /\*\*🔍[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const topicsPattern = /\*\*📚[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const thumbnailPattern = /\*\*🖼️[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const editingTipsPattern = /\*\*✂️[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const musicSuggestionsPattern = /\*\*🎵[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const sponsorshipPattern = /\*\*🤝[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+			const toolsPattern = /\*\*🛠️[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
+
+			console.log('Last complete idea content:', lastCompleteIdea);
+
+			// Extract fields based on subscription level
 			const baseFields: {
 				title: string;
 				description: string;
@@ -39,26 +140,24 @@ export async function POST(req: Request) {
 				sponsorship_opportunities?: string[];
 				tools_recommendations?: string[];
 			} = {
-				title: extractField(assistantMessage, '📝 Title'),
-				description: extractField(assistantMessage, '📋 Description'),
-				meta_description: extractField(assistantMessage, '🔍 Meta-Description'),
-				topics: extractListField(assistantMessage, '📚 List of Topics Covered'),
+				title: extractField(lastCompleteIdea, titlePattern),
+				description: extractField(lastCompleteIdea, descriptionPattern),
+				meta_description: extractField(lastCompleteIdea, metaDescriptionPattern),
+				topics: extractListField(lastCompleteIdea, topicsPattern),
 				video_type: ideaData.video_type,
 				video_target: ideaData.video_target,
 				video_length: ideaData.video_length,
 				video_style: ideaData.video_style,
 				creating_status: 'creating' as const,
 				pub_date: null,
-				thumbnail_idea: extractField(assistantMessage, '🖼️ Thumbnail Concept'),
-				editing_tips: extractField(assistantMessage, '✂️ Editing Techniques'),
-				music_suggestions: extractField(assistantMessage, '🎵 Background Music'),
-				sponsorship_opportunities: extractListField(assistantMessage, '🤝 Sponsorship Opportunities'),
-				tools_recommendations: extractListField(assistantMessage, '🛠️ Tools Recommendations')
+				thumbnail_idea: extractField(lastCompleteIdea, thumbnailPattern),
+				editing_tips: extractField(lastCompleteIdea, editingTipsPattern),
+				music_suggestions: extractField(lastCompleteIdea, musicSuggestionsPattern),
+				sponsorship_opportunities: extractListField(lastCompleteIdea, sponsorshipPattern),
+				tools_recommendations: extractListField(lastCompleteIdea, toolsPattern)
 			};
 
-			// Calculate token count for the baseFields
-			const tokenCount = tokenizer.encode(JSON.stringify(baseFields)).length;
-			console.log('Token count for baseFields:', tokenCount);
+			console.log('Extracted fields:', baseFields);
 
 			// Keep the original tags from the user, don't modify them
 			if (ideaData.tags && ideaData.tags.length > 0) {
@@ -101,6 +200,8 @@ export async function POST(req: Request) {
 	// Costruiamo un messaggio di sistema personalizzato basato sui dati del profilo
 	const systemMessage = `You are an advanced AI assistant specialized in helping YouTubers create engaging, high-quality video content.
 	 You **must only discuss topics related to YouTube content creation** and never provide a full script or timing breakdown of a video.
+	 You **must always use the user's language** for the response (and for the idea creation).
+	 You must always match the previous messages language.
 
 ## 🔹 USER INFORMATION:
 - The user has a **subscription plan**: Free, Pro, or Ultra.  
@@ -108,7 +209,6 @@ export async function POST(req: Request) {
 - If the user's subscription level is unknown, default to "Free."
 - You are talking to a user with a ${profile?.subscription || 'free'} subscription.  
 - The user's language is ${profile?.spoken_language || 'English'}.
-- Always use the user's language for the response.
 - You are talking to a ${profile?.experience_level || 'user'} level creator.  
 
 ## 🎥 VIDEO IDEA PARAMETERS:
@@ -260,4 +360,3 @@ This marker must ONLY be included when you've presented a complete video idea wi
 	});
 	return result.toDataStreamResponse();
 }
-

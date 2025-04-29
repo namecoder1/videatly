@@ -1,14 +1,12 @@
-import { Button } from '@/components/ui/button'
+import ScriptBox from '@/components/blocks/(protected)/script-box'
 import CustomIcon from '@/components/ui/custom-icon'
 import { Separator } from '@/components/ui/separator'
 import { createClient } from '@/utils/supabase/server'
-import { CircleHelp, NotepadText, PlusIcon } from 'lucide-react'
+import { CircleHelp, NotepadText } from 'lucide-react'
 import React from 'react'
-import Link from 'next/link'
 
 const ScriptsPage = async () => {
 	const supabase = await createClient()
-
 	const { data: scripts, error } = await supabase.from('scripts').select('*')
 
 	return (
@@ -25,10 +23,7 @@ const ScriptsPage = async () => {
         {scripts && scripts.length > 0 ? (
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
             {scripts.map((script) => (
-              <div key={script.id} className='bg-white p-4 rounded-lg shadow-md'>
-                <h3 className='text-lg font-semibold'>{script.title}</h3>
-                <p className='text-sm text-gray-500'>{script.description}</p>
-              </div>
+              <ScriptBox key={script.id} props={script} />
             ))}
           </div>
         ) : (
@@ -41,14 +36,6 @@ const ScriptsPage = async () => {
           </p>
           </div>
         )}  
-      </div>
-      <div className='absolute bottom-5 right-5 flex flex-col gap-2 items-end'>
-        <Button className='bg-black hover:bg-black/80 w-fit' asChild>
-          <Link href='/scripts/create'>
-            <PlusIcon />
-            New Script
-          </Link>
-        </Button>
       </div>
 		</section>
 	)

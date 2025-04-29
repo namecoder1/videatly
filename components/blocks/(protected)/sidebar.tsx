@@ -12,10 +12,12 @@ import {
    ChevronRight,
    ListCollapse
   } from 'lucide-react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { AppSidebar } from '../app-sidebar'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTokens } from '@/hooks/use-tokens'
+import { createClient } from '@/utils/supabase/client'
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -99,6 +101,26 @@ const settingsItems = [
 
 const ProtectedSidebar = () => {
 	const pathname = usePathname();
+	const { tokens, setTokens } = useTokens()
+  const supabase = createClient()
+
+  useEffect(() => {
+    const fetchTokens = async () => {
+      const { data, error } = await supabase.from('tokens').select('base_tokens, paid_tokens, tool')
+      if (error) {
+        console.error('Error fetching tokens:', error)
+        return
+      }
+      
+      if (data) {
+        setTokens(data)
+      }
+    }
+
+    if (!tokens.length) {
+      fetchTokens()
+    }
+  }, [])
 	
 	return (
 		<AppSidebar isProtected={true}>
@@ -184,7 +206,6 @@ const ProtectedSidebar = () => {
           </SidebarGroupContent>
         </SidebarGroup>
       
-
 		</AppSidebar>
 	)
 }

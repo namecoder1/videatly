@@ -60,7 +60,7 @@ const TagsInput = ({ name, label, placeholder, description }: TagsInputProps) =>
 			<Label htmlFor={name} className="font-medium">{label}</Label>
 			<div 
 				ref={inputRef}
-				className="flex flex-wrap gap-2 p-2 border border-input rounded-3xl transition-all focus-within:ring-1 focus-within:ring-ring focus-within:border-ring hover:border-gray-400"
+				className="bg-card flex flex-wrap gap-2 p-2 border border-input rounded-3xl transition-all focus-within:ring-1 focus-within:ring-ring focus-within:border-ring hover:border-gray-400"
 			>
 				{tags.map((tag) => (
 					<Badge 

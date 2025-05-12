@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import { Button } from '../ui/button'
 import { Avatar, AvatarFallback } from '../ui/avatar'
-import { Settings, User, CreditCard, ChevronDown, ChevronRight } from 'lucide-react'
+import { Settings, User, ChevronRight } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -10,6 +9,7 @@ import Image from 'next/image'
 const UserInfo = () => {
 
 	const [user, setUser] = useState<any>(null)
+	const [userData, setUserData] = useState<any>(null)
 
 	const supabase = createClient()
 
@@ -17,9 +17,15 @@ const UserInfo = () => {
 		const fetchUser = async () => {
 			const { data: { user } } = await supabase.auth.getUser()
 			setUser(user)
+			const { data: userProfile } = await supabase
+				.from('users')
+				.select('*')
+				.eq('auth_user_id', user?.id)
+				.single()
+			setUserData(userProfile)
 		}
 		fetchUser()
-	}, [])
+	}, [supabase])
 
 	return (
 		<DropdownMenu>
@@ -32,6 +38,8 @@ const UserInfo = () => {
 								alt="Profile"
 								fill
 								className="rounded-full object-cover"
+								priority
+								sizes='24px'
 							/>
 						) : (
 							<AvatarFallback className="bg-primary/5">
@@ -41,7 +49,7 @@ const UserInfo = () => {
 					</Avatar>
 					<div className='flex flex-col items-start text-sm group-data-[collapsible=icon]:hidden'>
 						<span className='font-medium tracking-tight'>
-							{user?.user_metadata.full_name || 'User'}
+							{userData?.name || 'User'}
 						</span>
 					</div>
 				</div>
@@ -58,15 +66,6 @@ const UserInfo = () => {
 						<div className="flex flex-col gap-1">
 							<span className="font-medium">Profile</span>
 							<span className="text-xs text-muted-foreground">Manage your profile settings</span>
-						</div>
-					</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<Link href="/billing" className="flex items-center gap-3 p-3 cursor-pointer">
-						<CreditCard className="h-4 w-4" />
-						<div className="flex flex-col gap-1">
-							<span className="font-medium">Billing</span>
-							<span className="text-xs text-muted-foreground">Manage your billing info</span>
 						</div>
 					</Link>
 				</DropdownMenuItem>

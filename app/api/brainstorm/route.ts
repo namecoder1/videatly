@@ -56,6 +56,7 @@ For each idea, provide a brief title and a one-sentence description. Format the 
 					.map((line: string) => line.replace(/^\d+\.\s*/, '').trim())
 			}
 		} catch (error) {
+			console.error('Error parsing ideas:', error)
 			// If JSON parsing fails, split by newlines
 			ideas = result.object.split('\n')
 				.filter((line: string) => line.trim().length > 0)

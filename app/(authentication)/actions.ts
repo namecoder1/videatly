@@ -44,7 +44,7 @@ export async function deleteAccount() {
     throw new Error('User not found')
   }
 
-  const { error: deleteError, data } = await supabase
+  const { error: deleteError } = await supabase
     .from('users')
     .delete()
     .eq('auth_user_id', user.id)
@@ -69,7 +69,7 @@ export const signInWithCustomRedirect = async (redirectPath: string) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  const { data, error } = await supabase.auth.signInWithOAuth({
+  const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: `${origin}${redirectPath}`

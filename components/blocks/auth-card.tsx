@@ -8,15 +8,9 @@ import Image from "next/image"
 import heroImage from '@/assets/hero-img.png'
 import Link from "next/link"
 import { signInWithGoogleAction } from "@/app/(authentication)/actions"
-import { useFormState } from "react-dom"
-import { Alert, AlertDescription } from "../ui/alert"
 
 interface AuthCardProps {
   className?: string
-}
-
-const initialState = {
-  error: ''
 }
 
 const AuthCard = ({

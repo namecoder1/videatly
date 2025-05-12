@@ -7,11 +7,13 @@ const DocsLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<SidebarProvider>
 			<PublicSidebar />
-			<main className='p-4 sm:p-6  w-full'>
-				<div className='absolute top-4 right-4 border rounded-2xl p-1.5 hover:bg-gray-100'>
-					<SidebarTrigger className='hover:bg-transparent' />
+			<main className='w-full h-full flex flex-col px-4 sm:px-6'>
+				<div className='absolute top-4 right-4 border rounded-2xl p-1.5 bg-card hover:bg-card/80'>
+					<SidebarTrigger />
 				</div>
-				{children}
+				<div className='my-4'>
+					{children}
+				</div>
 			</main>
 		</SidebarProvider>
 	)

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useChat } from 'ai/react';
-import { Brain, CirclePause, Send, User, Save, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Brain, CirclePause, User, Save, Loader2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -14,14 +14,19 @@ import {
   saveIdea, 
   deleteIdea, 
   fetchIdeaData, 
-  fetchUserProfile 
+  fetchUserProfile,
+  isValidIdeaMessage
 } from '@/app/actions';
-import { parseTags } from '@/utils/supabase/utils';
 import rehypeRaw from 'rehype-raw';
 import { createClient } from "@/utils/supabase/client";
 import { encode } from 'gpt-tokenizer/model/gpt-3.5-turbo-0125'
-import { useTokens } from '@/hooks/use-tokens';
-
+import { useTokens, initializeTokenListener } from '@/hooks/use-tokens';
+import { handleKeyDown, handleInputWithResize } from '@/lib/utils';
+import { parseTags } from '@/lib/extraction';
+import Loader from "@/components/blocks/loader";
+import { updateIdeaTokens } from '@/lib/utils';
+import ErrorMessage from "@/components/blocks/(protected)/error-message";
+import { Textarea } from "@/components/ui/textarea";
 
 
 
@@ -50,55 +55,23 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 			setBaseTokens(ideasTokens.base_tokens)
 			setTotalTokens(ideasTokens.base_tokens + ideasTokens.paid_tokens)
 		}
+
+		// Initialize real-time token listener
+		const cleanup = initializeTokenListener();
+		return () => {
+			cleanup();
+		};
 	}, [tokens])
 
-	const updateTokens = async (messageContent: string) => {
-		const tokenCount = encode(messageContent).length
-		setTokensToSubtract(tokenCount)
-
-		console.log(tokenCount, baseTokens)
-
-		if (tokenCount > baseTokens) {
-			toast({
-				title: "Error",
-				description: "Not enough tokens",
-				variant: "destructive"
-			})
-			return
-		}
-		
-		const newBaseTokens = baseTokens - tokenCount
-		
-		const { data, error } = await supabase.from('tokens').update({
-			base_tokens: newBaseTokens,
-		}).eq('tool', 'ideas')
-		
-		if (error) {
-			console.error('Error updating tokens:', error)
-			toast({
-				title: "Error",
-				description: "Failed to update tokens",
-				variant: "destructive"
-			})
-		} else {
-			toast({
-				title: "Success",
-				description: `Tokens updated successfully! You used ${tokenCount} tokens.`,
-				variant: "success"
-			})
-			setBaseTokens(newBaseTokens)
-			updateGlobalTokens('ideas', newBaseTokens)
-		}
-	}
-
 	const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit, isLoading, stop } = useChat({
+		api: '/api/idea-chat',
 		body: {
 			profile,
 			ideaData,
 		},
 		onFinish: async (message) => {
 			if (message.role === 'assistant') {
-				await updateTokens(message.content)
+				await updateIdeaTokens(message.content, setTokensToSubtract, tokens, supabase, setBaseTokens, setTotalTokens, updateGlobalTokens)
 			}
 		},
 		initialMessages: [
@@ -152,14 +125,9 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 	useEffect(() => {
 		const lastMessage = messages[messages.length - 1]
 		if (lastMessage?.role === 'assistant') {
-			// Check for the completion tag
-			const parser = new DOMParser()
-			const doc = parser.parseFromString(lastMessage.content, 'text/html')
-			const completionTag = doc.querySelector('data[value="idea-complete"]')
-			
-			if (completionTag && completionTag.getAttribute('hidden') === '') {
-				setCanSave(true)
-			}
+			// Check if the message contains a valid idea
+			const isValidIdea = isValidIdeaMessage(lastMessage.content)
+			setCanSave(isValidIdea)
 		}
 	}, [messages])
 
@@ -209,13 +177,6 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-			handleSubmit(e as any);
-		}
-	};
-
 	const handleBack = async () => {
 		try {
 			const result = await deleteIdea(id);
@@ -239,40 +200,16 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 		}
 	};
 
-	if (error) {
-		return (
-			<div className="flex flex-col items-center justify-center min-h-screen p-4">
-				<Card className="p-6 max-w-md w-full">
-					<h2 className="text-xl font-semibold mb-4">Error Loading Data</h2>
-					<p className="text-red-500 mb-4">{error}</p>
-					<Button onClick={() => router.push('/ideas/new')}>
-						<ArrowLeft className="w-4 h-4 mr-2" />
-						Go Back
-					</Button>
-				</Card>
-			</div>
-		);
-	}
+	if (error) return <ErrorMessage error={error} />
 	
-	if (!profile || !ideaData) {
-		return (
-			<div className="flex flex-col items-center justify-center min-h-screen gap-4">
-				<div className="animate-spin">
-					<Loader2 className="w-8 h-8" />
-				</div>
-				<p className="text-sm text-muted-foreground">
-					Loading data...
-				</p>
-			</div>
-		);
-	}
+	if (!profile || !ideaData) return <Loader position='full' />
 
 	const idea = ideaData as IdeaData;
 
 	const tags = parseTags(idea.tags || []);
 
 	return (
-		<div className="flex flex-col w-full max-w-sm mx-auto py-24">
+		<section className="flex flex-col w-full max-w-sm mx-auto py-24">
 			<div className="pb-[120px] space-y-6">
 				<Button 
 					onClick={handleBack}
@@ -323,6 +260,7 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 						</div>
 					);
 				})}
+				
 				{canSave && !savedIdeaId && (
 					<div className="w-full space-y-2">
 						<Button 
@@ -347,6 +285,12 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 
 				{savedIdeaId && (
 					<div className="w-full flex gap-2">
+						<Button className="bg-primary hover:bg-primary/80 text-white w-full" asChild>
+							<Link href={`/ideas/${id}`}>
+								<ArrowLeft className="w-4 h-4 ml-2" />
+								View Idea
+							</Link>
+						</Button>
 						<Button 
 							asChild
 							className="bg-primary hover:bg-primary/80 text-white w-full"
@@ -362,47 +306,54 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 			
 			{tokensToSubtract > totalTokens && (
 				<div className="text-sm text-muted-foreground">
-					<p>You don't have enough tokens to continue.</p>
+					<p>You don&apos;t have enough tokens to continue.</p>
 				</div>
 			)}
 
 			{tokensToSubtract <= totalTokens && (
 				<div className="text-sm text-muted-foreground">
-					<p>You have {totalTokens - tokensToSubtract} tokens left.</p>
+					<p>You have {totalTokens} tokens left.</p>
 				</div>
 			)}
 
-			<form onSubmit={handleSubmit} className="fixed bottom-2 w-full max-w-sm mb-8 rounded-xl backdrop-blur ">
+			<form onSubmit={handleSubmit} className="fixed bottom-2 w-full max-w-sm  rounded-3xl backdrop-blur">
 				{isLoading && (
 					<button
 						onClick={stop}
-						className="w-full mb-2 p-2 text-sm text-red-500 hover:text-red-600 hover:border-red-600 border border-transparent duration-300 bg-zinc-100 dark:bg-zinc-800 rounded"
+						className="w-full mb-2 p-2 text-sm border-gray-200 text-red-500 hover:text-red-600 hover:border-red-600 border duration-300 bg-zinc-100 dark:bg-zinc-800 rounded-3xl"
 						type="button"
 					>
 						<CirclePause className='inline-block mr-2' size={20} />
 						Stop generating
 					</button>
 				)}
-				<div className='flex items-start gap-x-1.5 p-2 border border-zinc-300 dark:border-zinc-800 rounded-xl shadow-xl bg-card z-50 overflow-hidden'>
-					<textarea
-						rows={1}
-						className={`w-full p-2 border border-zinc-300 dark:border-zinc-800 rounded-lg bg-input resize-none overflow-hidden
-							${isLoading ? 'cursor-not-allowed' : ''}`}
-						value={input}
-						placeholder={isLoading ? "Assistant is thinking..." : "Chat with the assistant..."}
-						onChange={handleInputChange}
-						onKeyDown={handleKeyDown}
-						disabled={isLoading}
-						aria-disabled={isLoading}
-						style={{ minHeight: '44px', maxHeight: '200px' }}
-					/>
-					<Button type='submit' variant='outline' disabled={isLoading}>
-						<Send className="mr-2" />
-						Send
-					</Button>
+				<div className='flex items-start gap-x-1.5 p-2 border border-zinc-300 dark:border-zinc-800 rounded-3xl shadow-xl bg-card z-50'>
+					<div className="flex-1 relative">
+						<Textarea
+							rows={1}
+							className={`w-full h-full rounded-2xl p-4 border bg-transparent focus-visible:outline-none focus-visible:ring-border resize-none duration-200 overflow-y-auto
+								scrollbar-thin scrollbar-thumb-zinc-400 dark:scrollbar-thumb-zinc-600 scrollbar-track-transparent hover:scrollbar-thumb-zinc-500 dark:hover:scrollbar-thumb-zinc-500
+								${isLoading ? 'cursor-not-allowed' : ''}`}
+							value={input}
+							placeholder={isLoading ? "Assistant is thinking..." : "Chat with the assistant..."}
+							onChange={(e) => {
+								handleInputChange(e);
+								handleInputWithResize(e);
+							}}
+							onKeyDown={handleKeyDown}
+							disabled={isLoading}
+							aria-disabled={isLoading}
+							style={{ 
+								minHeight: '44px', 
+								maxHeight: '200px',
+								scrollbarWidth: 'thin',
+								scrollbarColor: 'rgb(161 161 170) transparent'
+							}}
+						/>
+					</div>
 				</div>
 			</form>
-		</div>
+		</section>
 	);
 }
 

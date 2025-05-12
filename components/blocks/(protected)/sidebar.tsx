@@ -8,9 +8,8 @@ import {
    ShoppingCart, 
    CirclePlus, 
    ListOrdered, 
-   MoreHorizontal, 
    ChevronRight,
-   ListCollapse
+   Clapperboard
   } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { AppSidebar } from '../app-sidebar'
@@ -70,19 +69,12 @@ const createItems = [
   {
     label: "Scripts", 
     href: "/scripts",
-    icon: NotepadText,
-    submenu: [
-      {
-        label: 'Create Script',
-        href: '/scripts/create',
-        icon: CirclePlus
-      },
-      {
-        label: 'Your Scripts',
-        href: '/scripts',
-        icon: ListCollapse
-      }
-    ]
+    icon: NotepadText
+  },
+  {
+    label: "Production", 
+    href: "/production",
+    icon: Clapperboard
   },
 ]
 
@@ -120,7 +112,7 @@ const ProtectedSidebar = () => {
     if (!tokens.length) {
       fetchTokens()
     }
-  }, [])
+  }, [supabase, setTokens, tokens.length])
 	
 	return (
 		<AppSidebar isProtected={true}>
@@ -161,8 +153,9 @@ const ProtectedSidebar = () => {
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
+                    {item.submenu && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                         <SidebarMenuAction>
                           <ChevronRight />
                         </SidebarMenuAction>
@@ -178,6 +171,7 @@ const ProtectedSidebar = () => {
                         ))}
                       </DropdownMenuContent>
                     </DropdownMenu>
+                    )}
                   </SidebarMenuItem>
                 ))}
             </SidebarMenu>

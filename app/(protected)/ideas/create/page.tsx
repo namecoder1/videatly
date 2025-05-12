@@ -2,7 +2,7 @@
 
 import CustomIcon from '@/components/ui/custom-icon'
 import { Separator } from '@/components/ui/separator'
-import { CirclePlus, CircleHelp } from 'lucide-react'
+import { CirclePlus, CircleHelp, MessageCircleQuestion, Video, Tags } from 'lucide-react'
 import { VideoContentStyle, VideoLength, VideoTargetInterest, VideoType } from '@/types/enum'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import SearchableSelect from '@/components/blocks/(protected)/searchable-select';
 import TagsInput from '@/components/blocks/(protected)/tags-input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const CreateIdeaPage = () => {
 	const router = useRouter();
@@ -66,7 +66,7 @@ const CreateIdeaPage = () => {
 									id="description"
 									name="description"
 									placeholder="Insert here the suggestions for the idea"
-									className="w-full min-h-[150px] resize-y "
+									className="w-full min-h-[150px] resize-y p-4"
 									required
 								/>
 							</div>
@@ -146,28 +146,51 @@ const CreateIdeaPage = () => {
 							<CircleHelp className="w-5 h-5" />
 							Idea Details
 						</CardTitle>
+						<CardDescription>
+							Here you can find the details about the idea you want to create.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<div className="space-y-2">
-							<h3 className="font-semibold">Suggestion</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-blue-600 p-1.5 rounded-xl bg-blue-100">
+									<MessageCircleQuestion className="w-5 h-5" />
+								</span>
+								Suggestion
+							</h3>
 							<p className="text-sm text-muted-foreground">
 								Insert here the suggestions for the idea, you can add more suggestions when you will be in the chat.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h3 className="font-semibold">Content Style & Length</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-purple-600 p-1.5 rounded-xl bg-purple-100">
+									<Video className="w-5 h-5" />
+								</span>
+								Content Style & Length
+							</h3>
 							<p className="text-sm text-muted-foreground">
 								Choose a style that matches your content and audience. Educational videos work well with explainer formats, while entertainment may benefit from storytelling. Consider platform-specific lengths - shorter for social media, longer for in-depth topics.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h3 className="font-semibold">Video Type & Target Interest</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-orange-600 p-1.5 rounded-xl bg-orange-100">
+									<Video className="w-5 h-5" />
+								</span>
+								Video Type & Target Interest
+							</h3>
 							<p className="text-sm text-muted-foreground">
-								Select formats that align with your content goals. Different types have different engagement patterns. Define your target audience's interests to optimize content discovery and reach the right viewers.
+								Select formats that align with your content goals. Different types have different engagement patterns. Define your target audience&apos;s interests to optimize content discovery and reach the right viewers.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h3 className="font-semibold">Keywords</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-green-600 p-1.5 rounded-xl bg-green-100">
+									<Tags className="w-5 h-5" />
+								</span>
+								Keywords
+							</h3>
 							<p className="text-sm text-muted-foreground">
 								Include 5-7 relevant keywords that your audience might search for. Mix specific and broader terms. Consider including variations of your main topic and related concepts to improve SEO and content discovery.
 							</p>

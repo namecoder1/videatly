@@ -1,11 +1,4 @@
 'use client'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 import { VideoContentStyle, VideoLength, VideoTargetInterest, VideoType, ExperienceLevel } from "@/types/enum"
 import CustomIcon from '@/components/ui/custom-icon'
@@ -14,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Info, User, Save, Youtube, HelpCircle, Loader2, Languages } from 'lucide-react'
+import { User, Save, Youtube, HelpCircle, Languages, Video, TargetIcon } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { createClient } from "@/utils/supabase/client"
 import { useRouter } from 'next/navigation'
@@ -22,6 +15,7 @@ import { useToast } from '@/hooks/use-toast'
 import { fetchUserProfile, updateUserProfile, type ProfileFormData } from './actions'
 import SearchableSelect from "@/components/blocks/(protected)/searchable-select"
 import Link from "next/link"
+import Loader from "@/components/blocks/loader"
 
 const ProfilePage = () => {
   const router = useRouter()
@@ -36,7 +30,8 @@ const ProfilePage = () => {
     video_length: '',
     target_interest: '',
     content_type: '',
-    experience_level: ''
+    experience_level: '',
+    spoken_language: ''
   })
   const [originalData, setOriginalData] = useState<ProfileFormData>({
     yt_username: '',
@@ -44,7 +39,8 @@ const ProfilePage = () => {
     video_length: '',
     target_interest: '',
     content_type: '',
-    experience_level: ''
+    experience_level: '',
+    spoken_language: ''
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +52,7 @@ const ProfilePage = () => {
   }
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserAndProfileData = async () => {
       setLoading(true)
       try {
         // Get authenticated user
@@ -68,6 +64,16 @@ const ProfilePage = () => {
           const profileData = await fetchUserProfile(user.id)
           setFormData(profileData)
           setOriginalData(profileData)
+
+          // Fetch additional profile data
+          const { data: userData } = await supabase
+            .from('users')
+            .select('spoken_language')
+            .eq('auth_user_id', user.id)
+            .single()
+          
+          // Only show card if userData is null or spoken_language is null/empty string
+          setProfileData(userData || { spoken_language: null })
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -76,32 +82,14 @@ const ProfilePage = () => {
           description: 'An error occurred while fetching your profile data',
           variant: 'destructive'
         })
+        setProfileData({ spoken_language: null })
       } finally {
         setLoading(false)
       }
     }
-    fetchUserData()
-
-    const fetchProfileData = async () => {
-      try {
-        const { data: userData } = await supabase
-          .from('users')
-          .select('spoken_language')
-          .eq('auth_user_id', user?.id)
-          .single()
-        setProfileData(userData)
-      } catch (error) {
-        console.error('Error fetching profile data:', error)
-        toast({
-          title: 'Your language is not set',
-          description: 'Please set your language in the /settings page',
-          variant: 'destructive'
-        })
-      }
-    }
-    fetchProfileData()
-  }, [])
-
+    fetchUserAndProfileData()
+  }, [supabase, toast])
+  
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
@@ -137,6 +125,8 @@ const ProfilePage = () => {
     }
   }
 
+  if (loading) return <Loader position='full' />
+
 	return (
 		<section>
 			<div className='flex flex-col'>
@@ -157,88 +147,85 @@ const ProfilePage = () => {
                 YouTube Profile Settings
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              {loading ? (
-                <div className="flex justify-center py-6"><Loader2 className="h-5 w-5 animate-spin" /></div>
-              ) : (
-                <form onSubmit={handleSubmit}>
-                  <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6'>
-                    <div className='flex flex-col gap-2'>
-                      <Label htmlFor='yt_username'>YouTube Username</Label>
-                      <Input id='yt_username' placeholder='Enter your YouTube username' name='yt_username' value={formData.yt_username} onChange={handleChange} />
-                    </div>
-                    
-
-                    <SearchableSelect
-                      name="contentStyle"
-                      label="Content Style"
-                      placeholder="Select a style"
-                      searchPlaceholder="Search content style..."
-                      options={Object.values(VideoContentStyle)}
-                      value={formData.content_style}
-                      onChange={(value) => handleSelectChange("content_style", value)}
-                      required
-                    />
-
-                    <SearchableSelect
-                      name="videoLength"
-                      label="Video Length"
-                      placeholder="Select a length"
-                      searchPlaceholder="Search video length..."
-                      options={Object.values(VideoLength)}
-                      value={formData.video_length}
-                      onChange={(value) => handleSelectChange("video_length", value)}
-                      required
-                    />
-                    
-                    <SearchableSelect
-                      name="targetInterest"
-                      label="Target Interest"
-                      placeholder="Select a interest"
-                      searchPlaceholder="Search target interest..."
-                      options={Object.values(VideoTargetInterest)}
-                      value={formData.target_interest}
-                      onChange={(value) => handleSelectChange("target_interest", value)}
-                      required
-                    />
-                    
-                    <SearchableSelect
-                      name="videoType"
-                      label="Video Type"
-                      placeholder="Select a type"
-                      searchPlaceholder="Search video type..."
-                      options={Object.values(VideoType)}
-                      value={formData.content_type}
-                      onChange={(value) => handleSelectChange("content_type", value)}
-                      required
-                    />
-                    
-                    
-                    <SearchableSelect
-                      name="experienceLevel"
-                      label="Experience Level"
-                      placeholder="Select a level"
-                      searchPlaceholder="Search experience level..."
-                      options={Object.values(ExperienceLevel)}
-                      value={formData.experience_level}
-                      onChange={(value) => handleSelectChange("experience_level", value)}
-                      required
-                    />
-
+            <CardContent className="mt-2"> 
+              <form onSubmit={handleSubmit}>
+                <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6'>
+                  <div className='flex flex-col gap-2'>
+                    <Label htmlFor='yt_username'>YouTube Username</Label>
+                    <Input id='yt_username' placeholder='Enter your YouTube username' name='yt_username' value={formData.yt_username} onChange={handleChange} />
                   </div>
                   
-                  <div className="flex justify-end mt-4 sm:mt-6">
-                    <Button type="submit" className="flex items-center gap-2">
-                      <Save className="h-4 w-4" />
-                      Save Changes
-                    </Button>
-                  </div>
-                </form>
-              )}
+
+                  <SearchableSelect
+                    name="contentStyle"
+                    label="Content Style"
+                    placeholder="Select a style"
+                    searchPlaceholder="Search content style..."
+                    options={Object.values(VideoContentStyle)}
+                    value={formData.content_style}
+                    onChange={(value) => handleSelectChange("content_style", value)}
+                    required
+                  />
+
+                  <SearchableSelect
+                    name="videoLength"
+                    label="Video Length"
+                    placeholder="Select a length"
+                    searchPlaceholder="Search video length..."
+                    options={Object.values(VideoLength)}
+                    value={formData.video_length}
+                    onChange={(value) => handleSelectChange("video_length", value)}
+                    required
+                  />
+                  
+                  <SearchableSelect
+                    name="targetInterest"
+                    label="Target Interest"
+                    placeholder="Select a interest"
+                    searchPlaceholder="Search target interest..."
+                    options={Object.values(VideoTargetInterest)}
+                    value={formData.target_interest}
+                    onChange={(value) => handleSelectChange("target_interest", value)}
+                    required
+                  />
+                  
+                  <SearchableSelect
+                    name="videoType"
+                    label="Video Type"
+                    placeholder="Select a type"
+                    searchPlaceholder="Search video type..."
+                    options={Object.values(VideoType)}
+                    value={formData.content_type}
+                    onChange={(value) => handleSelectChange("content_type", value)}
+                    required
+                  />
+                  
+                  
+                  <SearchableSelect
+                    name="experienceLevel"
+                    label="Experience Level"
+                    placeholder="Select a level"
+                    searchPlaceholder="Search experience level..."
+                    options={Object.values(ExperienceLevel)}
+                    value={formData.experience_level}
+                    onChange={(value) => handleSelectChange("experience_level", value)}
+                    required
+                  />
+
+                </div>
+                
+                <div className="flex justify-end mt-6 sm:mt-8">
+                  <Button type="submit" variant='black' className="flex items-center gap-2">
+                    <Save className="h-4 w-4" />
+                    Save Changes
+                  </Button>
+                </div>
+              </form>
             </CardContent>
           </Card>
 
-          {!profileData?.spoken_language && !loading && (
+
+          {profileData && !loading && (!profileData.spoken_language || profileData.spoken_language === '') && (
             <Card className='mt-4 bg-blue-50/50 border-blue-200'>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg font-medium flex items-center gap-2">
@@ -277,10 +264,15 @@ const ProfilePage = () => {
             A guide to help you choose the right settings for your videos
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-2">
           <div className="space-y-4 sm:space-y-6">
             <div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">Video Length</h3>
+              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2 flex items-center gap-2">
+                <span className="text-blue-600 p-1.5 rounded-xl bg-blue-100">
+                  <Video className="w-5 h-5" />
+                </span>
+                Video Length
+              </h3>
               <p className="text-muted-foreground text-xs sm:text-sm">
                 Choose the appropriate duration for your content based on your platform and message complexity. Shorter videos work well for social media and quick engagement, while longer formats allow for more detailed exploration of topics.
               </p>
@@ -289,16 +281,26 @@ const ProfilePage = () => {
             <Separator />
             
             <div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">Target Interest</h3>
+              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2 flex items-center gap-2">
+                <span className="text-orange-600 p-1.5 rounded-xl bg-orange-100">
+                  <TargetIcon className="w-5 h-5" />
+                </span>
+                Target Interest
+              </h3>
               <p className="text-muted-foreground text-xs sm:text-sm">
-                This setting helps define your video's primary purpose and audience appeal. Whether you're looking to entertain, educate, inspire, or raise awareness, selecting the right target interest ensures your content resonates with your intended audience and achieves your communication goals.
+                This setting helps define your videos primary purpose and audience appeal. Whether you&apos;re looking to entertain, educate, inspire, or raise awareness, selecting the right target interest ensures your content resonates with your intended audience and achieves your communication goals.
               </p>
             </div>
             
             <Separator />
             
             <div>
-              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2">Video Type</h3>
+              <h3 className="font-medium text-base sm:text-lg mb-1 sm:mb-2 flex items-center gap-2">
+                <span className="text-green-600 p-1.5 rounded-xl bg-green-100">
+                  <Video className="w-5 h-5" />
+                </span>
+                Video Type
+              </h3>
               <p className="text-muted-foreground text-xs sm:text-sm">
                 The format structure determines how your content is presented to viewers. Different video types serve different purposes - from sharing knowledge and personal experiences to providing analysis or clarifying complex topics. Choose a format that best delivers your message and matches your content creation strengths.
               </p>

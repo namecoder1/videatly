@@ -1,11 +1,11 @@
 'use client'
 
-import { Check, ChevronRight } from 'lucide-react'
+import { Check, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { Button } from '../../ui/button'
 import AvatarStack from '../../ui/avatar-stack'
-import { handleScrollToElement } from '@/utils/supabase/utils'
+import { handleScrollToElement } from '@/lib/utils'
 import { signInWithGoogleAction } from '@/app/(authentication)/actions'
 
 const avatars = [
@@ -52,17 +52,18 @@ const Hero = ({ creators }: { creators: number }) => {
 
 				<div className="flex flex-col sm:flex-row gap-4 mb-8">
 					<form >
-						<Button className='w-full' size='lg' formAction={signInWithGoogleAction}>
+						<Button className='w-full group' size='lg' formAction={signInWithGoogleAction}>
+							<Play className='size-4 mr-2 group-hover:scale-125 transition-transform duration-500' />
 							Start Now
 						</Button>
 					</form>
-					<Button asChild className="w-full" variant="outline" size="lg">
+					<Button asChild className="w-full group" variant="outline" size="lg">
 						<Link
 							href="#features"
 							onClick={(e) => handleScrollToElement(e, 'features')}
 						>
 							Learn More
-							<ChevronRight />
+							<ChevronRight className='size-4 group-hover:translate-x-1 transition-transform duration-200' />
 						</Link>
 					</Button>
 				</div>

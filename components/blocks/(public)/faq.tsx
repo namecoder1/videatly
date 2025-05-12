@@ -40,7 +40,7 @@ const Faq = () => {
 				<h3 className='mt-2 text-balance text-5xl font-black tracking-tight sm:text-6xl sm:text-center'>
 					Frequently Asked Questions
 				</h3>
-				<Card className='px-6 py-4 rounded-xl w-full'>
+				<Card className='px-6 py-4 rounded-3xl w-full'>
 					<Accordion type="single" collapsible className="[&>*:last-child>div]:border-b-0">
 						{faq.map((item, index) => (
 							<AccordionItem 

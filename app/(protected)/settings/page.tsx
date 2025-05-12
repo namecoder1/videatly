@@ -1,18 +1,20 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Trash2, Mail, User, Image as ImageIcon, Calendar, Phone, CalendarClock, CalendarPlus, TriangleAlert, Shield, Download, Lock, KeyRound, Database, Info, Settings, Languages, CloudFog } from 'lucide-react'
+import { Trash2, Mail, User, Phone, CalendarClock, CalendarPlus, TriangleAlert, Shield, Lock, KeyRound, Database, Settings, Languages, CreditCard } from 'lucide-react'
+import Loader from '@/components/blocks/loader'
 import { Button } from '@/components/ui/button'
 import { deleteAccount } from '@/app/(authentication)/actions'
 import { createClient } from '@/utils/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { formatDate } from '@/utils/supabase/utils'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { formatDate } from '@/lib/utils'
 import Image from 'next/image'
 import CustomIcon from '@/components/ui/custom-icon'
 import { Separator } from '@/components/ui/separator'
 import { Select, SelectItem, SelectContent, SelectValue, SelectTrigger } from '@/components/ui/select'
 import { useToast } from '@/hooks/use-toast'
+import Link from 'next/link'
 
 const SettingsPage = () => {
 	const supabase = createClient()
@@ -22,35 +24,41 @@ const SettingsPage = () => {
 	const [newName, setNewName] = useState('')
 	const [language, setLanguage] = useState<string>('en')
 	const { toast } = useToast()
+	const [isLoading, setIsLoading] = useState(true)
 
 	useEffect(() => {
-		const fetchUser = async () => {
-			const { data: { user } } = await supabase.auth.getUser()
-			setUser(user)
-		}
-		fetchUser()
-	}, [])
+		const fetchData = async () => {
+			setIsLoading(true)
+			try {
+				// Fetch user
+				const { data: { user } } = await supabase.auth.getUser()
+				setUser(user)
 
-	useEffect(() => {
-		const fetchUserProfile = async () => {
-			if (user?.id) {
-				const { data: userProfile, error } = await supabase
-					.from('users')
-					.select('*')
-					.eq('auth_user_id', user.id)
-					.single()
-				setUserProfile(userProfile)
-				setNewName(userProfile?.name || '')
+				// If user exists, fetch profile
+				if (user?.id) {
+					const { data: userProfile, error } = await supabase
+						.from('users')
+						.select('*')
+						.eq('auth_user_id', user.id)
+						.single()
+					
+					if (!error) {
+						setUserProfile(userProfile)
+						setNewName(userProfile?.name || '')
+						if (userProfile?.spoken_language) {
+							setLanguage(userProfile.spoken_language)
+						}
+					}
+				}
+			} catch (error) {
+				console.error('Error fetching data:', error)
+			} finally {
+				setIsLoading(false)
 			}
 		}
-		fetchUserProfile()
-	}, [user])
 
-	useEffect(() => {
-		if (userProfile?.spoken_language) {
-			setLanguage(userProfile.spoken_language)
-		}
-	}, [userProfile])
+		fetchData()
+	}, [supabase])
 
 	const handleUpdateName = async () => {
 		if (user?.id && newName.trim()) {
@@ -89,6 +97,8 @@ const SettingsPage = () => {
 		}
 	}
 
+	if (isLoading) return <Loader position='full' />
+
 	return (
 		<section>
 			<div className='flex flex-col'>
@@ -101,6 +111,7 @@ const SettingsPage = () => {
 
 			<div className='grid grid-cols-1 lg:grid-cols-3 gap-6 h-fit w-full'>
 				<div className='col-span-1 lg:col-span-2 h-fit'>
+
 					<Card className='h-fit order-[1] lg:order-none mb-6'>
 						<CardHeader>
 							<CardTitle className="text-xl flex items-center justify-between gap-2">
@@ -112,25 +123,28 @@ const SettingsPage = () => {
 									<SelectTrigger className='w-fit space-x-2'>
 										<SelectValue placeholder='Select language' />
 									</SelectTrigger>
-									<SelectContent >
-										<SelectItem value='en'>🇺🇸 English</SelectItem>
-										<SelectItem value='it'>🇮🇹 Italian</SelectItem>
-										<SelectItem value='es'>🇪🇸 Spanish</SelectItem>
-										<SelectItem value='fr'>🇫🇷 French</SelectItem>
+									<SelectContent className='flex flex-col gap-2'>
+										<SelectItem value='en' className='flex items-center gap-2'><span className='text-xs mr-1'>🇺🇸</span> English</SelectItem>
+										<SelectItem value='it' className='flex items-center gap-2'><span className='text-xs mr-1'>🇮🇹</span> Italian</SelectItem>
+										<SelectItem value='es' className='flex items-center gap-2'><span className='text-xs mr-1'>🇪🇸</span> Spanish</SelectItem>
+										<SelectItem value='fr' className='flex items-center gap-2'><span className='text-xs mr-1'>🇫🇷</span> French</SelectItem>
 									</SelectContent>
 								</Select>
 							</CardTitle>
+							<CardDescription className='pt-2'>
+								We need to know your language to personalize your experience with the app and the AI features.
+							</CardDescription>
 						</CardHeader>
 					</Card>
 
-					<Card className="h-fit order-[2] lg:order-none">
+					<Card className="h-fit order-[2] lg:order-none mb-6">
 						<CardHeader className='flex flex-row items-center justify-between gap-2'>
 							<CardTitle className="text-xl flex items-center gap-2">
 								<User className="w-5 h-5" />
 								Personal Information
 							</CardTitle>
 							<div>
-								<p className='text-sm text-muted-foreground'>
+								<p className='text-sm text-muted-foreground font-medium'>
 									{renderLanguage(userProfile?.spoken_language || 'en')}
 								</p>
 							</div>
@@ -186,15 +200,10 @@ const SettingsPage = () => {
 												{user?.phone}
 											</div>
 										)}
-										<div className="flex items-center text-sm text-muted-foreground">
-											<ImageIcon className="w-4 h-4 mr-2" />
-											Profile Picture
-											<Button variant="ghost" size="sm" className="ml-2">Change</Button>
-										</div>
 									</div>
 								</div>
 
-								<div className="grid grid-cols-2 gap-4 text-sm">
+								<div className="flex gap-4 text-sm justify-between">
 									<div className="flex items-center gap-2 text-muted-foreground">
 										<CalendarClock className="w-4 h-4" />
 										Created: {user?.created_at ? formatDate(user.created_at, 'normal') : 'N/A'}
@@ -208,16 +217,35 @@ const SettingsPage = () => {
 						</CardContent>
 					</Card>
 
-					{/* Versione desktop della card */}
+					<Card className='h-fit order-[3] lg:order-none'>
+						<CardHeader className='flex flex-row items-center justify-between gap-2'>
+							<CardTitle className='text-xl flex items-center gap-2'>
+								<CreditCard className='w-5 h-5' />
+								{userProfile?.subscription === 'pro' ? 'Pro Plan' : userProfile?.subscription === 'ultra' ? 'Ultra Plan' : 'Free Plan'}
+							</CardTitle>
+							<CardDescription>
+								<span>You&apos;re paying us: </span>
+								<span className='font-semibold text-green-500 underline underline-offset-2'>{userProfile?.subscription === 'pro' ? '$15' : userProfile?.subscription === 'ultra' ? '$30' : '$0'} / month</span>
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<div className='flex items-start gap-2 flex-col'>
+								<p className='text-sm text-muted-foreground max-w-xl'>
+									We do not store your payment information. All payments are processed by <Link className='text-blue-500' target='_blank' href='https://stripe.com'>Stripe</Link>.
+									Click the button below to be redirected to the payment page.
+								</p>
+								<Button variant='black' className='ml-auto' size='sm'>Plan Settings</Button>
+							</div>
+						</CardContent>
+					</Card>
+
 					<DeleteCard isMobile={false} />
 				</div>
 
-				<Card className="col-span-1 order-[3] lg:order-none h-fit">
+				<Card className="col-span-1 order-[4] lg:order-none h-fit">
 					<CardHeader>
 						<CardTitle className="text-xl flex items-center gap-2">
-							<div className='p-2 rounded-xl bg-blue-400/90 border border-blue-500'>
-								<Shield className="w-5 h-5 text-white" />
-							</div>
+							<Shield className="w-5 h-5" />
 							Account & Privacy
 						</CardTitle>
 						<CardDescription>
@@ -227,8 +255,8 @@ const SettingsPage = () => {
 					<CardContent className="space-y-4">
 						<div className="space-y-2">
 							<h3 className="font-medium flex items-center gap-2">
-								<div className='p-2 rounded-xl bg-emerald-400/90 border border-emerald-500'>
-									<Lock className="w-4 h-4 text-white" />
+								<div className='p-2 rounded-xl bg-emerald-100'>
+									<Lock className="w-4 h-4 text-emerald-600" />
 								</div>
 								Data & Privacy
 							</h3>
@@ -239,8 +267,8 @@ const SettingsPage = () => {
 
 						<div className="space-y-2">
 							<h3 className="font-medium flex items-center gap-2">
-								<div className='p-2 rounded-xl bg-purple-400/90 border border-purple-500'>
-									<KeyRound className="w-4 h-4 text-white" />
+								<div className='p-2 rounded-xl bg-purple-100'>
+									<KeyRound className="w-4 h-4 text-purple-600" />
 								</div>
 								Account Security
 							</h3>
@@ -251,8 +279,8 @@ const SettingsPage = () => {
 
 						<div className="space-y-2">
 							<h3 className="font-medium flex items-center gap-2">
-								<div className='p-2 rounded-xl bg-amber-400/90 border border-amber-500'>
-									<Database className="w-4 h-4 text-white" />
+								<div className='p-2 rounded-xl bg-amber-100'>
+									<Database className="w-4 h-4 text-amber-600" />
 								</div>
 								Data Management
 							</h3>
@@ -323,15 +351,40 @@ const DeleteCard = ({ isMobile }: { isMobile: boolean }) => {
 function renderLanguage(language: string) {
 	switch (language) {
 		case 'en':
-			return '🇺🇸 English'
+			return (
+				<>
+					<span className='text-xs mr-1'>🇺🇸</span>
+					<span>English</span>
+				</>
+			)
 		case 'it':
-			return '🇮🇹 Italian'
+			return (
+				<>
+					<span className='text-xs mr-1'>🇮🇹</span>
+					<span>Italian</span>
+				</>
+			)
 		case 'es':
-			return '🇪🇸 Spanish'
+			return (
+				<>
+					<span className='text-xs mr-1'>🇪🇸</span>
+					<span>Spanish</span>
+				</>
+			)
 		case 'fr':
-			return '🇫🇷 French'
+			return (
+				<>
+					<span className='text-xs mr-1'>🇫🇷</span>
+					<span>French</span>
+				</>
+			)
 		default:
-			return '🇺🇸 English'
+			return (
+				<>
+					<span className='text-xs mr-1'>🇺🇸</span>
+					<span>English</span>
+				</>
+			)
 	}
 }
 

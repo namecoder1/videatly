@@ -19,7 +19,7 @@ const PRICING_PLANS = [
 		price: '15',
 		period: 'month',
 		description: 'For professional use',
-		features: ['10.000 video ideas', '20.000 script drafts', 'Advanced analytics', 'Priority support'],
+		features: ['10.000 video tokens', '20.000 script tokens', 'Advanced analytics', 'Priority support'],
 		popular: true,
 		variant: 'default',
 		action: 'Get Started'
@@ -29,7 +29,7 @@ const PRICING_PLANS = [
 		price: '30',
 		period: 'month',
 		description: 'For large organizations',
-		features: ['20.000 video ideas', '40.000 script drafts', 'Advanced analytics', 'Priority support', 'Thumbnail generator'],
+		features: ['20.000 video tokens', '40.000 script tokens', 'Advanced analytics', 'Priority support', 'Thumbnail generator'],
 		popular: false,
 		variant: 'outline',
 		action: 'Get Started'

@@ -16,7 +16,7 @@ export default async function Home() {
 
   return (
     <div>
-      <Hero creators={45} />
+      <Hero creators={12} />
       <section className="my-40 w-full px-4 py-40 space-y-24 bg-black" id="features">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <span className="text-primary font-semibold tracking-wide uppercase">Why Choose Videatly?</span>

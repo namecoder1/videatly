@@ -4,6 +4,7 @@ import { BarChartIcon } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 
 const AnalyticsPage = () => {
+	
 	return (
 		<section>
 			<div className='flex flex-col'>

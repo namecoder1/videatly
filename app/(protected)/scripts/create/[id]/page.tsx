@@ -1,9 +1,8 @@
 'use client'
 
-import { CardContent } from '@/components/ui/card'
 import SearchableSelect from '@/components/blocks/(protected)/searchable-select'
 import { Button } from '@/components/ui/button'
-import { Card, CardTitle, CardHeader } from '@/components/ui/card'
+import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card'
 import CustomIcon from '@/components/ui/custom-icon'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
@@ -11,9 +10,12 @@ import { toast } from '@/hooks/use-toast'
 import { ScriptTone, ScriptVerbosity, ScriptTarget, ScriptType, ScriptDuration, ScriptPersona, ScriptStructure } from '@/types/enum'
 import { IdeaData } from '@/types/types'
 import { createClient } from '@/utils/supabase/client'
-import { CircleHelp, Loader2, NotepadText } from 'lucide-react'
+import { CircleHelp, Clock4, ExternalLink, Film, Link2, Loader2, NotepadText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
+import { Checkbox } from '@/components/ui/checkbox'
+import Loader from '@/components/blocks/loader'
 
 
 const ScriptPage = ({ params }: { params: { id: string } }) => {
@@ -44,7 +46,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
     }
 
     fetchIdeaData()
-  }, [id])
+  }, [id, router])
 
 	async function createScript(formData: FormData) {
 		const supabase = createClient()
@@ -64,7 +66,14 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 			structure: formData.get('structure')
 		}
 
-		console.log(script)
+		if (!script.tone || !script.verbosity || !script.target_audience || !script.script_type || !script.duration || !script.persona || !script.structure) {
+			toast({
+				title: 'Error creating script',
+				description: 'Please fill in all fields',
+				variant: 'destructive'
+			})
+			return
+		}
 
 		const { data, error } = await supabase
 			.from('scripts')
@@ -74,19 +83,18 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 
 		if (error) {
 			console.error('Error creating script:', error)
+			toast({
+				title: 'Error creating script',
+				description: error.message,
+				variant: 'destructive'
+			})
 			return
 		}
 
 		router.push(`/scripts/create/${data.id}/chat`)
 	}
 
-  if (isLoading) {
-    return (
-      <div className='flex items-center justify-center h-screen'>
-        <Loader2 className='w-10 h-10 animate-spin' />
-      </div>
-    )
-  }
+  if (isLoading) return <Loader position='full' />
 
 	return (
 		<section>
@@ -98,6 +106,43 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
         <Separator className='my-4' />
       </div>
       
+		<Card className='mb-4 mt-2'>
+			<CardHeader className='pb-2'>	
+				<div className='flex items-center gap-2 text-sm text-muted-foreground font-medium justify-between'>
+					<p className='flex items-center gap-2'>
+						<span className='p-1 rounded-lg bg-blue-100 border border-blue-300'>
+							<Link2 className='w-4 h-4 text-blue-500' /> 
+						</span>
+						<span>Related Idea</span>
+					</p>
+					<Button size='sm' variant='outline'>
+						<Link href={`/ideas/${ideaData?.id}`} target='_blank' className='flex items-center gap-2'>
+							<ExternalLink className='w-4 h-4' />
+							View Idea
+						</Link>
+					</Button>
+				</div>
+				<CardTitle className='text-lg font-semibold mt-1'>{ideaData?.title}</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<p className='text-sm text-muted-foreground line-clamp-2'>{ideaData?.description}</p>
+				<span className='flex gap-2 mt-3 text-xs'>
+					{ideaData?.video_type && (
+						<span className='flex items-center gap-2 text-muted-foreground'>
+							<Film className='w-3 h-3 text-purple-500' />
+							{ideaData.video_type}
+						</span>
+					)}
+					{ideaData?.video_length && (
+						<span className='flex items-center gap-2 text-muted-foreground'>
+							<Clock4 className='w-3 h-3 text-amber-500' />
+							{ideaData.video_length}
+						</span>
+					)}
+				</span>
+			</CardContent>
+		</Card>
+
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 h-fit w-full'>
 				<form action={createScript} className="space-y-8 col-span-1 lg:col-span-2">
 					<div className="space-y-6">
@@ -124,8 +169,6 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 							</div>
 							
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								{/* TODO: Add CTA checklist */}
-
 								<SearchableSelect
 									name="target_audience"
 									label="Target Audience"
@@ -134,9 +177,6 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 									options={Object.values(ScriptTarget)}
 									required
 								/>
-							</div>
-							
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<SearchableSelect
 									name="script_type"
 									label="Script Type"
@@ -145,7 +185,9 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 									options={Object.values(ScriptType)}
 									required
 								/>
-
+							</div>
+							
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<SearchableSelect
 									name="duration"
 									label="Duration"
@@ -154,9 +196,6 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 									options={Object.values(ScriptDuration)}
 									required
 								/>
-							</div>
-							
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 								<SearchableSelect
 									name="persona"
 									label="Persona"
@@ -165,7 +204,9 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 									options={Object.values(ScriptPersona)}
 									required
 								/>
-
+							</div>
+							
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 								<SearchableSelect
 									name="structure"
 									label="Structure"
@@ -173,6 +214,16 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 									searchPlaceholder="Search structure..."
 									options={Object.values(ScriptStructure)}
 								/>
+
+								<div className='flex flex-col gap-2'>
+									<Label>Call to Action</Label>
+									<div className='flex items-center gap-2'>
+										<Checkbox
+											name='call_to_action'
+										/>
+										<p className='text-sm'>Add a call to action</p>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -191,8 +242,9 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 						<Button
 							type="submit"
 							className="min-w-[100px] bg-black text-white hover:bg-black/90"
+							disabled={isLoading}
 						>
-							Create Idea
+							{isLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Create Script'}
 						</Button>
 					</div>
 				</form>
@@ -200,26 +252,55 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<CircleHelp className="w-5 h-5" />
-							Idea Details
+							Script Details
 						</CardTitle>
+						<CardDescription>
+							Here you can find the details about the script you want to create.
+						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
 						<div className="space-y-2">
-							<h3 className="font-semibold">Suggestion</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-blue-600 p-1.5 rounded-xl bg-blue-100">
+									<CircleHelp className="w-5 h-5" />
+								</span>
+								Tone & Verbosity
+							</h3>
 							<p className="text-sm text-muted-foreground">
-								Insert here the suggestions for your script, you can add more suggestions when you will be in the chat.
+								Insert here the tone and verbosity for your script. The tone is the personality of the person who is speaking, while the verbosity is the level of detail in the script.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h3 className="font-semibold">Content Style & Length</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-orange-600 p-1.5 rounded-xl bg-orange-100">
+									<CircleHelp className="w-5 h-5" />
+								</span>
+								Duration & Persona
+							</h3>
 							<p className="text-sm text-muted-foreground">
-								Choose a style that matches your content and audience. Educational videos work well with explainer formats, while entertainment may benefit from storytelling. Consider platform-specific lengths - shorter for social media, longer for in-depth topics.
+								Choose a duration that matches your content and audience. Educational videos work well with explainer formats, while entertainment may benefit from storytelling. Consider platform-specific lengths - shorter for social media, longer for in-depth topics.
 							</p>
 						</div>
 						<div className="space-y-2">
-							<h3 className="font-semibold">Video Type & Target Interest</h3>
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-purple-600 p-1.5 rounded-xl bg-purple-100">
+									<CircleHelp className="w-5 h-5" />
+								</span>
+								Script Type & Target Audience
+							</h3>
 							<p className="text-sm text-muted-foreground">
-								Select formats that align with your content goals. Different types have different engagement patterns. Define your target audience's interests to optimize content discovery and reach the right viewers.
+								Select a script type that aligns with your content goals. Different types have different engagement patterns. Define your target audience&apos;s interests to optimize content discovery and reach the right viewers.
+							</p>
+						</div>
+						<div className="space-y-2">
+							<h3 className="font-semibold flex items-center gap-2">
+								<span className="text-green-600 p-1.5 rounded-xl bg-green-100">
+									<CircleHelp className="w-5 h-5" />
+								</span>
+								Structure & Call to Action
+							</h3>
+							<p className="text-sm text-muted-foreground">
+								Select a structure that aligns with your content goals. Different structures have different engagement patterns. Define your target audience&apos;s interests to optimize content discovery and reach the right viewers.
 							</p>
 						</div>
 					</CardContent>

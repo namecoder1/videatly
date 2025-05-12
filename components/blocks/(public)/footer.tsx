@@ -1,8 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import React from 'react'
 import Image from 'next/image'
 import logo from '@/assets/logo.png'
 import tobi from '@/assets/tobi-logo.png'
+import { handleScrollToElement } from '@/lib/utils'
 
 const Footer = () => {
 	const year = new Date().getFullYear()
@@ -30,10 +33,13 @@ const Footer = () => {
 								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Home</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Support</Link>
+								<Link href="mailto:support@videatly.ai" className='text-gray-300 hover:text-white transition-colors'>Support</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Pricing</Link>
+								<Link onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='text-gray-300 hover:text-white transition-colors'>Pricing</Link>
+							</li>
+							<li>
+								<Link href="/documentation" className='text-gray-300 hover:text-white transition-colors'>Documentation</Link>
 							</li>
 						</ul>
 					</div>
@@ -41,13 +47,13 @@ const Footer = () => {
 						<h2 className='text-lg font-bold mb-4'>LEGAL</h2>
 						<ul className='space-y-3'>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Privacy Policy</Link>
+								<Link href="/privacy-policy" className='text-gray-300 hover:text-white transition-colors'>Privacy Policy</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Terms of Service</Link>
+								<Link href="/terms-of-service" className='text-gray-300 hover:text-white transition-colors'>Terms of Service</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Cookie Policy</Link>
+								<Link href="/cookie-policy" className='text-gray-300 hover:text-white transition-colors'>Cookie Policy</Link>
 							</li>
 						</ul>
 					</div>
@@ -55,16 +61,16 @@ const Footer = () => {
 						<h2 className='text-lg font-bold mb-4'>MORE</h2>
 						<ul className='space-y-3'>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>About Us</Link>
+								<Link href="/about-us" className='text-gray-300 hover:text-white transition-colors'>About Us</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Contact Us</Link>
+								<Link href="/contact-us" className='text-gray-300 hover:text-white transition-colors'>Contact Us</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Instagram</Link>
+								<Link href="https://www.instagram.com/videatly/" target='_blank' className='text-gray-300 hover:text-white transition-colors'>Instagram</Link>
 							</li>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>YouTube</Link>
+								<Link href="https://www.youtube.com/@videatly" target='_blank' className='text-gray-300 hover:text-white transition-colors'>YouTube</Link>
 							</li>
 						</ul>
 					</div>
@@ -73,7 +79,7 @@ const Footer = () => {
 					<p className='text-sm text-gray-300 flex flex-col sm:flex-row items-center gap-2 justify-center sm:justify-start text-center sm:text-left'>
 						<Image src={tobi} alt='Tobi' width={33} height={33} className='rounded-full' />
 						<span>
-							Hey everybody! I'm <Link href='https://tob.codes' target='_blank' className='underline underline-offset-2 hover:text-white transition-colors'>Tobi</Link> and I'm the creator of Videatly. You can find more about me on my website.
+							Hey everybody! I&apos;m <Link href='https://tob.codes' target='_blank' className='underline underline-offset-2 hover:text-white transition-colors'>Tobi</Link> and I&apos;m the creator of Videatly. You can find more about me on my website.
 						</span>
 					</p>
 				</div>

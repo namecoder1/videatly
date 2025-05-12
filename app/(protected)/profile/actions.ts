@@ -7,6 +7,7 @@ export type ProfileFormData = {
   target_interest: string
   content_type: string
   experience_level: string
+  spoken_language: string
 }
 
 export const fetchUserProfile = async (userId: string) => {
@@ -28,7 +29,8 @@ export const fetchUserProfile = async (userId: string) => {
     video_length: data?.video_length || '',
     target_interest: data?.target_interest || '',
     content_type: data?.content_type || '',
-    experience_level: data?.experience_level || ''
+    experience_level: data?.experience_level || '',
+    spoken_language: data?.spoken_language || ''
   }
 }
 

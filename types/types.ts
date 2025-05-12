@@ -55,9 +55,26 @@ export interface IdeaData {
   topics?: string[];
 }
 
+export interface ScriptData {
+  id: number;
+  created_at: string;
+  user_id: string;
+  idea_id: string;
+  content: string;
+  tone: string;
+  verbosity: string;
+  target_audience: string;
+  script_type: string;
+  duration: string;
+  call_to_action: boolean;
+  persona: string;
+  structure: string;
+}
+
 export interface Tool {
 	name: string;
 	url: string;
+	description: string;
 }
 
 export interface Sponsorship {
@@ -67,13 +84,55 @@ export interface Sponsorship {
 }
 
 export type ScriptBoxProps = {
+	id: number;
 	idea_id: string;
 	content: string;
 	tone: string;
 	verbosity: string;
-	target: string;
-	type: string;
+	target_audience: string;
+	script_type: string;
 	duration: string;
 	persona: string;
 	structure: string;
+	call_to_action: boolean;
+	created_at: string;
+}
+
+export interface Token {
+  tool: string;
+  base_tokens: number;
+  paid_tokens: number;
+}
+
+export interface ScriptSection {
+  startTime: string;
+  endTime: string;
+  points: string[];
+  isCollapsed?: boolean;
+}
+
+export interface SortableScriptSectionProps {
+  section: ScriptSection;
+  sectionIndex: number;
+  isEditing: boolean;
+  onUpdate: (index: number, field: string, value: string) => void;
+  onRemove: (index: number) => void;
+  onAddPoint: (index: number) => void;
+  onRemovePoint: (sectionIndex: number, pointIndex: number) => void;
+  onToggleCollapse: (index: number) => void;
+}
+
+export interface TodoProps {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  priority: string;
+  idea_id: string;
+  script_id: string;
+  user_id: string;
+  status: string;
+  start_time: string;
+  end_time: string;
+  category: string;
 }

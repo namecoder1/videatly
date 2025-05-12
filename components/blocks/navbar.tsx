@@ -4,12 +4,12 @@ import React from 'react'
 import Image from 'next/image'
 import logo from '@/assets/logo.png'
 import { Button } from '../ui/button'
-import { DollarSign, House, Library, Menu } from 'lucide-react'
+import { DollarSign, Library } from 'lucide-react'
 import { Squeeze as Hamburger } from 'hamburger-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import googleLogo from '@/assets/google-icon.png'
 import { signInWithGoogleAction } from '@/app/(authentication)/actions'
-import { handleScrollToElement } from '@/utils/supabase/utils'
+import { handleScrollToElement } from '@/lib/utils'
 
 const Navbar = () => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false)
@@ -18,7 +18,7 @@ const Navbar = () => {
 
 	return (
 		<nav className=' bg-background/80 backdrop-blur-sm md:mx-4'>
-			<div className='mx-4 my-4 flex items-center justify-between max-w-3xl md:mx-auto border border-border py-2 px-4 rounded-full'>
+			<div className='mx-4 my-4 flex items-center justify-between max-w-3xl md:mx-auto border border-border py-2 px-4 rounded-full bg-white shadow-sm'>
 				<Link href="/" className='shrink-0'>
 					<Image src={logo} alt="logo" width={40} height={40} className='w-10 h-10' />
 				</Link>

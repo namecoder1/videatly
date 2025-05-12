@@ -1,11 +1,19 @@
-import { DropdownMenu, DropdownMenuItem, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Separator } from '@/components/ui/separator'
-import { Info, Coins } from 'lucide-react'
-import { useTokens } from '@/hooks/use-tokens'
-import React from 'react'
+import { Info, Coins, Lightbulb, NotepadText } from 'lucide-react'
+import { useTokens, initializeTokenListener } from '@/hooks/use-tokens'
+import React, { useEffect } from 'react'
 
 const TokenViewer = () => {
 	const { tokens } = useTokens()
+
+	useEffect(() => {
+		// Initialize real-time token listener
+		const cleanup = initializeTokenListener();
+		return () => {
+			cleanup();
+		};
+	}, []);
 
 	// Verifica che tokens sia un array
 	const tokenArray = Array.isArray(tokens) ? tokens : [];
@@ -48,12 +56,12 @@ const TokenViewer = () => {
 					<div className='space-y-2'>
 						<h4 className='font-semibold text-neutral-800'>Token Distribution</h4>
 						<ul className='text-sm space-y-2'>
-							<li className='flex items-center gap-2'>
-								<div className='w-2 h-2 rounded-full bg-blue-500'></div>
+							<li className='flex items-center gap-2 p-2 rounded-xl bg-yellow-100 border border-yellow-500'>
+								<Lightbulb className='text-yellow-500' size={14} />
 								<span className='text-neutral-600'>Ideas: <span className='font-medium text-neutral-800'>{ideasTotal}</span> tokens</span>
 							</li>
-							<li className='flex items-center gap-2'>
-								<div className='w-2 h-2 rounded-full bg-green-500'></div>
+							<li className='flex items-center gap-2 p-2 rounded-xl bg-blue-100 border border-blue-500'>
+								<NotepadText className='text-blue-500' size={14} />
 								<span className='text-neutral-600'>Scripts: <span className='font-medium text-neutral-800'>{scriptsTotal}</span> tokens</span>
 							</li>
 						</ul>

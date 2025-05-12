@@ -47,9 +47,9 @@ export enum VideoLength {
 }
 
 export enum ExperienceLevel {
-  Beginner = 'beginner',
-  Intermediate = 'intermediate',
-  Advanced = 'advanced'
+  Beginner = 'Beginner',
+  Intermediate = 'Intermediate',
+  Advanced = 'Advanced'
 }
 
 export enum VideoTargetInterest {

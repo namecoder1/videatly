@@ -34,7 +34,7 @@ export function DocsSidebar({ sections }: { sections: Section[] }) {
     })
 
     return () => observer.disconnect()
-  }, [])
+  }, [sections])
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
@@ -45,8 +45,8 @@ export function DocsSidebar({ sections }: { sections: Section[] }) {
   }
 
   return (
-    <nav className="h-[calc(100vh-5rem)] overflow-y-auto pl-4">
-      <div className="flex h-full">
+    <nav className="h-fit overflow-y-auto pl-4">
+      <div className="flex h-fit">
         <Separator className='h-full' orientation="vertical" />
         <div className="flex-1 pl-4">
           <h2 className="text-xl font-semibold mb-4">In this section</h2>

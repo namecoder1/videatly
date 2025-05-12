@@ -1,29 +1,65 @@
+'use client'
+
 import { Separator } from '@/components/ui/separator'
-import { LayoutDashboardIcon, PlusIcon, YoutubeIcon, BookIcon, BarChart3Icon } from 'lucide-react'
-import React from 'react'
+import Loader from '@/components/blocks/loader'
+import { LayoutDashboardIcon, PlusIcon, Users, CircleCheckBig } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
 import CustomIcon from '@/components/ui/custom-icon'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/supabase/client'
 import { redirect } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { VideoContentStyle, VideoLength, ExperienceLevel, VideoTargetInterest } from '@/types/enum'
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-const DashboardPage = async () => {
-	const supabase = await createClient()
-	const { data: { user } } = await supabase.auth.getUser()
-	const { data: userData, error } = await supabase.from('users').select('*').eq('auth_user_id', user?.id).single()
-	const { data: ideasCount } = await supabase.from('ideas').select('id', { count: 'exact' }).eq('user_id', user?.id)
-	const { data: scriptsCount } = await supabase.from('scripts').select('id', { count: 'exact' }).eq('user_id', user?.id)
+const DashboardPage = () => {
+	const supabase = createClient()
 
-	if (error) {
-		console.error('Error fetching user data:', error)
-		redirect('/')
-	}
+	const [userData, setUserData] = useState<any>(null)
+	const [ideasCount, setIdeasCount] = useState<number>(0)
+	const [scriptsCount, setScriptsCount] = useState<number>(0)
+	const [todosCount, setTodosCount] = useState<number>(0)
+	const [loading, setLoading] = useState<boolean>(true)
 
-	if (!userData.yt_username) {
-		redirect('/profile')
-	}
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				setLoading(true)
+				const { data: { user }, error: userError } = await supabase.auth.getUser()
+				
+				if (userError) throw userError
+
+				const [
+					{ data: userData, error: userDataError },
+					{ count: ideasCount, error: ideasError },
+					{ count: scriptsCount, error: scriptsError },
+					{ count: todosCount, error: todosError }
+				] = await Promise.all([
+					supabase.from('users').select('*').eq('auth_user_id', user?.id).single(),
+					supabase.from('ideas').select('*', { count: 'exact', head: true }).eq('user_id', user?.id),
+					supabase.from('scripts').select('*', { count: 'exact', head: true }).eq('user_id', user?.id),
+					supabase.from('todos').select('*', { count: 'exact', head: true }).eq('user_id', user?.id)
+				])
+
+				if (userDataError) throw userDataError
+				if (ideasError) throw ideasError
+				if (scriptsError) throw scriptsError
+				if (todosError) throw todosError
+				setUserData(userData)
+				setIdeasCount(ideasCount || 0)
+				setScriptsCount(scriptsCount || 0)
+				setTodosCount(todosCount || 0)
+			} catch (error) {
+				console.error('Error fetching dashboard data:', error)
+				redirect('/')
+			} finally {
+				setLoading(false)
+			}
+		}
+		fetchData()
+	}, [supabase])
+
+	if (loading) return <Loader position='full' />
 
 	return (
 		<section>
@@ -35,73 +71,41 @@ const DashboardPage = async () => {
 				<Separator className='my-4' />
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-				<InfoCards title='YouTube Profile' type='yt' value={`@${userData.yt_username}`} description='Your YouTube channel name' icon={<YoutubeIcon className='h-5 w-5 text-red-500' />} />
+			<div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mb-6">
+				<InfoCard title='YOUR CHANNEL' description={`@${userData.yt_username}`}>
+					<p className='text-sm text-muted-foreground flex items-center gap-2'>
+						100 
+						<Users />
+					</p>
+				</InfoCard>
 
-				<InfoCards title='Content Stats' type='stats' value={`${ideasCount?.length || 0} ideas, ${scriptsCount?.length || 0} scripts`} description='Your content creation stats' icon={<BookIcon className='h-5 w-5 text-blue-500' />} />
+				<InfoCard title='YOUR ACTIVITY' description='Content count'>
+					<p className='text-sm text-muted-foreground flex items-center gap-2'>
+						Ideas {ideasCount}
+					</p>
+					<Separator orientation='vertical' className='h-4' />
+					<p className='text-sm text-muted-foreground flex items-center gap-2'>
+						Scripts {scriptsCount}
+					</p>
+				</InfoCard>
+					
 
-				<InfoCards title='Experience Level' type='experience' value={userData.experience_level || "Not set"} description='Your content creation level' icon={<BarChart3Icon className='h-5 w-5 text-green-500' />} />
+				<InfoCard title='YOUR PRODUCTION' description='Total todos'>
+					<p className='text-sm text-muted-foreground flex items-center gap-2'>
+						{todosCount}
+						<CircleCheckBig />
+					</p>
+				</InfoCard>
+			</div>
+
 			
-			</div>
 
-			<div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-				<Card>
-					<CardHeader>
-						<CardTitle>Content Preferences</CardTitle>
-						<CardDescription>Your content creation preferences</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div>
-							<h3 className="text-sm font-medium text-muted-foreground">Content Style</h3>
-							<p className="text-base font-medium mt-1">{userData.content_style || "Not set"}</p>
-						</div>
-						<div>
-							<h3 className="text-sm font-medium text-muted-foreground">Video Length</h3>
-							<p className="text-base font-medium mt-1">{userData.video_length || "Not set"}</p>
-						</div>
-						<div>
-							<h3 className="text-sm font-medium text-muted-foreground">Target Interest</h3>
-							<p className="text-base font-medium mt-1">{userData.target_interest || "Not set"}</p>
-						</div>
-						<div>
-							<h3 className="text-sm font-medium text-muted-foreground">Content Type</h3>
-							<p className="text-base font-medium mt-1">{userData.content_type || "Not set"}</p>
-						</div>
-					</CardContent>
-				</Card>
 
-				<Card>
-					<CardHeader>
-						<CardTitle>Recent Activity</CardTitle>
-						<CardDescription>Your latest content creation activity</CardDescription>
-					</CardHeader>
-					<CardContent>
-						{(ideasCount?.length === 0 && scriptsCount?.length === 0) ? (
-							<div className="flex flex-col items-center justify-center h-40 text-center">
-								<p className="text-muted-foreground mb-4">No recent activity</p>
-								<p className="text-sm text-muted-foreground">Start creating ideas and scripts to see your activity here</p>
-							</div>
-						) : (
-							<div className="space-y-4">
-								{/* Activity items would go here */}
-								<p className="text-sm text-muted-foreground">Recent activity will appear here</p>
-							</div>
-						)}
-					</CardContent>
-				</Card>
-			</div>
-
-			<div className='fixed bottom-5 right-5 flex flex-col gap-2 items-end'>
+			<div className='fixed bottom-5 right-5'>
 				<Button className='bg-black hover:bg-black/80 w-fit' asChild>
 					<Link href='/ideas/create'>
 						<PlusIcon className="mr-2 h-4 w-4" />
 						New Idea
-					</Link>
-				</Button>
-				<Button className='bg-black hover:bg-black/80 w-fit' asChild>
-					<Link href='/scripts/create'>
-						<PlusIcon className="mr-2 h-4 w-4" />
-						New Script
 					</Link>
 				</Button>
 			</div>
@@ -110,30 +114,21 @@ const DashboardPage = async () => {
 }
 
 
-
-const InfoCards = (props: { title: string, value: string, description: string, icon: React.ReactNode, type: 'yt' | 'content' | 'experience' | 'stats' }) => {
+const InfoCard = ({ title, description, children } : { title: string, description: string, children: React.ReactNode }) => {
 	return (
 		<Card>
-			<CardHeader className="pb-2">
-				<CardTitle className="text-lg font-medium flex items-center gap-2">
-					{props.icon}
-					{props.title}
+			<CardHeader className='flex flex-row items-center justify-between'>
+				<CardTitle>
+					<h3 className='text-sm text-muted-foreground'>{title}</h3>
+					<h2 className='text-2xl font-bold'>{description}</h2>
 				</CardTitle>
+				<CardDescription className='flex items-center gap-2'>
+					{children}
+				</CardDescription>
 			</CardHeader>
-			<CardContent>
-				{props.value ? (
-					props.type === 'yt' ? (
-						<p className="text-2xl font-bold">{props.value || "Not set"}</p>
-					) : (
-						<p className="text-2xl font-bold capitalize">{props.value || "Not set"}</p>
-					)
-				) : (
-					<Link href='/profile' className="text-2xl font-bold capitalize">Set {props.title}</Link>
-				)}
-				<p className="text-sm text-muted-foreground mt-1">{props.description}</p>
-			</CardContent>
 		</Card>
 	)
 }
+
 
 export default DashboardPage

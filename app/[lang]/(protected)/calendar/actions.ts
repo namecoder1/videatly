@@ -1,6 +1,6 @@
 import { IdeaData, TodoProps } from "@/types/types"
 import { fetchTodos } from "../production/[id]/actions"
-import { IdeaWithScripts } from "./page"
+import IdeaWithScripts from "./page"
 
 export const handleTodayClick = (setSelectedDate: (date: Date) => void, today: Date) => {
   return () => {
@@ -45,13 +45,13 @@ export const handleTodoUpdate = (
 }
 
 export const handleIdeaSelect = (
-  setSelectedIdea: (idea: IdeaWithScripts | null) => void,
+  setSelectedIdea: (idea: typeof IdeaWithScripts | null) => void,
   ideas: IdeaData[]
 ) => {
   return (idea: IdeaData) => {
     const selectedIdeaWithScripts = ideas.find(i => i.id === idea.id)
     if (selectedIdeaWithScripts) {
-      setSelectedIdea(selectedIdeaWithScripts as IdeaWithScripts)
+      setSelectedIdea(selectedIdeaWithScripts as unknown as typeof IdeaWithScripts)
     }
   }
 }

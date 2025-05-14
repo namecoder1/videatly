@@ -30,7 +30,7 @@ const TodoLittle = React.forwardRef<HTMLDivElement, { todo: TodoProps, showDate?
         <div className="flex flex-col gap-1">
           {showDate && (
             <p className="text-base font-semibold flex items-center gap-1">
-              {formatStringDate(todo.start_time).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+              {formatStringDate(todo.start_date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
             </p>
           )}
           {!showDate && (
@@ -50,9 +50,9 @@ const TodoLittle = React.forwardRef<HTMLDivElement, { todo: TodoProps, showDate?
             </Link>
           )}        </div>
         <span className="text-xs text-muted-foreground">
-          <p>{formatStringDate(todo.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+          <p>{formatStringDate(todo.start_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
           <Separator className="my-1" />
-          <p>{formatStringDate(todo.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+          <p>{formatStringDate(todo.end_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
         </span>
       </div>
     )

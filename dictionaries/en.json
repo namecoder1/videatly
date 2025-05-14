@@ -1,0 +1,582 @@
+{
+  "currency": "$",
+  "tokens": {
+    "span": "Available Tokens",
+    "description1": "You have ",
+    "description2": " tokens to use",
+    "span2": "Token Distribution",
+    "ideas": "Ideas: ",
+    "scripts": "Scripts: "
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout"
+  },
+  "navbar": {
+    "documentation": "Documentation",
+    "pricing": "Pricing",
+    "login": "Login"
+  },
+  "footer": {
+    "description": "Create, Analyze and Grow your YouTube channel with the Power of AI",
+    "copyright": "All rights reserved",
+    "links": [
+      "Home",
+      "Support",
+      "Pricing",
+      "Documentation"
+    ],
+    "legal": [
+      "Privacy Policy",
+      "Terms of Service",
+      "Cookie Policy"
+    ],
+    "more": [
+      "About Us",
+      "Contact Us"
+    ],
+    "tobi1": "Hey everybody! I'm ",
+    "tobi2": "and I'm the creator of Videatly. You can find more about me on my website."
+  },
+  "home": {
+    "title": "Create, Analyze and Grow with the Power of AI",
+    "description": "Generate ideas, write optimized scripts and compare your performance with AI.",
+    "uniqueVideoIdeas": "Unique video ideas instantly",
+    "craftViralScripts": "Craft viral scripts in seconds",
+    "analyzeOptimizeDominate": "Analyze, optimize, dominate",
+    "startNow": "Start Now",
+    "learnMore": "Learn More",
+    "creatorsJoined": "creators joined"
+  },
+  "features": {
+    "title": "Why choose Videatly?",
+    "subtitle": "Your secret weapon for viral content",
+    "description": "Stop wasting time with brainstorming. Start creating content that captivates your audience and grows your channel automatically.",
+    "aiMagic": "AI-powered content",
+    "aiMagicDescription": "Generate unlimited creativity with AI. Create perfect video ideas for your audience and preferences.",
+    "aiScripts": "Scripts that captivate",
+    "aiScriptsDescription": "Transform ideas into engaging stories instantly. Our AI creates captivating scripts that keep viewers glued to the screen.",
+    "skyrocketGrow": "Skyrocket growth",
+    "skyrocketGrowDescription": "Grow 10x faster. What used to take days now happens in minutes with our AI."
+  },
+  "pricing": {
+    "title": "Pricing",
+    "popular": "Most Popular",
+    "free": {
+      "title": "Free",
+      "description": "For personal use",
+      "features": [
+        "2500 video tokens",
+        "5000 script tokens",
+        "Basic analytics"
+      ],
+      "action": "Get Started"
+    },
+    "pro": {
+      "title": "Pro",
+      "description": "For professional use",
+      "features": [
+        "10.000 video tokens",
+        "20.000 script tokens",
+        "Advanced analytics",
+        "Priority support"
+      ],
+      "action": "Get Started"
+    },
+    "ultra": {
+      "title": "Ultra",
+      "description": "For large organizations",
+      "features": [
+        "20.000 video tokens",
+        "40.000 script tokens",
+        "Advanced analytics",
+        "Priority support",
+        "Thumbnail generator"
+      ],
+      "action": "Get Started"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": "How can I customize my profile?",
+    "a1": "You can customize your profile by adding a photo, editing your personal information, and setting your notification preferences. All these options are accessible through the 'Profile Settings' menu.",
+    "q2": "What are the system requirements?",
+    "a2": "The app is optimized to work on all modern browsers (Chrome, Firefox, Safari, Edge). For the best experience, we recommend keeping your browser updated to the latest version.",
+    "q3": "How is my personal data handled?",
+    "a3": "Data security is our priority. We use end-to-end encryption to protect your information, and we never share your data with third parties without your explicit consent.",
+    "q4": "What should I do if I forget my password?",
+    "a4": "If you forget your password, you can use the 'Forgot Password' function on the login page. You'll receive an email with instructions to securely reset your password.",
+    "q5": "How can I report a technical issue?",
+    "a5": "You can report technical issues through the 'Support' section in the app or by sending a detailed email to our technical team. Include screenshots and precise descriptions to help us resolve the issue more quickly.",
+    "q6": "How can I get started?",
+    "a6": "Getting started is easy! Simply sign up for an account, and you'll have immediate access to all features. Our documentation provides comprehensive guides for new users.",
+    "q7": "Do you offer support?",
+    "a7": "Yes, we provide dedicated support through our help center and email. Our team typically responds within 24 hours to any queries or concerns."
+  },
+  "mainSidebar": {
+    "manage": {
+      "title": "Manage",
+      "label1": "Dashboard",
+      "label2": "Analytics",
+      "label3": "Calendar"
+    },
+    "create": {
+      "title": "Create",
+      "label1": [
+        "Ideas",
+        "Create Idea",
+        "Your Ideas"
+      ],
+      "label2": "Scripts",
+      "label3": "Production"
+    },
+    "settings": {
+      "title": "Settings",
+      "label1": "Shop",
+      "label2": "Docs"
+    }
+  },
+  "docSidebar": {
+    "description": "Edit this page on ",
+    "documentation": [
+      "Home",
+      "Getting Started",
+      "Usage",
+      "Configuration",
+      "Use Cases"
+    ],
+    "specific": [
+      "Ideas",
+      "Scripts",
+      "Tokens & Plans"
+    ],
+    "platform": [
+      "Platform Guide",
+      "Ideas Guide",
+      "Scripts Guide"
+    ]
+  },
+  "userInfo": {
+    "profile": "Profile",
+    "profileDescription": "Manage your profile settings",
+    "settings": "Settings",
+    "settingsDescription": "Customize your experience"
+  },
+  "profilePage": {
+    "title": "Profile",
+    "toast": {
+      "fetchError": [
+        "Error fetching user data",
+        "An error occurred while fetching user data. Please try again later."
+      ],
+      "noChanges": [
+        "No changes detected",
+        "No changes were made to the profile data"
+      ],
+      "updateSuccess": [
+        "Data updated successfully",
+        "The profile data has been updated successfully"
+      ],
+      "updateError": [
+        "Error updating data",
+        "An error occurred while updating the profile data. Please try again later."
+      ]
+    },
+    "youtubeProfileSettings": {
+      "title": "YouTube Profile Settings",
+      "yt_username": "YouTube Username",
+      "yt_usernamePlaceholder": "Enter your YouTube username",
+      "contentStyle": "Content Style",
+      "contentStylePlaceholder": "Select a style",
+      "contentStyleSearchPlaceholder": "Search content style...",
+      "videoLength": "Video Length",
+      "videoLengthPlaceholder": "Select a length",
+      "videoLengthSearchPlaceholder": "Search video length...",
+      "targetInterest": "Target Interest",
+      "targetInterestPlaceholder": "Select an interest",
+      "targetInterestSearchPlaceholder": "Search target interest...",
+      "videoType": "Video Type",
+      "videoTypePlaceholder": "Select a type",
+      "videoTypeSearchPlaceholder": "Search video type...",
+      "experienceLevel": "Experience Level",
+      "experienceLevelPlaceholder": "Select a level",
+      "experienceLevelSearchPlaceholder": "Search experience level...",
+      "submit": "Save Changes",
+      "languageSettings": {
+        "title": "It is necessary to set the language",
+        "description": "To personalize your video recommendations, it is necessary to set the language in the Settings page.",
+        "button": "Set Language"
+      },
+      "info": {
+        "title": "Understand your options",
+        "description": "A guide to help you choose the right settings for your videos",
+        "fields": [
+          {
+            "title": "Video Length",
+            "description": "The video length is an important factor for the success of your video. If your video is too short, it may not be enough to capture the attention of your audience. If it is too long, it may be boring and push your viewers to skip the video."
+          },
+          {
+            "title": "Target Interest",
+            "description": "The target interest is the audience you like. If your video is too short, it may not be enough to capture the attention of your audience. If it is too long, it may be boring and push your viewers to skip the video."
+          },
+          {
+            "title": "Video Type",
+            "description": "The video type is an important factor for the success of your video. If your video is too short, it may not be enough to capture the attention of your audience. If it is too long, it may be boring and push your viewers to skip the video."
+          }
+        ]
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Settings",
+    "fields": {
+      "languagePicker": {
+        "language": "Language",
+        "languageDescription": "We need to know your language to personalize your experience with the app and the AI features.",
+        "languagePlaceholder": "Select language",
+        "languageSearchPlaceholder": "Search language..."
+      },
+      "personalInfo": {
+        "title": "Personal Information",
+        "nameEdit": "Edit name",
+        "nameSave": "Save",
+        "nameCancel": "Cancel",
+        "namePlaceholder": "Enter name",
+        "created": "Created",
+        "lastUpdated": "Last Updated"
+      },
+      "userPlan": {
+        "description1": "We do not store your payment information. All payments are processed by ",
+        "description2": ". Click the button below to be redirected to the payment page.",
+        "span": "You're paying us: ",
+        "month": "month",
+        "button": "Plan Settings"
+      },
+      "deleteCard": {
+        "title": "Danger Zone",
+        "description": "Deleting your account will remove all your data from our servers. By deleting your account, you will no longer be able to access your account or any of its contents.",
+        "button": "Delete Account"
+      }
+    },
+    "info": {
+      "title": "Account & Privacy",
+      "description": "Manage your account settings and your privacy.",
+      "fields": {
+        "privacy": {
+          "title": "Data & Privacy",
+          "description": "We collect and store only essential data needed to provide our services. Your data is encrypted and securely stored."
+        },
+        "account": {
+          "title": "Account Security",
+          "description": "Your account is protected with Google OAuth authentication. We recommend enabling two-factor authentication for additional security."
+        },
+        "data": {
+          "title": "Data Management",
+          "description": "Your data is securely stored and managed in our systems. We handle all data operations automatically to ensure smooth service delivery."
+        }
+      }
+    }
+  },
+  "shopPage": {
+    "title": "Shop",
+    "ideaTokens": {
+      "title": "Idea Tokens",
+      "description": "Generate unique video ideas for your next project.",
+      "fields": [
+        {
+          "title": "Basic",
+          "description": "For starters"
+        },
+        {
+          "title": "Standard",  
+          "description": "For regular creators"
+        },
+        {
+          "title": "Premium",
+          "description": "For power users"
+        }
+      ]
+    },
+    "scriptTokens": {
+      "title": "Script Tokens",
+      "button": "Buy for ",
+      "description": "Generate engaging scripts for your next project.",
+      "fields": [
+        {
+          "title": "Basic",
+          "description": "For beginners"
+        },
+        {
+          "title": "Standard",
+          "description": "For content creators"
+        },
+        {
+          "title": "Premium",
+          "description": "For professional users"
+        }
+      ]
+    }
+  },
+  "dashboardPage": {
+    "title": "Dashboard"
+  },
+  "calendarPage": {
+    "locale": "en-US",
+    "title": "Calendar",
+    "toast": {
+      "fillFields": [
+        "Please fill in all fields",
+        "To create a todo, you need to fill in all fields"
+      ],
+      "fetchError": [
+        "Error fetching calendar data",
+        "An error occurred while fetching calendar data. Please try again later."
+      ],
+      "creationError": [
+        "Error creating todo",
+        "An error occurred while creating the todo. Please try again later."
+      ],
+      "updateError": [
+        "Error updating todo",
+        "An error occurred while updating the todo. Please try again later."
+      ],
+      "creationSuccess": [
+        "Todo created successfully",
+        "The todo has been created successfully"
+      ],
+      "updateSuccess": [
+        "Todo updated successfully",
+        "The todo has been updated successfully"
+      ],
+      "deleteSuccess": [
+        "Todo deleted successfully",
+        "The todo has been deleted successfully"
+      ],
+      "deleteError": [
+        "Error deleting todo",
+        "An error occurred while deleting the todo. Please try again later."
+      ],
+      "randomError": [
+        "An error occurred",
+        "An error occurred while performing the action. Please try again later."
+      ]
+    },
+    "today": "Today",
+    "publishingDateFor": "Publishing Date for",
+    "viewIdea": "View Idea",
+    "noDate": "No date",
+    "selectDate": "Select a date",
+    "selectDateMessage": "Select a date to view your events",
+    "addEvent": "Add Event",  
+    "editEvent": "Edit Event",
+    "production": "Production",
+    "productionPlaceholder": "Select a production",
+    "formTitle": "Title",
+    "formDescription": "Description",
+    "formEditTime": "Edit time",
+    "formStartTime": "Start Time",
+    "formStartTimePlaceholder": "Select a start time",
+    "formEndTime": "End Time",
+    "formEndTimePlaceholder": "Select an end time",
+    "formPriority": "Priority",
+    "formPriorityPlaceholder": "Select a priority",
+    "formCategory": "Category",
+    "formCategoryPlaceholder": "Select a category",
+    "formSubmit": "Add Event",
+    "formUpdate": "Update Event",
+    "noEvents": "No events scheduled for this day"
+  },
+  "ideasPage": {
+    "title": "Ideas",
+    "newIdea": "New Idea",
+    "yourIdeas": "Your Ideas",
+    "noIdeasFound": "No ideas found",
+    "noIdeasFoundDescription": "Start creating ideas by clicking the button below"
+  },
+  "ideaCreatePage": {
+    "title": "Create Idea",
+    "form": {
+      "suggestions": "Suggestions",
+      "suggestionsPlaceholder": "Enter your suggestions for the idea to create",
+      "contentStyle": "Content Style",
+      "contentStylePlaceholder": "Select a style",
+      "contentStyleSearchPlaceholder": "Search content style...",
+      "videoLength": "Video Length",
+      "videoLengthPlaceholder": "Select a length",
+      "videoLengthSearchPlaceholder": "Search video length...",
+      "targetInterest": "Target Interest",
+      "targetInterestPlaceholder": "Select an interest",
+      "targetInterestSearchPlaceholder": "Search target interest...",
+      "videoType": "Video Type",
+      "videoTypePlaceholder": "Select a type",
+      "videoTypeSearchPlaceholder": "Search video type...",
+      "keywords": "Keywords",
+      "keywordsPlaceholder": "Write and press space or comma to add keywords",
+      "cancel": "Cancel",
+      "create": "Create Idea",
+      "info": {
+        "title": "Idea Details",
+        "description": "Here you can find information about the fields available to create a new idea",
+        "fields": [
+          {
+            "title": "Suggestions",
+            "description": "Enter your suggestions for the idea to create, you can add more later when you are in the chat with the AI"
+          },
+          {
+            "title": "Content Style & Video Length",
+            "description": "Choose a style that fits your content and your audience. Educational videos work well with explanatory formats, while entertainment can benefit from storytelling. Consider the duration based on the platform: shorter for social media, longer for in-depth topics."
+          },
+          {
+            "title": "Video Type & Target Interest",
+            "description": "Choose formats that align with your content goals. Different types generate varying levels of engagement. Define your audience's interests to optimize content discovery and reach the right viewers."
+          },
+          {
+            "title": "Keywords",
+            "description": "Include 5-7 relevant keywords that your audience might search for. Mix specific terms with broader concepts. Consider adding variations of your main topic and related concepts to improve SEO and content discovery."
+          }
+        ]
+      }
+    }
+  },
+  "ideaChatPage": {
+    "info": {
+      "title": "Idea Details"
+    },
+    "tokens": {
+      "tokenOutput": "Token consumed",
+      "tokensLeft1": "You have ",
+      "tokensLeft2": " tokens left."
+    },
+    "toast": {
+      "fetchError": [
+        "Error fetching token data",
+        "An error occurred while fetching token data. Please try again later."
+      ],
+      "saveSuccess": [
+        "Success",
+        "The idea has been saved successfully"
+      ],
+      "saveError": [
+        "Error saving idea",
+        "An error occurred while saving the idea. Please try again later."
+      ],
+      "deleteError": [
+        "Error deleting idea",
+        "An error occurred while deleting the idea. Please try again later."
+      ]
+    },
+    "chat": {
+      "back": "Back",
+      "placeholder1": "Chat with the assistant",
+      "placeholder2": "I'm thinking...",
+      "stop": "Stop",
+      "save": "Save Idea",
+      "isSaving": "Saving idea...",
+      "viewIdea": "View Idea",
+      "createScript": "Create Script",
+      "noTokens": "You don't have enough tokens to send a message"
+    }
+  },
+  "scriptsPage": {
+    "title": "Scripts",
+    "yourScripts": "Your Scripts",
+    "yourIdeas": "Your Ideas",
+    "noScriptsFound": "No scripts found",
+    "noScriptsFoundDescription": "Start creating scripts by clicking the button below",
+    "noIdeasFound": "No ideas found",
+    "noIdeasFoundDescription": "Start creating ideas by clicking the button below",
+    "createScript": "Create Script"
+  },
+  "scriptCreatePage": {
+
+  },
+  "components": {
+    "translatableSelect": {
+      "noResults": "No results found."
+    },
+    "filterSheet": {
+      "sortBy": "Sort by",
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "filterIdeas": "Filter Ideas",
+      "filterScripts": "Filter Scripts",
+
+      "duration": "Duration",
+      "selectDuration": "Select Duration",
+      "allDuration": "All duration...",
+
+      "scriptType": "Script Type",
+      "selectScriptType": "Select Script Type",
+      "allTypes": "All script type...",
+
+      "scriptPersona": "Script Persona",
+      "selectPersona": "Select Script Persona",
+      "allPersonas": "All script persona...",
+
+      "scriptStructure": "Script Structure",
+      "selectStructure": "Select Script Structure",
+      "allStructures": "All script structure...",
+
+      "scriptTone": "Script Tone",
+      "selectTone": "Select Script Tone",
+      "allTones": "All script tone...",
+
+      "targetAudience": "Target Audience",
+      "selectTargetAudience": "Select Target Audience",
+      "allTargetAudiences": "All target audience...",
+
+      "videoType": "Video Type",
+      "selectVideoType": "Select Video Type",
+      "allVideoTypes": "All video type...",
+
+      "contentStyle": "Content Style",
+      "selectContentStyle": "Select Content Style",
+      "allStyles": "All content style...",
+      
+      "videoLength": "Video Length",
+      "selectVideoLength": "Select Video Length",
+      "allVideoLengths": "All video length...",
+
+      "targetInterest": "Target Interest",
+      "selectTargetInterest": "Select Target Interest",
+      "allTargetInterests": "All target interest..."
+    },
+    "filterBar": {
+      "filterBy": "Filter by",
+      "resetFilter": "Reset",
+      "newest": "Newest",
+      "oldest": "Oldest"
+    },
+    "ideaBox": {
+      "viewIdea": "View Idea",
+      "toast": {
+        "deleteSuccess": [
+          "Idea deleted successfully",
+          "The idea has been deleted successfully"
+        ],
+        "deleteError": [
+          "Error deleting idea",
+          "An error occurred while deleting the idea. Please try again later."
+        ]
+      }
+    },
+    "scriptBox": {
+      "viewScript": "View Script",
+      "toast": {
+        "deleteSuccess": [
+          "Script deleted successfully",
+          "The script has been deleted successfully"
+        ],
+        "deleteError": [
+          "Error deleting script",
+          "An error occurred while deleting the script. Please try again later."
+        ]
+      }
+    }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "backToHome": "Back to Home"
+  }
+} 

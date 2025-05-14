@@ -2,32 +2,48 @@
 
 import { Button } from '@/components/ui/button'
 import { FilterType } from './filter-sheet'
+import { getEnumTranslation } from '@/utils/enum-translations'
 
 interface FilterBarProps {
   activeFilters: FilterType
   onReset: () => void
   onOpenSheet: () => void
+  dict: any
 }
 
-const FilterBar = ({ activeFilters, onReset, onOpenSheet }: FilterBarProps) => {
+const FilterBar = ({ activeFilters, onReset, onOpenSheet, dict }: FilterBarProps) => {
   return (
     <div className='flex items-center gap-4'>
       <Button variant='black' onClick={onOpenSheet}>
-        Filter By
+        {dict.components.filterBar.filterBy}
       </Button>
       <div className='flex flex-wrap gap-2'>
         {Object.entries(activeFilters).map(([key, value]) => {
-          if (!value) return null
+          if (!value) return null;
+          
+          // Special handling for sortBy which isn't an enum
+          if (key === 'sortBy') {
+            // Translate the sort values
+            const sortLabel = value === 'newest' 
+              ? (dict.components.filterBar?.newest || 'Newest') 
+              : (dict.components.filterBar?.oldest || 'Oldest');
+            return (
+              <div key={key} className='text-sm bg-gray-100 px-2 py-1 rounded-md'>
+                {sortLabel}
+              </div>
+            );
+          }
+          
           return (
             <div key={key} className='text-sm bg-gray-100 px-2 py-1 rounded-md'>
-              {value.charAt(0).toUpperCase() + value.slice(1)}
+              {getEnumTranslation(value, dict.locale) || value.charAt(0).toUpperCase() + value.slice(1)}
             </div>
-          )
+          );
         })}
       </div>
       {Object.values(activeFilters).some(value => value !== null) && (
         <Button variant='outline' size='sm' onClick={onReset}>
-          Reset Filters
+          {dict.components.filterBar.resetFilter}
         </Button>
       )}
     </div>

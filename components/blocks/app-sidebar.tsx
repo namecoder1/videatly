@@ -21,8 +21,11 @@ import TokenViewer from './(protected)/tokens-viewer'
 import { createClient } from "@/utils/supabase/client"
 import { useEffect, useState } from 'react'
 import { Skeleton } from "../ui/skeleton"
+import LanguageSwitcher from './LanguageSwitcher'
+import { usePathname } from 'next/navigation'
 
-export const AppSidebar = ({ children, isProtected, ...props } : { 
+export const AppSidebar = ({ dict, children, isProtected, ...props } : { 
+  dict: any,
   children: React.ReactNode,
   isProtected: boolean,
   props?: React.ComponentProps<typeof Sidebar>
@@ -32,6 +35,8 @@ export const AppSidebar = ({ children, isProtected, ...props } : {
   const supabase = createClient()
   const [user, setUser] = useState<any>(null)
   const [tokens, setTokens] = useState<any>("0")
+  const pathname = usePathname()
+  const currentLang = pathname.split('/')[1] || 'en'
   
   useEffect(() => {
     const fetchUser = async () => {
@@ -66,11 +71,11 @@ export const AppSidebar = ({ children, isProtected, ...props } : {
     <Sidebar collapsible="icon" {...props} variant="floating">
       <SidebarHeader>
         {user ? (
-          <Link href="/dashboard">
+          <Link href={`/${currentLang}/dashboard`}>
             <Image src={logo} alt="Logo" width={80} height={80} priority />
           </Link>
         ) : (
-          <Link href="/">
+          <Link href={`/${currentLang}`}>
             <Image src={logo} alt="Logo" width={80} height={80} priority />
           </Link>
         )}
@@ -103,25 +108,26 @@ export const AppSidebar = ({ children, isProtected, ...props } : {
             </>
           ) : user ? (
             <>
-              <TokenViewer />
-              <UserInfo />
+              <TokenViewer dict={dict} />
+              <UserInfo dict={dict} />
               <Separator />
               <form>
                 <Button formAction={logOut} type="submit" className="w-full">
                   <LogOut />
                   <span className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
-                    Log Out
+                    {dict.auth.logout}
                   </span>
                 </Button>
               </form>
             </>
           ) : (
-            <form>
+            <form className='flex items-center gap-x-2'>
+              <LanguageSwitcher showLabel={false} className='group-data-[collapsible=icon]:hidden' />
               <Button className='w-full bg-black text-white hover:bg-black/80' type="submit" formAction={signInWithGoogleAction}>
                 <LogInIcon className='hidden group-data-[collapsible=icon]:block' />
                 <Image src={googleLogo} alt="google logo" width={20} height={20} className='w-5 h-5 group-data-[collapsible=icon]:hidden' />
                 <span className='flex items-center gap-2 group-data-[collapsible=icon]:hidden'>
-                  Log In
+                  {dict.auth.login}
                 </span>
               </Button>
             </form>
@@ -132,7 +138,7 @@ export const AppSidebar = ({ children, isProtected, ...props } : {
               <LogInIcon className='hidden group-data-[collapsible=icon]:block' />
               <Image src={googleLogo} alt="google logo" width={20} height={20} className='w-5 h-5 group-data-[collapsible=icon]:hidden' />
               <span className='flex items-center gap-2 group-data-[collapsible=icon]:hidden'>
-                Log In
+                {dict.auth.login}
               </span>
             </Button>
           </form>

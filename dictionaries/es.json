@@ -1,0 +1,118 @@
+{
+  "currency": "€",
+  "tokens": {
+    "span": "Tokens disponibles",
+    "description1": "Tienes ",
+    "description2": " tokens disponibles",
+    "span2": "Distribución de tokens",
+    "ideas": "Ideas: ",
+    "scripts": "Script: "
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión"
+  },
+  "navbar": {
+    "documentation": "Documentación",
+    "pricing": "Precios",
+    "login": "Iniciar sesión"
+  },
+  "footer": {
+    "description": "Crea, Analiza y Crecer con el Poder de la IA",
+    "copyright": "Todos los derechos reservados",
+    "links": [
+      "Inicio",
+      "Soporte",
+      "Precios",
+      "Documentación"
+    ],
+    "legal": [
+      "Política de privacidad",
+      "Términos de servicio",
+      "Política de cookies"
+    ],
+    "more": [
+      "Quiénes somos",
+      "Contáctenos"
+    ],
+    "tobi1": "¡Hola a todos! Soy ",
+    "tobi2": "y soy el creador de Videatly. Puedes encontrar más sobre mí en mi sitio web."
+  },
+  "home": {
+    "title": "Crea, Analiza y Crecer con el Poder de la IA",
+    "description": "Genera ideas para videos atractivos, scripts optimizados y compara tus resultados con la IA.",
+    "uniqueVideoIdeas": "Ideas de video únicas en un clic",
+    "craftViralScripts": "Script virales en segundos",
+    "analyzeOptimizeDominate": "Analiza, optimiza, domina",
+    "startNow": "Comenzar ahora",
+    "learnMore": "Aprender más",
+    "creatorsJoined": "creadores que aman Videatly"
+  },
+  "features": {
+    "title": "¿Por qué elegir Videatly?",
+    "subtitle": "Tu arma secreta para los contenidos virales",
+    "description": "Deja de perder tiempo con el brainstorming. Comienza a crear contenido que atrae la atención de tu público y hace crecer tu canal de manera automática.",
+    "aiMagic": "Contenido AI mágico",
+    "aiMagicDescription": "Genera creatividad ilimitada con la IA. Crea ideas de video perfectas para tu público y tus preferencias.",
+    "aiScripts": "Scripts que atrapan",
+    "aiScriptsDescription": "Transforma ideas en historias atractivas instantáneas. Nuestra IA crea scripts cautivadores que mantienen a los espectadores pegados a la pantalla.",
+    "skyrocketGrow": "Crecer de manera exponencial",
+    "skyrocketGrowDescription": "Crecer 10 veces más rápido. Lo que antes tomaba días ahora ocurre en minutos con la IA."
+  },
+  "pricing": {
+    "title": "Precios",
+    "popular": "Más Popular",
+    "free": {
+      "title": "Gratuito",
+      "description": "Para uso personal",
+      "features": [
+        "2500 tokens video",
+        "5000 tokens script",
+        "Análisis básico"
+      ],
+      "action": "Comenzar ahora"
+    },
+    "pro": {
+      "title": "Pro",
+      "description": "Para uso profesional",
+      "features": [
+        "10.000 tokens video",
+        "20.000 tokens script",
+        "Análisis avanzado",
+        "Soporte prioritario"
+      ],
+      "action": "Comenzar ahora"
+    },
+    "ultra": {
+      "title": "Ultra",
+      "description": "Para uso empresarial",
+      "features": [
+        "100.000 tokens video",
+        "200.000 tokens script",
+        "Análisis avanzado",
+        "Soporte prioritario"
+      ],
+      "action": "Comenzar ahora"
+    }
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "q1": "¿Cómo puedo personalizar mi perfil?",
+    "a1": "Puedes personalizar tu perfil agregando una foto, modificando tus información personal y estableciendo tus preferencias de notificaciones. Todas estas opciones están disponibles a través del menú 'Configuración del perfil'.",
+    "q2": "¿Cuáles son los requisitos de sistema?",
+    "a2": "La aplicación está optimizada para funcionar en todos los modernos navegadores (Chrome, Firefox, Safari, Edge). Para la mejor experiencia, te recomendamos mantener actualizado tu navegador a la versión más reciente.",
+    "q3": "¿Cómo se manejan mis datos personales?",
+    "a3": "La seguridad de tus datos es nuestra prioridad. Utilizamos el cifrado end-to-end para proteger tus datos y no compartimos tus datos con terceros sin tu consentimiento explícito.",
+    "q4": "¿Qué hacer si olvido mi contraseña?",
+    "a4": "Si olvidas tu contraseña, puedes usar la función 'Recuperar contraseña' en la página de inicio de sesión. Recibirás un correo electrónico con instrucciones para restablecer tu contraseña de manera segura.",
+    "q5": "¿Puedo cancelar mi suscripción en cualquier momento?",
+    "a5": "Sí, puedes cancelar tu suscripción en cualquier momento. No hay cargos ocultos y no se te cobrará por el mes en curso. Simplemente cierra tu cuenta en la sección de 'Configuración' y sigue las instrucciones para cancelar.",
+    "q6": "¿Qué pasa si tengo más preguntas?",
+    "a6": "Si tienes más preguntas, no dudes en contactarnos a través de nuestro formulario de contacto o nuestro correo electrónico de soporte. Estamos aquí para ayudarte en lo que necesited."
+  },  
+  "components": {
+    "translatableSelect": {
+      "noResults": "No se encontraron resultados."
+    }
+  }
+} 

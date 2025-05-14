@@ -3,16 +3,27 @@ import { Label } from '@/components/ui/label'
 import React from 'react'
 import { FilterType } from './filter-sheet'
 
-const Fakebox = ({ activeFilters, handleSelectChange, selecter }: { 
-  activeFilters: FilterType, 
-  handleSelectChange: (type: keyof FilterType, value: string) => void, 
-  selecter: string 
-}) => {
+interface FakeboxProps {
+  activeFilters: FilterType
+  handleSelectChange: (type: keyof FilterType, value: string) => void
+  selecter: string
+  dict?: any
+}
+
+const Fakebox = ({ activeFilters, handleSelectChange, selecter, dict }: FakeboxProps) => {
+  // Get the translated label for the sort value
+  const getLabel = () => {
+    if (dict?.components?.filterSheet) {
+      return dict.components.filterSheet[selecter] || selecter.charAt(0).toUpperCase() + selecter.slice(1)
+    }
+    return selecter.charAt(0).toUpperCase() + selecter.slice(1)
+  }
+
   return (
     <div className='relative'>
       <div className='flex items-center gap-2 w-full'>
         <Label htmlFor='sort-by-date' className={`py-2 w-full text-center px-4 bg-card border border-input text-md rounded-3xl ${activeFilters.sortBy === selecter ? 'bg-blue-500 text-white' : ''}`}>
-          {selecter.charAt(0).toUpperCase() + selecter.slice(1)}
+          {getLabel()}
         </Label>
       </div>
       <Checkbox 

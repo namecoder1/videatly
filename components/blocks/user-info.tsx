@@ -5,11 +5,17 @@ import { Settings, User, ChevronRight } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import CustomLink from './custom-link'
 
-const UserInfo = () => {
+const UserInfo = ({ dict }: { dict: any }) => {
 
 	const [user, setUser] = useState<any>(null)
 	const [userData, setUserData] = useState<any>(null)
+
+	const pathname = usePathname();
+
+  const currentLang = pathname.split('/')[1] || 'en';
 
 	const supabase = createClient()
 
@@ -61,22 +67,22 @@ const UserInfo = () => {
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
-					<Link href="/profile" className="flex items-center gap-3 p-3 cursor-pointer">
+					<CustomLink href="/profile" className="flex items-center gap-3 p-3 cursor-pointer">
 						<User className="h-4 w-4" />
 						<div className="flex flex-col gap-1">
-							<span className="font-medium">Profile</span>
-							<span className="text-xs text-muted-foreground">Manage your profile settings</span>
+							<span className="font-medium">{dict.userInfo.profile}</span>
+							<span className="text-xs text-muted-foreground">{dict.userInfo.profileDescription}</span>
 						</div>
-					</Link>
+					</CustomLink>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<Link href="/settings" className="flex items-center gap-3 p-3 cursor-pointer">
+					<CustomLink href="/settings" className="flex items-center gap-3 p-3 cursor-pointer">
 						<Settings className="h-4 w-4" />
-					<div className="flex flex-col gap-1">
-						<span className="font-medium">Settings</span>
-							<span className="text-xs text-muted-foreground">Customize your experience</span>
+						<div className="flex flex-col gap-1">
+							<span className="font-medium">{dict.userInfo.settings}</span>
+							<span className="text-xs text-muted-foreground">{dict.userInfo.settingsDescription}</span>
 						</div>
-					</Link>
+					</CustomLink>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

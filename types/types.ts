@@ -126,13 +126,13 @@ export interface TodoProps {
   id: string;
   title: string;
   description: string;
-  date: string;
   priority: string;
   idea_id: string;
-  script_id: string;
+  script_id?: string;
   user_id: string;
   status: string;
-  start_time: string;
-  end_time: string;
+  start_date: string;
+  end_date: string;
   category: string;
+  created_at?: string;
 }

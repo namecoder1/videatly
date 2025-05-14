@@ -1,3 +1,4 @@
+'use client'
 import { SidebarMenuItem } from '@/components/ui/sidebar'
 import { SidebarMenuButton } from '@/components/ui/sidebar'
 import { SidebarMenu } from '@/components/ui/sidebar'
@@ -7,74 +8,82 @@ import { AppSidebar } from '../app-sidebar'
 import { BookOpen, CreditCard, FileSliders, Home, Lightbulb, ListCheck, NotepadText, Rocket, SquareLibrary } from 'lucide-react'
 import Link from 'next/link'
 import { SidebarGroup } from '@/components/ui/sidebar'
+import { usePathname } from 'next/navigation'
 
 
-const documentationItems = [
-	{
-		label: 'Home',
-		href: '/documentation',
-		icon: <Home />
-	},
-	{
-		label: 'Getting Started',
-		href: '/documentation/getting-started',
-		icon: <Rocket />
-	},
-	{
-		label: 'Usage',
-		href: '/documentation/usage',
-		icon: <BookOpen />
-	},
-	{
-		label: 'Configuration',
-		href: '/documentation/configuration',
-		icon: <FileSliders />
-	},
-	{
-		label: 'Use Cases',
-		href: '/documentation/use-cases',
-		icon: <ListCheck />
-	},
-]
+const PublicSidebar = ({ dict }: { dict: any }) => {
 
-const specificItems = [
-	{
-		label: 'Ideas',
-		href: '/documentation/ideas',
-		icon: <Lightbulb />
-	},
-	{
-		label: 'Scripts',
-		href: '/documentation/scripts',
-		icon: <NotepadText />
-	},
-	{
-		label: 'Tokens & Plans',
-		href: '/documentation/tokens-and-plans',
-		icon: <CreditCard />
-	},
-]
+	const pathname = usePathname();
 
-const platformGuidesItems = [
-	{
-		label: 'Platform Guide',
-		href: '/documentation/platform-guide',
-		icon: <SquareLibrary />
-	},
-	{
-		label: 'Ideas Guide',
-		href: '/documentation/ideas-guide',
-		icon: <SquareLibrary />
-	},
-	{
-		label: 'Scripts Guide',
-		href: '/documentation/scripts-guide',
-		icon: <SquareLibrary />
-	}
-]
-const PublicSidebar = () => {
+  const currentLang = pathname.split('/')[1] || 'en';
+
+
+	const documentationItems = [
+		{
+			label: dict.docSidebar.documentation[0],
+			href: `/${currentLang}/documentation`,
+			icon: <Home />
+		},
+		{
+			label: dict.docSidebar.documentation[1],
+			href: `/${currentLang}/documentation/getting-started`,
+			icon: <Rocket />
+		},
+		{
+			label: dict.docSidebar.documentation[2],
+			href: `/${currentLang}/documentation/usage`,
+			icon: <BookOpen />
+		},
+		{
+			label: dict.docSidebar.documentation[3],
+			href: `/${currentLang}/documentation/configuration`,
+			icon: <FileSliders />
+		},
+		{
+			label: dict.docSidebar.documentation[4],
+			href: `/${currentLang}/documentation/use-cases`,
+			icon: <ListCheck />
+		},
+	]
+	
+	const specificItems = [
+		{
+			label: dict.docSidebar.specific[0],
+			href: `/${currentLang}/documentation/ideas`,
+			icon: <Lightbulb />
+		},
+		{
+			label: dict.docSidebar.specific[1],
+			href: `/${currentLang}/documentation/scripts`,
+			icon: <NotepadText />
+		},
+		{
+			label: dict.docSidebar.specific[2],
+			href: `/${currentLang}/documentation/tokens-and-plans`,
+			icon: <CreditCard />
+		},
+	]
+	
+	const platformGuidesItems = [
+		{
+			label: dict.docSidebar.platform[0],
+			href: `/${currentLang}/documentation/platform-guide`,
+			icon: <SquareLibrary />
+		},
+		{
+			label: dict.docSidebar.platform[1],
+			href: `/${currentLang}/documentation/ideas-guide`,
+			icon: <SquareLibrary />
+		},
+		{
+			label: dict.docSidebar.platform[2],
+			href: `/${currentLang}/documentation/scripts-guide`,
+			icon: <SquareLibrary />
+		}
+	]
+
 	return (
-		<AppSidebar isProtected={true}>
+		<AppSidebar isProtected={true} dict={dict}>
 			<SidebarGroup>
 				<SidebarGroupLabel>Overview</SidebarGroupLabel>
 				<SidebarMenu>

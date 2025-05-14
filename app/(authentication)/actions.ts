@@ -4,15 +4,23 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 import { headers } from 'next/headers'
 import { encodedRedirect } from '@/utils/supabase/utils'
+import { locales } from '@/middleware'
 
-export const signInWithGoogleAction = async () => {
+export const signInWithGoogleAction = async (formData?: FormData) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+  
+  // Get language from current URL
+  const headersList = (await headers());
+  const referer = headersList.get("referer") || "";
+  const refererUrl = new URL(referer);
+  const pathParts = refererUrl.pathname.split('/');
+  const lang = pathParts.length > 1 && locales.includes(pathParts[1]) ? pathParts[1] : 'en';
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${origin}/auth/callback`
+      redirectTo: `${origin}/auth/callback?lang=${lang}`
     }
   });
 
@@ -26,16 +34,30 @@ export const signInWithGoogleAction = async () => {
 export async function logOut() {
 	const supabase = await createClient()
 	const { error } = await supabase.auth.signOut()
-
+	
+	// Get current language from URL
+	const headersList = headers();
+	const referer = headersList.get("referer") || "";
+	const refererUrl = new URL(referer);
+	const pathParts = refererUrl.pathname.split('/');
+	const lang = pathParts.length > 1 && locales.includes(pathParts[1]) ? pathParts[1] : 'en';
+	
 	if (error) {
 		console.error(error)
 	}
 
-	redirect('/')
+	redirect(`/${lang}`)
 }
 
 export async function deleteAccount() {
   const supabase = await createClient()
+  
+  // Get current language from URL
+  const headersList = headers();
+  const referer = headersList.get("referer") || "";
+  const refererUrl = new URL(referer);
+  const pathParts = refererUrl.pathname.split('/');
+  const lang = pathParts.length > 1 && locales.includes(pathParts[1]) ? pathParts[1] : 'en';
   
   const { data: { user }, error: userError } = await supabase.auth.getUser()
   
@@ -62,25 +84,38 @@ export async function deleteAccount() {
     throw new Error(`Failed to sign out: ${deleteAuthError.message}`)
   }
 
-  return redirect('/')
+  return redirect(`/${lang}`)
 }
 
 export const signInWithCustomRedirect = async (redirectPath: string) => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+  
+  // Get current language from URL
+  const headersList = (await headers());
+  const referer = headersList.get("referer") || "";
+  const refererUrl = new URL(referer);
+  const pathParts = refererUrl.pathname.split('/');
+  const lang = pathParts.length > 1 && locales.includes(pathParts[1]) ? pathParts[1] : 'en';
+  
+  // If redirectPath doesn't already include the language, add it
+  let finalRedirectPath = redirectPath;
+  if (!finalRedirectPath.startsWith(`/${lang}`)) {
+    finalRedirectPath = `/${lang}${redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`}`;
+  }
 
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${origin}${redirectPath}`
+      redirectTo: `${origin}/auth/callback?lang=${lang}`
     }
   });
 
   if (error) {
-    return encodedRedirect("error", "/", error.message);
+    return encodedRedirect("error", `/${lang}`, error.message);
   }
 
-  // Se vuoi ignorare data.url e reindirizzare sempre al percorso specificato
-  return redirect(redirectPath);
+  // If you want to ignore data.url and always redirect to the specified path
+  return redirect(finalRedirectPath);
 };
 

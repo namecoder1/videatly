@@ -9,6 +9,14 @@ import personaIcon from '@/assets/icons/persona-icon.png'
 import structureIcon from '@/assets/icons/structure-icon.png'
 import ctaIcon from '@/assets/icons/cta-icon.png'
 
+// Avatars
+import creator1 from '@/assets/avatars/creator-1.jpeg'
+import creator2 from '@/assets/avatars/creator-2.jpg'
+import creator3 from '@/assets/avatars/creator-3.jpeg'
+import creator4 from '@/assets/avatars/creator-4.jpg'
+import creator5 from '@/assets/avatars/creator-5.jpeg'
+
+
 export { 
   googleIcon, 
   logo, 
@@ -17,5 +25,10 @@ export {
   typeIcon,
   personaIcon,
   structureIcon,
-  ctaIcon
+  ctaIcon,
+  creator1,
+  creator2,
+  creator3,
+  creator4,
+  creator5
 }

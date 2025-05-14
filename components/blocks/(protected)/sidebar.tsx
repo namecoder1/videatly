@@ -29,72 +29,79 @@ import {
 } from "@/components/ui/sidebar"
 import { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
+import { useDictionary } from '@/app/context/dictionary-context'
 
-const manageItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard 
-  },
-  {
-    label: "Analytics", 
-    href: "/analytics",
-    icon: BarChart
-  },
-  {
-    label: "Calendar",
-    href: "/calendar",
-    icon: Calendar
-  }
-]
 
-const createItems = [
-  {
-    label: "Ideas",
-    href: "/ideas",
-    icon: Lightbulb,
-    submenu: [
-      {
-        label: 'Create Idea',
-        href: '/ideas/create',
-        icon: CirclePlus
-      },
-      {
-        label: 'Your Ideas',
-        href: '/ideas',
-        icon: ListOrdered
-      }
-    ]
-  },
-  {
-    label: "Scripts", 
-    href: "/scripts",
-    icon: NotepadText
-  },
-  {
-    label: "Production", 
-    href: "/production",
-    icon: Clapperboard
-  },
-]
-
-const settingsItems = [
-  {
-    label: "Shop",
-    href: "/shop",
-    icon: ShoppingCart,
-  },
-  {
-    label: "Docs",
-    href: "/documentation",
-    icon: Book,
-  }
-]
 
 const ProtectedSidebar = () => {
 	const pathname = usePathname();
 	const { tokens, setTokens } = useTokens()
   const supabase = createClient()
+  const dict = useDictionary()
+  
+  // Estrai la lingua corrente dal pathname
+  const currentLang = pathname.split('/')[1] || 'en';
+
+  const manageItems = [
+    {
+      label: dict.mainSidebar.manage.label1,
+      href: `/${currentLang}/dashboard`,
+      icon: LayoutDashboard 
+    },
+    {
+      label: dict.mainSidebar.manage.label2, 
+      href: `/${currentLang}/analytics`,
+      icon: BarChart
+    },
+    {
+      label: dict.mainSidebar.manage.label3,
+      href: `/${currentLang}/calendar`,
+      icon: Calendar
+    }
+  ]
+  
+  const createItems = [
+    {
+      label: dict.mainSidebar.create.label1[0],
+      href: `/${currentLang}/ideas`,
+      icon: Lightbulb,
+      submenu: [
+        {
+          label: dict.mainSidebar.create.label1[1],
+          href: `/${currentLang}/ideas/create`,
+          icon: CirclePlus
+        },
+        {
+          label: dict.mainSidebar.create.label1[2],
+          href: `/${currentLang}/ideas`,
+          icon: ListOrdered
+        }
+      ]
+    },
+    {
+      label: dict.mainSidebar.create.label2, 
+      href: `/${currentLang}/scripts`,
+      icon: NotepadText
+    },
+    {
+      label: dict.mainSidebar.create.label3, 
+      href: `/${currentLang}/production`,
+      icon: Clapperboard
+    },
+  ]
+  
+  const settingsItems = [
+    {
+      label: dict.mainSidebar.settings.label1,
+      href: `/${currentLang}/shop`,
+      icon: ShoppingCart,
+    },
+    {
+      label: dict.mainSidebar.settings.label2,
+      href: `/${currentLang}/documentation`,
+      icon: Book,
+    }
+  ]
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -115,11 +122,11 @@ const ProtectedSidebar = () => {
   }, [supabase, setTokens, tokens.length])
 	
 	return (
-		<AppSidebar isProtected={true}>
+		<AppSidebar isProtected={true} dict={dict}>
 			      
 				<SidebarGroup>
           <SidebarGroupLabel>
-            Manage
+            {dict.mainSidebar.manage.title}
           </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -141,7 +148,7 @@ const ProtectedSidebar = () => {
 
         <SidebarGroup>
           <SidebarGroupLabel>
-            Create
+            {dict.mainSidebar.create.title}
           </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -182,7 +189,7 @@ const ProtectedSidebar = () => {
         
         <SidebarGroup>
           <SidebarGroupLabel>
-            Various
+            {dict.mainSidebar.settings.title}
           </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>

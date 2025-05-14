@@ -10,8 +10,10 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import googleLogo from '@/assets/google-icon.png'
 import { signInWithGoogleAction } from '@/app/(authentication)/actions'
 import { handleScrollToElement } from '@/lib/utils'
+import LanguageSwitcher from './LanguageSwitcher'
+import CustomLink from '@/components/blocks/custom-link'
 
-const Navbar = () => {
+const Navbar = ({ dict }: { dict: any }) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false)
 
 	
@@ -26,22 +28,24 @@ const Navbar = () => {
 				{/* Desktop Menu */}
 				<ul className='hidden md:flex items-center gap-6'>	
 					<li>
-						<Link onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='text-sm flex items-center gap-2 hover-underline-animation text-muted-foreground hover:text-foreground transition-colors'>
-							<DollarSign className='size-4' /> Pricing
-						</Link>
+						<CustomLink onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='text-sm flex items-center gap-2 hover-underline-animation text-muted-foreground hover:text-foreground transition-colors'>
+							<DollarSign className='size-4' /> {dict.navbar.pricing}
+						</CustomLink>
 					</li>
 					<li>
-						<Link href="/documentation" className='text-sm flex items-center gap-2 hover-underline-animation text-muted-foreground hover:text-foreground transition-colors'>
-							<Library className='size-4' /> Documentation
-						</Link>
+						<CustomLink href="/documentation" className='text-sm flex items-center gap-2 hover-underline-animation text-muted-foreground hover:text-foreground transition-colors'>
+							<Library className='size-4' /> {dict.navbar.documentation}
+						</CustomLink>
 					</li>
 				</ul>
 
+
 				<form className='hidden md:flex items-center gap-2'>
+				<LanguageSwitcher />
 					<Button className='bg-black hover:bg-black/80' type='submit' formAction={signInWithGoogleAction}>
 						<div className='flex items-center gap-2'>
 							<Image src={googleLogo} alt="google logo" width={20} height={20} />
-							Login with Google
+							{dict.navbar.login}
 						</div>
 					</Button>
 				</form>
@@ -56,18 +60,18 @@ const Navbar = () => {
 					<DropdownMenuContent className='w-56 mr-4 mt-3'>
 						<DropdownMenuItem className='flex items-center gap-2 py-2'>
 							<Library className='size-4' />
-							<Link href="/documentation" className='flex-1'>Documentation</Link>
+							<CustomLink href="/documentation" className='flex-1'>{dict.navbar.documentation}</CustomLink>
 						</DropdownMenuItem>
 						<DropdownMenuItem className='flex items-center gap-2 py-2'>
 							<DollarSign className='size-4' />
-							<Link onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='flex-1'>Pricing</Link>
+							<Link onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='flex-1'>{dict.navbar.pricing}</Link>
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<form className='p-1 space-y-2'>
 							<Button type='submit' formAction={signInWithGoogleAction} className='w-full justify-start bg-black hover:bg-black/80'>
 								<div className='flex items-center gap-2'>
 									<Image src={googleLogo} alt="google logo" width={20} height={20} />
-									Login with Google
+									{dict.navbar.login}
 								</div>
 							</Button>
 						</form>

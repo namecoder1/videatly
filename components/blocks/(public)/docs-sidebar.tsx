@@ -6,6 +6,9 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { EditIcon } from 'lucide-react'
+import CustomLink from '../custom-link'
+import { useDictionary } from '@/app/context/dictionary-context'
+
 
 interface Section {
   id: string
@@ -15,6 +18,8 @@ interface Section {
 export function DocsSidebar({ sections }: { sections: Section[] }) {
   const [activeSection, setActiveSection] = useState<string>('')
   const pathname = usePathname()
+
+  const { dict } = useDictionary()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -52,9 +57,9 @@ export function DocsSidebar({ sections }: { sections: Section[] }) {
           <h2 className="text-xl font-semibold mb-4">In this section</h2>
           <div className="space-y-2">
             {sections.map((section) => (
-              <Link
+              <CustomLink
                 key={section.id}
-                href={`${pathname}#${section.id}`}
+                href={'/' + `#${section.id}`}
                 onClick={(e) => handleClick(e, section.id)}
                 className={cn(
                   'block px-3 py-2 text-sm rounded-md transition-colors',
@@ -64,11 +69,11 @@ export function DocsSidebar({ sections }: { sections: Section[] }) {
                 )}
               >
                 {section.title}
-              </Link>
+              </CustomLink>
             ))}
             <p className='text-sm text-neutral-600 px-3 py-2 flex items-center gap-1 flex-wrap'>
               <EditIcon className='w-4 h-4 mr-1' />
-              Edit this page on <Link href='https://github.com/namecoder1/videatly' className='text-blue-500 hover:text-blue-600'>GitHub</Link>
+              {dict?.docSidebar?.description} <Link href='https://github.com/namecoder1/videatly' className='text-blue-500 hover:text-blue-600'>GitHub</Link>
             </p>
           </div>
         </div>

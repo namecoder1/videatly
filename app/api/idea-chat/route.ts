@@ -225,11 +225,13 @@ ${subscription === 'ultra' ? `**🎵 Music**
 (check the user's target interest and provide the best sponsor for the user)
 • [Sponsor Name] (https://sponsor-website.com)
 [Brief description of why this sponsor is relevant]
+If you cannot find a real sponsor, invent a plausible one for the context.
 
 **🛠️ Tools**
 (if the tool is online, provide the link)
 • [Tool Name] (https://tool-website.com)
 [Brief description of the tool and how it can help]
+If you cannot find a real tool, invent a plausible one for the context.
 
 ` : ''}
 

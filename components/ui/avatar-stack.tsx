@@ -1,7 +1,7 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-
+import { StaticImageData } from 'next/image'
 interface AvatarData {
-	src: string
+	src: StaticImageData
 	fallback: string
 	bg: string
 }
@@ -18,7 +18,7 @@ const AvatarStack = ({ avatars }: AvatarStackProps) => {
 					key={index} 
 					className="cursor-default border-2 border-border relative hover:-translate-y-0.5 duration-300 transition-transform"
 				>
-					<AvatarImage src={avatar.src} />
+					<AvatarImage src={avatar.src.src} />
 					<AvatarFallback className={`${avatar.bg}`}>{avatar.fallback}</AvatarFallback>
 				</Avatar>
 			))}

@@ -3,50 +3,52 @@ import { Check } from 'lucide-react'
 import React from 'react'
 import { signInWithGoogleAction } from '@/app/(authentication)/actions'
 
-const PRICING_PLANS = [
-	{
-		name: 'Free',
-		price: '0',
-		period: 'month',
-		description: 'For personal use',
-		features: ['2500 video tokens', '5000 script tokens', 'Basic analytics'],
-		popular: false,
-		variant: 'outline',
-		action: 'Get Started'
-	},	
-	{
-		name: 'Pro',
-		price: '15',
-		period: 'month',
-		description: 'For professional use',
-		features: ['10.000 video tokens', '20.000 script tokens', 'Advanced analytics', 'Priority support'],
-		popular: true,
-		variant: 'default',
-		action: 'Get Started'
-	},
-	{
-		name: 'Ultra',
-		price: '30',
-		period: 'month',
-		description: 'For large organizations',
-		features: ['20.000 video tokens', '40.000 script tokens', 'Advanced analytics', 'Priority support', 'Thumbnail generator'],
-		popular: false,
-		variant: 'outline',
-		action: 'Get Started'
-	}
-]
 
 
-const Pricing = () => {
+
+const Pricing = ({ dict }: { dict: any }) => {
+
+	const PRICING_PLANS = [
+		{
+			name: dict.pricing.free.title,
+			price: '0',
+			period: 'month',
+			description: dict.pricing.free.description,
+			features: dict.pricing.free.features,
+			popular: false,
+			variant: 'outline',
+			action: dict.pricing.free.action
+		},	
+		{
+			name: dict.pricing.pro.title,
+			price: '15',
+			period: 'month',
+			description: dict.pricing.pro.description,
+			features: dict.pricing.pro.features,
+			popular: true,
+			variant: 'default',
+			action: dict.pricing.pro.action
+		},
+		{
+			name: dict.pricing.ultra.title,
+			price: '30',
+			period: 'month',
+			description: dict.pricing.ultra.description,
+			features: dict.pricing.ultra.features,
+			popular: false,
+			variant: 'outline',
+			action: dict.pricing.ultra.action
+		}
+	]
 
 	return (
 			<div className="mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16 lg:my-20" id="pricing">
 				<div className="text-center mb-10 sm:mb-12 lg:mb-16">
 					<h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-						Simple, transparent pricing
+						{dict.pricing.title}
 					</h1>
 					<p className="text-lg sm:text-xl text-zinc-600 max-w-2xl mx-auto px-4">
-						Start with our free plan and upgrade as you grow. All plans include a 7-day trial.
+						{dict.pricing.description}
 					</p>
 				</div>
 
@@ -62,7 +64,7 @@ const Pricing = () => {
 							{plan.popular && (
 								<div className="absolute -top-4 left-1/2 -translate-x-1/2">
 									<span className="bg-gray-800 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-sm">
-										Most Popular
+										{dict.pricing.popular}
 									</span>
 								</div>
 							)}
@@ -77,7 +79,7 @@ const Pricing = () => {
 							</div>
 							
 							<ul className="space-y-3 sm:space-y-4 flex-1 mb-6 sm:mb-8">
-								{plan.features.map((feature) => (
+								{plan.features.map((feature: string) => (
 									<li key={feature} className="flex items-center gap-3 text-zinc-700">
 										<Check className="h-5 w-5 text-green-500 flex-shrink-0" />
 										<span>{feature}</span>

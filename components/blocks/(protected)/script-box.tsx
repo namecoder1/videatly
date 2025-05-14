@@ -11,11 +11,15 @@ import { Trash2, ArrowRight, Users, Hourglass } from "lucide-react";
 import Link from "next/link";
 import { personaIcon, structureIcon, toneIcon, typeIcon } from "@/assets/home";
 import Image from "next/image";
+import { getEnumTranslation } from "@/utils/enum-translations";
+import { useDictionary } from "@/app/context/dictionary-context";
 
 const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id: number) => void }) => {
 	const { toast } = useToast();
 	const [idea, setIdea] = useState<IdeaData | null>(null);
 	const { id, idea_id, tone, target_audience, script_type, duration, persona, structure } = props;
+	const dict = useDictionary();
+	const locale = dict.locale || 'it';
 
 	useEffect(() => {
 		const fetchIdea = async () => {
@@ -33,14 +37,14 @@ const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id
 				onDelete(props.id);
 			}
 			toast({
-				title: 'Success',
-				description: 'Script deleted successfully',
+				title: dict.scriptBox?.toast?.deleteSuccess?.[0] || 'Success',
+				description: dict.scriptBox?.toast?.deleteSuccess?.[1] || 'Script deleted successfully',
 				variant: 'success'
 			});
 		} else {
 			toast({
-				title: 'Error',
-				description: 'Failed to delete script: ' + result.error,
+				title: dict.scriptBox?.toast?.deleteError?.[0] || 'Error',
+				description: (dict.scriptBox?.toast?.deleteError?.[1] || 'Failed to delete script: ') + result.error,
 				variant: 'destructive'
 			});
 		}
@@ -58,27 +62,27 @@ const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id
 				<div className="grid grid-cols-2 gap-2">
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Image src={typeIcon} alt="Type" className="w-4 h-4 min-w-4 min-h-4 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{script_type}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(script_type, locale)}</span>
 					</div>
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Image src={toneIcon} alt="Tone" className="w-4 h-4 min-w-4 min-h-4 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{tone}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(tone, locale)}</span>
 					</div>
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Image src={personaIcon} alt="Persona" className="w-4 h-4 min-w-4 min-h-4 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{persona}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(persona, locale)}</span>
 					</div>
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Image src={structureIcon} alt="Structure" className="w-4 h-4 min-w-4 min-h-4 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{structure}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(structure, locale)}</span>
 					</div>
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Hourglass className="w-4 h-4 min-w-4 min-h-4 text-amber-500 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{duration}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(duration, locale)}</span>
 					</div>
 					<div className="flex items-center p-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 						<Users className="w-4 h-4 min-w-4 min-h-4 text-blue-500 mr-2" />
-						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{target_audience}</span>
+						<span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getEnumTranslation(target_audience, locale)}</span>
 					</div>
 				</div>
 			</CardContent>
@@ -93,7 +97,7 @@ const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id
 				</Button>
 				<Button className="w-full" variant='black' asChild>
 					<Link href={`/scripts/${id}`}>
-						View Script
+						{dict.components.scriptBox.viewScript}
 						<ArrowRight className="ml-2 h-4 w-4" />
 					</Link>
 				</Button>

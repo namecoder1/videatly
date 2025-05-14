@@ -119,7 +119,7 @@ export enum VideoType {
   Comparison = 'Comparison',
   TierList = 'Tier List',
   BehindTheMusic = 'Behind the Music',
-  MysteriSolving = 'Mystery Solving',
+  MysterySolving = 'Mystery Solving',
   ParanormalInvestigation = 'Paranormal Investigation',
   TechBreakdown = 'Tech Breakdown',
   BuildAndCreate = 'Build & Create',
@@ -198,7 +198,7 @@ export enum ScriptPersona {
 
 export enum ScriptStructure {
   hook_then_content = 'Hook then Content',
-  chronological = 'chronological',
+  chronological = 'Chronological',
   problem_solution = 'Problem-Solution',
   question_answer = 'Question-Answer',
   listicle = 'Listicle',

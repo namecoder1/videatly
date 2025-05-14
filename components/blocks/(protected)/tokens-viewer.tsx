@@ -4,7 +4,7 @@ import { Info, Coins, Lightbulb, NotepadText } from 'lucide-react'
 import { useTokens, initializeTokenListener } from '@/hooks/use-tokens'
 import React, { useEffect } from 'react'
 
-const TokenViewer = () => {
+const TokenViewer = ({ dict }: { dict: any }) => {
 	const { tokens } = useTokens()
 
 	useEffect(() => {
@@ -38,7 +38,7 @@ const TokenViewer = () => {
 					<Coins className='w-4 h-4 text-black' />
 				</div>
 				<div className='flex flex-col group-data-[collapsible=icon]:hidden'>
-					<span className='text-xs text-neutral-500 font-medium'>Available Tokens</span>
+					<span className='text-xs text-neutral-500 font-medium'>{dict?.tokens?.span}</span>
 					<span className='text-base font-bold text-neutral-800'>{totalTokens}</span>
 				</div>
 			</div>
@@ -49,20 +49,20 @@ const TokenViewer = () => {
 				</DropdownMenuTrigger>
 				<DropdownMenuContent side="right" align="start" className='p-5 rounded-2xl space-y-3 bg-white shadow-lg border-neutral-200'>
 					<div className='space-y-1.5'>
-						<h4 className='font-semibold text-neutral-800'>Available Tokens</h4>
-						<p className='text-sm text-neutral-600'>You have <span className='font-medium text-neutral-800'>{totalTokens}</span> tokens to use</p>
+						<h4 className='font-semibold text-neutral-800'>{dict?.tokens?.span}</h4>
+						<p className='text-sm text-neutral-600'>{dict?.tokens?.description1}<span className='font-medium text-neutral-800'>{totalTokens}</span>{dict?.tokens?.description2}</p>
 					</div>
 					<Separator className='bg-neutral-200' />
 					<div className='space-y-2'>
-						<h4 className='font-semibold text-neutral-800'>Token Distribution</h4>
+						<h4 className='font-semibold text-neutral-800'>{dict?.tokens?.span2}</h4>
 						<ul className='text-sm space-y-2'>
 							<li className='flex items-center gap-2 p-2 rounded-xl bg-yellow-100 border border-yellow-500'>
 								<Lightbulb className='text-yellow-500' size={14} />
-								<span className='text-neutral-600'>Ideas: <span className='font-medium text-neutral-800'>{ideasTotal}</span> tokens</span>
+								<span className='text-neutral-600 flex ic justify-between w-full'>{dict?.tokens?.ideas}<span className='font-medium text-neutral-800 flex items-center gap-1'>{ideasTotal}<Coins className='w-3 h-3 text-black' /></span></span>
 							</li>
 							<li className='flex items-center gap-2 p-2 rounded-xl bg-blue-100 border border-blue-500'>
 								<NotepadText className='text-blue-500' size={14} />
-								<span className='text-neutral-600'>Scripts: <span className='font-medium text-neutral-800'>{scriptsTotal}</span> tokens</span>
+								<span className='text-neutral-600 flex ic justify-between w-full'>{dict?.tokens?.scripts}<span className='font-medium text-neutral-800 flex items-center gap-1'>{scriptsTotal}<Coins className='w-3 h-3 text-black' /></span></span>
 							</li>
 						</ul>
 					</div>

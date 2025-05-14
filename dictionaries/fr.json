@@ -1,0 +1,121 @@
+{
+  "currency": "€",
+  "tokens": {
+    "span": "Tokens disponibles",
+    "description1": "Vous avez ",
+    "description2": " tokens à utiliser",
+    "span2": "Distribution des tokens",
+    "ideas": "Idées: ",
+    "scripts": "Script: "
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
+  "navbar": {
+    "documentation": "Documentation",
+    "pricing": "Prix",
+    "login": "Connexion"
+  },
+  "footer": {
+    "description": "Crée, Analyse et Cresse avec le Pouvoir de l'IA",
+    "copyright": "Tous droits réservés",
+    "links": [
+      "Accueil",
+      "À propos",
+      "Contact",
+      "Conditions d'utilisation",
+      "Politique de confidentialité"
+    ],
+    "legal": [
+      "Politique de confidentialité",
+      "Conditions d'utilisation",
+      "Politique de cookies"
+    ],
+    "more": [
+      "À propos",
+      "Contact"
+    ],
+    "tobi1": "Bonjour à tous! Je suis ",
+    "tobi2": "et je suis le créateur de Videatly. Vous pouvez en savoir plus sur moi sur mon site web."
+  },
+  "home": {
+    "title": "Crée, Analyse et Cresse avec le Pouvoir de l'IA",
+    "description": "Générez des idées pour des vidéos attrayantes, des scripts optimisés et comparez vos résultats avec l'IA.",
+    "uniqueVideoIdeas": "Idées de vidéo uniques en un clic",
+    "craftViralScripts": "Scripts viraux en quelques secondes",
+    "analyzeOptimizeDominate": "Analyse, optimise, domine",
+    "startNow": "Commencer maintenant",
+    "learnMore": "En savoir plus",
+    "creatorsJoined": "créateurs qui aiment Videatly"
+  },
+  "features": {
+    "title": "Pourquoi choisir Videatly?",
+    "subtitle": "Votre arme secrète pour les contenus viraux",
+    "description": "Arrêtez de perdre du temps avec le brainstorming. Commencez à créer du contenu qui attire l'attention de votre public et fait croître votre canal de manière automatique.",
+    "aiMagic": "Contenu AI magique",
+    "aiMagicDescription": "Générez de la créativité illimitée avec l'IA. Créez des idées de vidéo parfaites pour votre public et vos préférences.",
+    "aiScripts": "Scripts captivants",
+    "aiScriptsDescription": "Transformez des idées en histoires captivantes instantanées. Notre intelligence artificielle crée des scripts accrocheurs qui maintiennent les spectateurs collés à l'écran.",
+    "skyrocketGrow": "Croître de manière exponentielle",
+    "skyrocketGrowDescription": "Croître 10 fois plus rapidement. Ce qui prenait des jours maintenant se fait en quelques minutes avec notre intelligence artificielle."
+  },
+  "pricing": {
+    "title": "Prix",
+    "popular": "Plus Populaires",
+    "free": {
+      "title": "Gratuit",
+      "description": "Pour un usage personnel",
+      "features": [
+        "2500 tokens vidéo",
+        "5000 tokens script",
+        "Analyse de base"
+      ],
+      "action": "Commencer maintenant"
+    },
+    "pro": {
+      "title": "Pro",
+      "description": "Pour un usage professionnel",
+      "features": [
+        "10.000 tokens vidéo",
+        "20.000 tokens script",
+        "Analyse avancée",
+        "Support prioritaire"
+      ],
+      "action": "Commencer maintenant"
+    },
+    "ultra": {
+      "title": "Ultra",
+      "description": "Pour les grandes organisations",
+      "features": [
+        "20.000 tokens vidéo",
+        "40.000 tokens script",
+        "Analyse avancée",
+        "Support prioritaire"
+      ],
+      "action": "Commencer maintenant"
+    }
+  },
+  "faq": {
+    "title": "Questions fréquentes",
+    "q1": "Comment puis-je personnaliser mon profil?",
+    "a1": "Vous pouvez personnaliser votre profil en ajoutant une photo, en modifiant vos informations personnelles et en définissant vos préférences de notifications. Toutes ces options sont accessibles via le menu 'Paramètres du profil'.",
+    "q2": "Quels sont les exigences de système?",
+    "a2": "L'application est optimisée pour fonctionner sur tous les navigateurs modernes (Chrome, Firefox, Safari, Edge). Pour une meilleure expérience, nous vous recommandons de maintenir votre navigateur à jour à la dernière version.",
+    "q3": "Comment sont gérés mes données personnelles?",
+    "a3": "La sécurité de vos données est notre priorité. Nous utilisons le chiffrement end-to-end pour protéger vos informations et ne partageons pas vos données avec des tiers sans votre consentement explicite.",
+    "q4": "Que faire si je me suis trompé de mot de passe?",
+    "a4": "Si vous avez oublié votre mot de passe, vous pouvez utiliser la fonction 'Réinitialiser le mot de passe' sur la page de connexion. Vous recevrez un email avec les instructions pour réinitialiser votre mot de passe de manière sécurisée.",
+    "q5": "Comment puis-je signaler un problème technique?",
+    "a5": "Vous pouvez signaler les problèmes techniques via la section 'Support' dans l'application ou en envoyant un email détaillé à notre équipe technique. Incluez des captures d'écran et des descriptions précises pour nous aider à résoudre le problème plus rapidement.",
+    "q6": "Comment puis-je commencer?",
+    "a6": "Commencer est facile! Il suffit de créer un compte et vous aurez accès instantanément à toutes les fonctionnalités. Notre documentation fournit des guides complets pour les utilisateurs nouveaux.",
+    "q7": "Offrez-vous un support?",
+    "a7": "Oui, nous offrons un support dédié via notre centre d'assistance et notre email. Notre équipe répond généralement dans les 24 heures pour toute question ou préoccupation."
+  },
+  "components": {
+    "translatableSelect": {
+      "noResults": "Aucun résultat trouvé."
+    }
+  }
+} 

@@ -12,6 +12,8 @@ import { deleteIdea } from '@/app/actions'
 import { useSidebarViewport } from '@/hooks/use-sidebar-viewport'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
+import { getEnumTranslation } from '@/utils/enum-translations'
+import { useDictionary } from '@/app/context/dictionary-context'
 
 const IdeaBox = ({ 
 	idea, 
@@ -23,9 +25,11 @@ const IdeaBox = ({
 	setSelectedIdea?: (idea: IdeaData) => void
 }) => {
 	const { toast } = useToast();
-	const { gridClasses, cardClasses } = useSidebarViewport()
-	const { container } = gridClasses
-	const { base, active, background } = cardClasses
+	const { gridClasses, cardClasses } = useSidebarViewport();
+	const { container } = gridClasses;
+	const { base, active, background } = cardClasses;
+	const dict = useDictionary();
+	const locale = dict.locale || 'it';
 
 	const tags = parseTags(idea.tags || []);
 
@@ -37,14 +41,14 @@ const IdeaBox = ({
 			if (element) element.remove();
 			
 			toast({
-				title: 'Success',
-				description: 'Idea deleted successfully',
+				title: dict.ideaBox?.toast?.deleteSuccess?.[0] || 'Success',
+				description: dict.ideaBox?.toast?.deleteSuccess?.[1] || 'Idea deleted successfully',
 				variant: 'success'
 			});
 		} else {
 			toast({
-				title: 'Error',
-				description: 'Failed to delete idea: ' + result.error,
+				title: dict.ideaBox?.toast?.deleteError?.[0] || 'Error',
+				description: (dict.ideaBox?.toast?.deleteError?.[1] || 'Failed to delete idea: ') + result.error,
 				variant: 'destructive'
 			});
 		}
@@ -65,7 +69,7 @@ const IdeaBox = ({
 				<h3 className='text-xl font-semibold mb-2'>{idea.title}</h3>
 			</div>
 			<p className='text-sm text-gray-500 mb-4'>{idea.description}</p>
-			<div className='flex gap-2 my-4'>
+			<div className='flex flex-wrap gap-2 my-4'>
 				{tags.map((tag: string) => (
 					<Badge variant='outline' key={tag}>
 						{tag}
@@ -75,19 +79,19 @@ const IdeaBox = ({
 			<div className={container}>
 				<div className='flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors'>
 					<Paintbrush className='w-4 h-4 min-w-4 min-h-4 text-blue-500 mr-2' />
-					<span className='text-sm font-medium'>{idea.video_style}</span>
+					<span className='text-sm font-medium'>{getEnumTranslation(idea.video_style, locale)}</span>
 				</div>
 				<div className='flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors'>
 					<Film className='w-4 h-4 min-w-4 min-h-4 text-purple-500 mr-2' />
-					<span className='text-sm font-medium'>{idea.video_type}</span>
+					<span className='text-sm font-medium'>{getEnumTranslation(idea.video_type, locale)}</span>
 				</div>
 				<div className='flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors'>
 					<Clock4 className='w-4 h-4 min-w-4 min-h-4 text-amber-500 mr-2' />
-					<span className='text-sm font-medium'>{idea.video_length}</span>
+					<span className='text-sm font-medium'>{getEnumTranslation(idea.video_length, locale)}</span>
 				</div>
 				<div className='flex items-center p-2 rounded-md bg-gray-50 hover:bg-gray-100 transition-colors'>
 					<Target className='w-4 h-4 min-w-4 min-h-4 text-red-500 mr-2' />
-					<span className='text-sm font-medium'>{idea.video_target}</span>
+					<span className='text-sm font-medium'>{getEnumTranslation(idea.video_target, locale)}</span>
 				</div>
 			</div>
 			<div className='flex justify-center gap-2 mt-4'>
@@ -101,7 +105,7 @@ const IdeaBox = ({
 				</Button>
 				<Button asChild className='bg-black hover:bg-black/80 w-full'>
 					<Link href={`/ideas/${idea.id}`} >
-						<p className='text-white'>View Idea</p>
+						<p className='text-white'>{dict.ideaBox?.viewIdea || dict.calendarPage?.viewIdea || 'View Idea'}</p>
 					<ArrowRight className='w-4 h-4' />
 				</Link>
 			</Button>

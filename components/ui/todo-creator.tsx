@@ -19,55 +19,72 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
-import { format } from "date-fns"
+import { format, parseISO, addMinutes } from "date-fns"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { CalendarPlus, Clock, Link2 } from "lucide-react"
+import { CalendarPlus, Clock, Link2, Calendar as CalendarIcon, ChevronDown, Trash2 } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "./textarea"
-import { createTodo, deleteTodo, updateTodo } from "@/app/(protected)/production/[id]/actions"
-import { useState, useRef } from "react"
+import { createTodo, deleteTodo, updateTodo } from "@/app/[lang]/(protected)/production/[id]/actions"
+import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { TodoProps, IdeaData } from "@/types/types"
+import { TodoProps, IdeaData, ScriptData } from "@/types/types"
 import { Checkbox } from "./checkbox"
 import { formatStringDate } from "@/lib/utils"
 import TodoLittle from "../blocks/(protected)/todo-little"
-import Swipeable from "./swipeable"
 import { Card } from "./card"
 import Link from "next/link"
+import { Calendar } from "@/components/ui/calendar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { Badge } from "@/components/ui/badge"
 
-const TIME_SLOTS = [
-  // Morning slots
-  { label: 'Early Morning', time: '08:00', period: 'am' },
-  { label: 'Early Morning', time: '08:30', period: 'am' },
-  { label: 'Morning', time: '09:00', period: 'am' },
-  { label: 'Morning', time: '09:30', period: 'am' },
-  { label: 'Late Morning', time: '10:00', period: 'am' },
-  { label: 'Late Morning', time: '10:30', period: 'am' },
-  { label: 'Late Morning', time: '11:00', period: 'am' },
-  { label: 'Late Morning', time: '11:30', period: 'am' },
-  // Afternoon slots
-  { label: 'Noon', time: '12:00', period: 'pm' },
-  { label: 'Early Afternoon', time: '12:30', period: 'pm' },
-  { label: 'Early Afternoon', time: '01:00', period: 'pm' },
-  { label: 'Early Afternoon', time: '01:30', period: 'pm' },
-  { label: 'Afternoon', time: '02:00', period: 'pm' },
-  { label: 'Afternoon', time: '02:30', period: 'pm' },
-  { label: 'Late Afternoon', time: '03:00', period: 'pm' },
-  { label: 'Late Afternoon', time: '03:30', period: 'pm' },
-  { label: 'Late Afternoon', time: '04:00', period: 'pm' },
-  { label: 'Late Afternoon', time: '04:30', period: 'pm' },
-  // Evening slots
-  { label: 'Early Evening', time: '05:00', period: 'pm' },
-  { label: 'Early Evening', time: '05:30', period: 'pm' },
-  { label: 'Evening', time: '06:00', period: 'pm' },
-  { label: 'Evening', time: '06:30', period: 'pm' },
-  { label: 'Late Evening', time: '07:00', period: 'pm' },
-  { label: 'Late Evening', time: '07:30', period: 'pm' },
-  { label: 'Late Evening', time: '08:00', period: 'pm' },
-  { label: 'Late Evening', time: '08:30', period: 'pm' },
-]
+// Import the IdeaWithScripts interface
+interface IdeaWithScripts extends IdeaData {
+  scripts: ScriptData[];
+}
+
+// Generate time slots for every 30 minutes
+const generateTimeSlots = () => {
+  const slots = [];
+  for (let hour = 0; hour < 24; hour++) {
+    const period = hour < 12 ? 'am' : 'pm';
+    const displayHour = hour % 12 || 12;
+    
+    // Add slots for :00 and :30
+    slots.push({
+      label: getTimeLabel(hour),
+      time: `${hour.toString().padStart(2, '0')}:00`,
+      period,
+      displayHour,
+      displayMinutes: '00'
+    });
+    
+    slots.push({
+      label: getTimeLabel(hour),
+      time: `${hour.toString().padStart(2, '0')}:30`,
+      period,
+      displayHour,
+      displayMinutes: '30'
+    });
+  }
+  return slots;
+};
+
+// Helper to get time of day label
+const getTimeLabel = (hour: number) => {
+  if (hour >= 5 && hour < 8) return 'Early Morning';
+  if (hour >= 8 && hour < 10) return 'Morning';
+  if (hour >= 10 && hour < 12) return 'Late Morning';
+  if (hour >= 12 && hour < 13) return 'Noon';
+  if (hour >= 13 && hour < 16) return 'Afternoon';
+  if (hour >= 16 && hour < 19) return 'Late Afternoon';
+  if (hour >= 19 && hour < 22) return 'Evening';
+  return 'Night';
+};
+
+const TIME_SLOTS = generateTimeSlots();
 
 type TodoMode = 'create' | 'update'
 
@@ -82,7 +99,9 @@ export function TodoCreator({
   todo,
   onUpdate,
   ideas,
-  onIdeaSelect
+  onIdeaSelect,
+  dict,
+  initialOpen = false,
 }: { 
   className?: string
   defaultValue: Date
@@ -93,57 +112,120 @@ export function TodoCreator({
   context?: 'production' | 'calendar'
   todo?: TodoProps
   onUpdate?: () => void
-  ideas?: IdeaData[]
-  onIdeaSelect?: (idea: IdeaData) => void
+  ideas?: IdeaWithScripts[]
+  onIdeaSelect?: (idea: IdeaWithScripts) => void
+  dict?: any
+  initialOpen?: boolean
 }) {
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const router = useRouter()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(initialOpen)
   const { toast } = useToast()
-  const swipeableRef = useRef<HTMLDivElement>(null)
   
-  // Initialize times from todo if in update mode, otherwise use default
-  const defaultTime = todo ? todo.start_time.split(':').map(num => num.padStart(2, '0')).join(':') : format(defaultValue, 'HH:mm')
-  const defaultPeriod = todo ? (parseInt(todo.start_time.split(':')[0]) >= 12 ? 'pm' : 'am') : format(defaultValue, 'a').toLowerCase()
+  // Date state for both start and end time
+  const [startDate, setStartDate] = useState<Date>(todo?.start_date 
+    ? new Date(todo.start_date) 
+    : defaultValue)
   
-  const [startTime, setStartTime] = useState({ 
-    time: defaultTime, 
-    period: defaultPeriod 
-  })
-  const [endTime, setEndTime] = useState({ 
-    time: todo ? todo.end_time?.split(':').map(num => num.padStart(2, '0')).join(':') : defaultTime,
-    period: todo ? (parseInt(todo.end_time?.split(':')[0] || '0') >= 12 ? 'pm' : 'am') : defaultPeriod
-  })
+  const [endDate, setEndDate] = useState<Date>(todo?.end_date 
+    ? new Date(todo.end_date) 
+    : addMinutes(defaultValue, 30))
+  
+  // State for popover open status
+  const [startPickerOpen, setStartPickerOpen] = useState(false)
+  const [endPickerOpen, setEndPickerOpen] = useState(false)
 
-  const handleStartTimeChange = (value: string) => {
-    const [time, period] = value.split('|')
-    setStartTime({ time, period })
-    // Auto-set end time to 30 minutes later if not set
-    if (!endTime.time) {
-      const [hours, minutes] = time.split(':').map(Number)
-      let endHours = hours
-      let endMinutes = minutes + 30
-      let endPeriod = period
-
-      if (endMinutes >= 60) {
-        endHours = (endHours + 1) % 12 || 12
-        endMinutes = 0
-        if (endHours === 1 && period === 'am') {
-          endPeriod = 'pm'
-        }
-      }
-
-      const newEndTime = { 
-        time: `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`, 
-        period: endPeriod 
-      }
-      setEndTime(newEndTime)
+  // Set open state when initialOpen changes - this ensures the component respects external state
+  useEffect(() => {
+    setOpen(initialOpen)
+  }, [initialOpen])
+  
+  // Make sure we call onUpdate when the dialog is closed externally
+  const handleOpenChange = (newOpenState: boolean) => {
+    setOpen(newOpenState)
+    if (!newOpenState && initialOpen && onUpdate) {
+      onUpdate()
     }
   }
 
-  const handleEndTimeChange = (value: string) => {
-    const [time, period] = value.split('|')
-    setEndTime({ time, period })
+  // Handle date changes
+  const handleStartDateChange = (date: Date | undefined) => {
+    if (date) {
+      const newDate = new Date(date);
+      // Preserve the time from the current startDate
+      if (startDate) {
+        newDate.setHours(startDate.getHours());
+        newDate.setMinutes(startDate.getMinutes());
+      }
+      
+      // Set the new date
+      setStartDate(newDate);
+      
+      // If end date is before the new start date, adjust it
+      if (endDate < newDate) {
+        const newEndDate = new Date(newDate);
+        newEndDate.setMinutes(newEndDate.getMinutes() + 30);
+        setEndDate(newEndDate);
+      }
+    }
+  };
+  
+  const handleEndDateChange = (date: Date | undefined) => {
+    if (date) {
+      const newDate = new Date(date);
+      // Preserve the time from the current endDate
+      if (endDate) {
+        newDate.setHours(endDate.getHours());
+        newDate.setMinutes(endDate.getMinutes());
+      }
+      
+      // Ensure end date is not before start date
+      if (newDate >= startDate) {
+        setEndDate(newDate);
+      } else {
+        // If the selected end date is before start date, set it to start date + 30 min
+        toast({
+          title: dict?.calendarPage?.toast?.invalidDateRange?.[0] || "Invalid date range",
+          description: dict?.calendarPage?.toast?.invalidDateRange?.[1] || "End date cannot be before start date",
+          variant: 'destructive',
+        });
+        const adjustedDate = new Date(startDate);
+        adjustedDate.setMinutes(adjustedDate.getMinutes() + 30);
+        setEndDate(adjustedDate);
+      }
+    }
+  };
+  
+  // Handle time changes
+  const handleStartTimeChange = (time: string) => {
+    const [hourStr, minuteStr] = time.split(':')
+    const newDate = new Date(startDate)
+    newDate.setHours(parseInt(hourStr))
+    newDate.setMinutes(parseInt(minuteStr))
+    setStartDate(newDate)
+    
+    // If end time is now before start time, adjust it
+    if (endDate < newDate) {
+      setEndDate(addMinutes(newDate, 30))
+    }
+  }
+  
+  const handleEndTimeChange = (time: string) => {
+    const [hourStr, minuteStr] = time.split(':')
+    const newDate = new Date(endDate)
+    newDate.setHours(parseInt(hourStr))
+    newDate.setMinutes(parseInt(minuteStr))
+    
+    // Validate that end time is after start time
+    if (newDate > startDate) {
+      setEndDate(newDate)
+    } else {
+      toast({
+        title: dict?.calendarPage?.toast?.invalidTimeRange?.[0] || "Invalid time range",
+        description: dict?.calendarPage?.toast?.invalidTimeRange?.[1] || "End time must be after start time",
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleSubmit = async (formData: any) => {
@@ -151,26 +233,41 @@ export function TodoCreator({
     formDataToSubmit.append('title', formData.title)
     formDataToSubmit.append('description', formData.description)
 
-    // Gestione robusta degli orari e della data
+    // Handle date and times with timezone for timestamptz
     let skipDateAndTime = (mode === 'update' && todo && !formData.editTime)
     if (!skipDateAndTime) {
-      formDataToSubmit.append('date', format(defaultValue, 'yyyy-MM-dd'))
-      const startTimeValue = `${startTime.time} ${startTime.period}`
-      const endTimeValue = `${endTime.time} ${endTime.period}`
-      formDataToSubmit.append('startTime', startTimeValue)
-      formDataToSubmit.append('endTime', endTimeValue)
+      // Store the date as ISO string to preserve timezone info
+      const startISOString = startDate.toISOString()
+      const endISOString = endDate.toISOString()
+      
+      formDataToSubmit.append('start_date', startISOString)
+      formDataToSubmit.append('end_date', endISOString)
     }
+    
     formDataToSubmit.append('priority', formData.priority.toLowerCase())
-    formDataToSubmit.append('idea_id', ideaId.toString())
-    formDataToSubmit.append('script_id', scriptId.toString())
+    
+    // Use the selected idea ID from the form if available, otherwise use the prop
+    const selectedIdeaId = formData.idea_id || ideaId.toString();
+    formDataToSubmit.append('idea_id', selectedIdeaId)
+    
+    // Find the corresponding script ID for the selected idea
+    let scriptIdToUse = scriptId;
+    if (ideas && ideas.length > 0) {
+      const selectedIdea = ideas.find(idea => idea.id.toString() === selectedIdeaId);
+      if (selectedIdea && 'scripts' in selectedIdea && Array.isArray(selectedIdea.scripts) && selectedIdea.scripts.length > 0) {
+        scriptIdToUse = selectedIdea.scripts[0].id;
+      }
+    }
+    
+    formDataToSubmit.append('script_id', scriptIdToUse.toString())
     formDataToSubmit.append('user_id', userId)
     formDataToSubmit.append('status', formData.status.toLowerCase())
     formDataToSubmit.append('category', formData.category)
 
-    if (!formData.title || !formData.description || !startTime.time || !endTime.time || !formData.priority || !formData.category) {
+    if (!formData.title || !formData.description || !formData.priority || !formData.category) {
       toast({
-        title: 'Please fill in all fields',
-        description: 'To create a todo, you need to fill in all fields',
+        title: dict?.calendarPage?.toast?.fillFields?.[0],
+        description: dict?.calendarPage?.toast?.fillFields?.[1],
         variant: 'destructive',
       })
       return
@@ -186,22 +283,39 @@ export function TodoCreator({
       }
       
       if (result.error) {
-        toast({
-          title: `Failed to ${mode === 'update' ? 'update' : 'create'} todo`,
-          description: result.error,
-          variant: 'destructive',
-        })
-        return
+        if (mode === 'update') {
+          toast({
+            title: dict?.calendarPage?.toast?.updateError?.[0],
+            description: dict?.calendarPage?.toast?.updateError?.[1],
+            variant: 'destructive',
+          })
+          return
+        } else {
+          toast({
+            title: dict?.calendarPage?.toast?.creationError?.[0],
+            description: dict?.calendarPage?.toast?.creationError?.[1],
+            variant: 'destructive',
+          })
+          return
+        }
       }
 
-      toast({
-        title: `Todo ${mode === 'update' ? 'updated' : 'created'} successfully`,
-        description: `Your todo has been ${mode === 'update' ? 'updated' : 'created'} successfully`,
-        variant: 'success',
-      })
+      if (mode === 'update') {
+        toast({
+          title: dict?.calendarPage?.toast?.updateSuccess?.[0],
+          description: dict?.calendarPage?.toast?.updateSuccess?.[1],
+          variant: 'success',
+        })
+      } else {
+        toast({
+          title: dict?.calendarPage?.toast?.creationSuccess?.[0],
+          description: dict?.calendarPage?.toast?.creationSuccess?.[1],
+          variant: 'success',
+        })
+      }
       
       // Close the dialog/drawer
-      setOpen(false)
+      handleOpenChange(false)
       
       // Call onUpdate callback if provided
       if (onUpdate) {
@@ -211,11 +325,19 @@ export function TodoCreator({
       // Revalidate the router to update all server components
       router.refresh()
     } catch (error) {
-      toast({
-        title: `An error occurred while ${mode === 'update' ? 'updating' : 'creating'} the todo`,
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive',
-      })
+      if (mode === 'update') {
+        toast({
+          title: dict?.calendarPage?.toast?.updateError?.[0],
+          description: dict?.calendarPage?.toast?.updateError?.[1],
+          variant: 'destructive',
+        })
+      } else {
+        toast({
+          title: dict?.calendarPage?.toast?.randomError?.[0],
+          description: dict?.calendarPage?.toast?.randomError?.[1],
+          variant: 'destructive',
+        })
+      }
       console.error(error)
     }
   }
@@ -226,22 +348,22 @@ export function TodoCreator({
       
       if (result.error) {
         toast({
-          title: 'Failed to delete todo',
-          description: result.error,
+          title: dict?.calendarPage?.toast?.deleteError?.[0],
+          description: dict?.calendarPage?.toast?.deleteError?.[1],
           variant: 'destructive',
         })
         return
       }
 
       toast({
-        title: 'Todo deleted successfully',
-        description: 'Your todo has been deleted successfully',
+        title: dict?.calendarPage?.toast?.deleteSuccess?.[0],
+        description: dict?.calendarPage?.toast?.deleteSuccess?.[1],
         variant: 'success',
       })
       router.refresh()
 
       // Close the dialog/drawer
-      setOpen(false)
+      handleOpenChange(false)
       
       // Call onUpdate callback if provided
       if (onUpdate) {
@@ -252,8 +374,8 @@ export function TodoCreator({
       router.refresh()
     } catch (error) {
       toast({
-        title: 'Failed to delete todo',
-        description: error instanceof Error ? error.message : 'Unknown error',
+        title: dict?.calendarPage?.toast?.randomError?.[0],
+        description: dict?.calendarPage?.toast?.randomError?.[1],
         variant: 'destructive',
       })
       console.error(error)
@@ -263,89 +385,78 @@ export function TodoCreator({
   const getTriggerButton = () => {
     if (mode === 'update' && context === 'production' && todo) {
       return (
-        <TodoLittle todo={todo} showDate={false} onClick={() => setOpen(true)} className="cursor-pointer" showIdea={false} />
+        <TodoLittle todo={todo} showDate={false} onClick={() => setOpen(true)} className="cursor-pointer hidden" showIdea={false} />
       )
     }
 
-    if (mode === 'update' && context === 'calendar' && todo) {
-      return (
-        <TodoLittle todo={todo} showDate={false} onClick={() => setOpen(true)} className="cursor-pointer" showIdea={true} />
-      )
-    }
 
     return (
-      <Button className={cn('w-fit', className)} variant="black" size="sm">
-        <CalendarPlus className="h-4 w-4 mr-2" /> Add Event
+      <Button className={cn('w-fit hidden', className)} variant="black" size="sm" >
+        <CalendarPlus className="h-4 w-4 mr-2" /> {dict?.calendarPage?.addEvent || "Add Event"}
       </Button>
     )
   }
 
   if (isDesktop) {
     return mode === 'update' ? (
-      <Swipeable ref={swipeableRef} onSwipe={handleDelete}>
-        <Dialog open={open} onOpenChange={(newOpen) => {
-          const swipeableElement = swipeableRef.current;
-          const isSwiping = swipeableElement?.getAttribute('data-swiping') === 'true';
-          const swipeProgress = parseFloat(swipeableElement?.getAttribute('data-swipe-progress') || '0');
-          if (isSwiping || swipeProgress > 0.2) return;
-          setOpen(newOpen);
-        }}>
-          <DialogTrigger asChild className="w-full">
-            {getTriggerButton()}
-          </DialogTrigger>
-          <DialogContent className='max-w-md'>
-            <DialogHeader>
-              <DialogTitle>Edit Event</DialogTitle>
-            </DialogHeader>
-            <DialogDescription asChild>
-              <div className="flex flex-col gap-4">
-                {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} />}
-                <TodoForm 
-                  onSubmit={handleSubmit}
-                  startTime={startTime}
-                  endTime={endTime}
-                  onStartTimeChange={handleStartTimeChange}
-                  onEndTimeChange={handleEndTimeChange}
-                  mode={mode}
-                  todo={todo}
-                  handleDelete={handleDelete}
-                  ideas={ideas}
-                  onIdeaSelect={onIdeaSelect}
-                  ideaId={ideaId}
-                />
-              </div>
-            </DialogDescription>
-          </DialogContent>
-        </Dialog>
-      </Swipeable>
-    ) : (
       <Dialog open={open} onOpenChange={(newOpen) => {
-        const swipeableElement = swipeableRef.current;
-        const isSwiping = swipeableElement?.getAttribute('data-swiping') === 'true';
-        const swipeProgress = parseFloat(swipeableElement?.getAttribute('data-swipe-progress') || '0');
-        if (isSwiping || swipeProgress > 0.2) return;
-        setOpen(newOpen);
+        handleOpenChange(newOpen);
       }}>
-        <DialogTrigger asChild className="w-full">
+        <DialogTrigger asChild className="hidden">
           {getTriggerButton()}
         </DialogTrigger>
         <DialogContent className='max-w-md'>
           <DialogHeader>
-            <DialogTitle>Add Event</DialogTitle>
+            <DialogTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DialogTitle>
+          </DialogHeader>
+          <DialogDescription asChild>
+            <div className="flex flex-col gap-4">
+              {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} dict={dict} />}
+              <TodoForm 
+                onSubmit={handleSubmit}
+                mode={mode}
+                todo={todo}
+                handleDelete={handleDelete}
+                ideas={ideas}
+                onIdeaSelect={onIdeaSelect}
+                ideaId={ideaId}
+                dict={dict}
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={handleStartDateChange}
+                onEndDateChange={handleEndDateChange}
+                onStartTimeChange={handleStartTimeChange}
+                onEndTimeChange={handleEndTimeChange}
+              />
+            </div>
+          </DialogDescription>
+        </DialogContent>
+      </Dialog>
+    ) : (
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild className="hidden">
+          {getTriggerButton()}
+        </DialogTrigger>
+        <DialogContent className='max-w-md'>
+          <DialogHeader>
+            <DialogTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DialogTitle>
           </DialogHeader>
           <DialogDescription asChild>
             <TodoForm 
               onSubmit={handleSubmit}
-              startTime={startTime}
-              endTime={endTime}
-              onStartTimeChange={handleStartTimeChange}
-              onEndTimeChange={handleEndTimeChange}
               mode={mode}
               todo={todo}
               handleDelete={handleDelete}
               ideas={ideas}
               onIdeaSelect={onIdeaSelect}
               ideaId={ideaId}
+              dict={dict}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+              onStartTimeChange={handleStartTimeChange}
+              onEndTimeChange={handleEndTimeChange}
             />
           </DialogDescription>
         </DialogContent>
@@ -354,65 +465,52 @@ export function TodoCreator({
   }
 
   return mode === 'update' ? (
-    <Swipeable ref={swipeableRef} onSwipe={handleDelete}>
-      <Drawer open={open} onOpenChange={(newOpen) => {
-        const swipeableElement = swipeableRef.current;
-        const isSwiping = swipeableElement?.getAttribute('data-swiping') === 'true';
-        const swipeProgress = parseFloat(swipeableElement?.getAttribute('data-swipe-progress') || '0');
-        if (isSwiping || swipeProgress > 0.2) return;
-        setOpen(newOpen);
-      }}>
-        <DrawerTrigger asChild className="w-full">
-          {getTriggerButton()}
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader className="pt-2">
-            <DrawerTitle>Edit Event</DrawerTitle>
-          </DrawerHeader>
-          <DrawerDescription asChild>
-            <div className="flex flex-col gap-4">
-              {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} mobile={true} />}
-              <TodoForm 
-                onSubmit={handleSubmit}
-                startTime={startTime}
-                endTime={endTime}
-                onStartTimeChange={handleStartTimeChange}
-                onEndTimeChange={handleEndTimeChange}
-                mode={mode}
-                todo={todo}
-                handleDelete={handleDelete}
-                ideas={ideas}
-                onIdeaSelect={onIdeaSelect}
-                ideaId={ideaId}
-                className="p-4"
-              />
-            </div>
-          </DrawerDescription>
-        </DrawerContent>
-      </Drawer>
-    </Swipeable>
-  ) : (
     <Drawer open={open} onOpenChange={(newOpen) => {
-      const swipeableElement = swipeableRef.current;
-      const isSwiping = swipeableElement?.getAttribute('data-swiping') === 'true';
-      const swipeProgress = parseFloat(swipeableElement?.getAttribute('data-swipe-progress') || '0');
-      if (isSwiping || swipeProgress > 0.2) return;
-      setOpen(newOpen);
+      handleOpenChange(newOpen);
     }}>
-      <DrawerTrigger asChild className="w-full">
+      <DrawerTrigger asChild className="hidden">
         {getTriggerButton()}
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="pt-2">
-          <DrawerTitle>Add Event</DrawerTitle>
+          <DrawerTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DrawerTitle>
+        </DrawerHeader>
+        <DrawerDescription asChild>
+          <div className="flex flex-col gap-4">
+            {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} mobile={true} dict={dict} />}
+            <TodoForm 
+              onSubmit={handleSubmit}
+              mode={mode}
+              todo={todo}
+              handleDelete={handleDelete}
+              ideas={ideas}
+              onIdeaSelect={onIdeaSelect}
+              ideaId={ideaId}
+              className="p-4"
+              dict={dict}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+              onStartTimeChange={handleStartTimeChange}
+              onEndTimeChange={handleEndTimeChange}
+            />
+          </div>
+        </DrawerDescription>
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Drawer open={open} onOpenChange={handleOpenChange}>
+      <DrawerTrigger asChild className="hidden">
+        {getTriggerButton()}
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader className="pt-2">
+          <DrawerTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DrawerTitle>
         </DrawerHeader>
         <DrawerDescription asChild>
           <TodoForm 
             onSubmit={handleSubmit}
-            startTime={startTime}
-            endTime={endTime}
-            onStartTimeChange={handleStartTimeChange}
-            onEndTimeChange={handleEndTimeChange}
             mode={mode}
             todo={todo}
             handleDelete={handleDelete}
@@ -420,6 +518,13 @@ export function TodoCreator({
             onIdeaSelect={onIdeaSelect}
             ideaId={ideaId}
             className="p-4"
+            dict={dict}
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={handleStartDateChange}
+            onEndDateChange={handleEndDateChange}
+            onStartTimeChange={handleStartTimeChange}
+            onEndTimeChange={handleEndTimeChange}
           />
         </DrawerDescription>
       </DrawerContent>
@@ -429,30 +534,34 @@ export function TodoCreator({
 
 interface TodoFormProps extends React.ComponentProps<"form"> {
   onSubmit: (formData: any) => void;
-  startTime: { time: string; period: string };
-  endTime: { time: string; period: string };
-  onStartTimeChange: (value: string) => void;
-  onEndTimeChange: (value: string) => void;
   mode: TodoMode;
   todo?: TodoProps;
   handleDelete: () => void;
-  ideas?: IdeaData[];
-  onIdeaSelect?: (idea: IdeaData) => void;
+  ideas?: IdeaWithScripts[];
+  onIdeaSelect?: (idea: IdeaWithScripts) => void;
   ideaId: number;
+  dict: any;
+  startDate: Date;
+  endDate: Date;
+  onStartDateChange: (date: Date | undefined) => void;
+  onEndDateChange: (date: Date | undefined) => void;
+  onStartTimeChange: (time: string) => void;
+  onEndTimeChange: (time: string) => void;
+  className?: string;
 }
 
-const IdeaDatas = ({ ideas, ideaId, mobile=false }: { ideas: IdeaData[] | undefined, ideaId: number, mobile?: boolean }) => {
+const IdeaDatas = ({ ideas, ideaId, mobile=false, dict }: { ideas: IdeaWithScripts[] | undefined, ideaId: number, mobile?: boolean, dict: any }) => {
   return (
     <Card className={`p-4 ${mobile ? 'mx-4' : ''}`}>
       <h3 className="text-md font-semibold">{ideas?.find(idea => idea.id.toString() === ideaId.toString())?.title || 'Not found'}</h3>
       <div className="flex items-center justify-between mt-1 gap-2">
         <Link href={`/ideas/${ideas?.find(idea => idea.id.toString() === ideaId.toString())?.id}`} className="flex items-center gap-2 hover:underline underline-offset-4">
           <Link2 size={16} />
-          <p className="text-sm">View Idea</p>
+          <p className="text-sm">{dict.calendarPage.viewIdea}</p>
         </Link>
         <p className="text-sm text-muted-foreground flex items-center gap-2">
           <CalendarPlus size={16} />
-          {formatDate(ideas?.find(idea => idea.id.toString() === ideaId.toString())?.pub_date || '', 'normal') || 'No description'}
+          {formatDate(ideas?.find(idea => idea.id.toString() === ideaId.toString())?.pub_date || '', 'normal') || dict.calendarPage.noDate}
         </p>
       </div>
     </Card>
@@ -462,60 +571,74 @@ const IdeaDatas = ({ ideas, ideaId, mobile=false }: { ideas: IdeaData[] | undefi
 function TodoForm({ 
   className, 
   onSubmit, 
-  startTime, 
-  endTime, 
-  onStartTimeChange, 
-  onEndTimeChange, 
   mode, 
   todo, 
   handleDelete,
   ideas,
   onIdeaSelect,
-  ideaId
+  ideaId,
+  dict,
+  startDate,
+  endDate,
+  onStartDateChange,
+  onEndDateChange,
+  onStartTimeChange,
+  onEndTimeChange
 }: TodoFormProps) {
   const [formData, setFormData] = useState({
     title: todo?.title || '',
     description: todo?.description || '',
-    priority: todo?.priority || '',
-    status: 'Pending',
-    category: todo?.category || '',
+    priority: todo?.priority || 'medium',
+    status: todo?.status || 'pending',
+    category: todo?.category || 'production',
     editTime: false,
+    idea_id: todo?.idea_id?.toString() || ideaId.toString(),
   })
   const [editTime, setEditTime] = useState(false)
+  
+  // State for popover open status
+  const [startPickerOpen, setStartPickerOpen] = useState(false)
+  const [endPickerOpen, setEndPickerOpen] = useState(false)
 
-  // Sincronizza editTime tra stato locale e formData
-  React.useEffect(() => {
+  // Synchronize editTime between local state and formData
+  useEffect(() => {
     setFormData((prev) => ({ ...prev, editTime }))
   }, [editTime])
+  
+  // Update form when ideaId prop changes (for new todos)
+  useEffect(() => {
+    if (!todo) {
+      setFormData((prev) => ({ ...prev, idea_id: ideaId.toString() }))
+    }
+  }, [ideaId, todo])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     onSubmit(formData)
   }
 
-  function formatTime12h(time: string, period: string) {
-    if (!time) return '';
-    const [h, m] = time.split(':');
-    const hour = String(((parseInt(h) + 11) % 12) + 1).padStart(2, '0');
-    return `${hour}:${m} ${period.toUpperCase()}`;
+  // Handle idea selection
+  const handleIdeaChange = (value: string) => {
+    setFormData({ ...formData, idea_id: value });
+    if (onIdeaSelect && ideas) {
+      const selectedIdea = ideas.find(idea => idea.id.toString() === value);
+      if (selectedIdea) {
+        onIdeaSelect(selectedIdea);
+      }
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className={cn('flex flex-col gap-4', className)}>
-      {mode === 'create' && ideas && onIdeaSelect && (
+      {ideas && (
         <div className='flex flex-col gap-2'>
-          <Label>Production</Label>
+          <Label>{dict.calendarPage.production}</Label>
           <Select 
-            value={ideaId.toString()} 
-            onValueChange={(value) => {
-              const selectedIdea = ideas.find(idea => idea.id.toString() === value)
-              if (selectedIdea) {
-                onIdeaSelect(selectedIdea)
-              }
-            }}
+            value={formData.idea_id} 
+            onValueChange={handleIdeaChange}
           >
             <SelectTrigger className='w-full'>
-              <SelectValue placeholder='Select a production' className='w-full' />
+              <SelectValue placeholder={dict.calendarPage.productionPlaceholder} className='w-full' />
             </SelectTrigger>
             <SelectContent>
               {ideas.map((idea) => (
@@ -528,7 +651,7 @@ function TodoForm({
         </div>
       )}
       <div className='flex flex-col gap-2'>
-        <Label>Title</Label>
+        <Label>{dict.calendarPage.formTitle}</Label>
         <Input 
           type="text" 
           value={formData.title} 
@@ -536,100 +659,145 @@ function TodoForm({
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <Label>Description</Label>
+        <Label>{dict.calendarPage.formDescription}</Label>
         <Textarea 
           value={formData.description} 
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
         />
       </div>
       <div className='flex flex-col gap-2'>
-        <Label>Time</Label>
+        <Label>{dict.calendarPage.formTime}</Label>
         <div className="flex flex-col border rounded-3xl p-4 bg-card w-full">
           <div className="flex items-center gap-2">
             {mode === 'update' && (
               <div className="flex-1 mb-4">
-                <Label className="text-xs text-muted-foreground">Current Time</Label>
-                <p className="text-sm">{formatStringDate(todo?.start_time || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {formatStringDate(todo?.end_time || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <Label className="text-xs text-muted-foreground">{dict.calendarPage.formCurrentTime}</Label>
+                <p className="text-sm border w-fit py-1 px-2 rounded-md">
+                  {todo?.start_date && format(new Date(todo.start_date), 'MMM dd, yyyy HH:mm')} - 
+                  {todo?.end_date && format(new Date(todo.end_date), 'MMM dd, yyyy HH:mm')}
+                </p>
               </div>
             )}
             {mode === 'update' && (
               <div className="flex items-center gap-2">
+                <Label htmlFor="edit-time" className="text-sm">{dict.calendarPage.formEditTime}</Label>
                 <Checkbox 
                   id="edit-time" 
                   checked={editTime}
                   onCheckedChange={(checked) => setEditTime(checked as boolean)}
                 />
-                <Label htmlFor="edit-time" className="text-sm">Edit Time</Label>
               </div>
             )}
           </div>
+          
           {(mode === 'create' || editTime) && (
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <Label className="text-xs text-muted-foreground">Start</Label>
-                <Select 
-                  value={`${startTime.time}|${startTime.period}`} 
-                  onValueChange={onStartTimeChange}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <SelectValue placeholder="Start time">
-                        {startTime.time && startTime.period
-                          ? formatTime12h(startTime.time, startTime.period)
-                          : 'Start Time'}
-                      </SelectValue>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className='max-h-[400px] overflow-y-auto'>
-                    {TIME_SLOTS.map((slot) => (
-                      <SelectItem 
-                        key={`start-${slot.time}-${slot.period}`} 
-                        value={`${slot.time}|${slot.period}`}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">{slot.label}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {slot.time} {slot.period.toUpperCase()}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-4">
+              {/* Start Date & Time */}
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">{dict.calendarPage.formStartTime}</Label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {/* Date Picker */}
+                  <div className="z-10 w-full sm:w-auto">
+                    <DatePickerWithPrevent
+                      selected={startDate}
+                      open={startPickerOpen}
+                      onOpenChange={setStartPickerOpen}
+                      onSelect={onStartDateChange}
+                    />
+                  </div>
+                  
+                  {/* Time Picker */}
+                  <Select
+                    value={format(startDate, 'HH:mm')}
+                    onValueChange={onStartTimeChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <SelectValue>
+                          {format(startDate, 'HH:mm')}
+                        </SelectValue>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="h-80">
+                      <ScrollArea className="h-80">
+                        {TIME_SLOTS.map((slot) => (
+                          <SelectItem
+                            key={`start-${slot.time}`}
+                            value={slot.time}
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{slot.label}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(
+                                  new Date().setHours(
+                                    parseInt(slot.time.split(':')[0]),
+                                    parseInt(slot.time.split(':')[1])
+                                  ),
+                                  'hh:mm a'
+                                )}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </ScrollArea>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Label className="text-xs text-muted-foreground">End</Label>
-                <Select 
-                  value={`${endTime.time}|${endTime.period}`} 
-                  onValueChange={onEndTimeChange}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <SelectValue placeholder="End time">
-                        {endTime.time && endTime.period
-                          ? formatTime12h(endTime.time, endTime.period)
-                          : 'End Time'}
-                      </SelectValue>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className='max-h-[400px] overflow-y-auto'>
-                    {TIME_SLOTS.map((slot) => (
-                      <SelectItem 
-                        key={`end-${slot.time}-${slot.period}`} 
-                        value={`${slot.time}|${slot.period}`}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">{slot.label}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {slot.time} {slot.period.toUpperCase()}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              
+              {/* End Date & Time */}
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">{dict.calendarPage.formEndTime}</Label>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  {/* Date Picker */}
+                  <div className="relative z-10 w-full sm:w-auto">
+                    <DatePickerWithPrevent
+                      selected={endDate}
+                      open={endPickerOpen}
+                      onOpenChange={setEndPickerOpen}
+                      onSelect={onEndDateChange}
+                    />
+                  </div>
+                  
+                  {/* Time Picker */}
+                  <Select
+                    value={format(endDate, 'HH:mm')}
+                    onValueChange={onEndTimeChange}
+                  >
+                    <SelectTrigger className="w-full">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4" />
+                        <SelectValue>
+                          {format(endDate, 'HH:mm')}
+                        </SelectValue>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="h-80">
+                      <ScrollArea className="h-80">
+                        {TIME_SLOTS.map((slot) => (
+                          <SelectItem
+                            key={`end-${slot.time}`}
+                            value={slot.time}
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium">{slot.label}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(
+                                  new Date().setHours(
+                                    parseInt(slot.time.split(':')[0]),
+                                    parseInt(slot.time.split(':')[1])
+                                  ),
+                                  'hh:mm a'
+                                )}
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </ScrollArea>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           )}
@@ -637,13 +805,13 @@ function TodoForm({
       </div>
       <div className='flex items-center gap-4'>
         <div className='flex flex-1 flex-col gap-2'>
-          <Label>Priority</Label>
+          <Label>{dict.calendarPage.formPriority}</Label>
           <Select 
             value={formData.priority} 
             onValueChange={(value) => setFormData({ ...formData, priority: value })}
           >
             <SelectTrigger className='w-full'>
-              <SelectValue placeholder='Priority' className='w-full' />
+              <SelectValue placeholder={dict.calendarPage.formPriorityPlaceholder} className='w-full' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='low'>Low</SelectItem>
@@ -653,13 +821,13 @@ function TodoForm({
           </Select>
         </div>
         <div className='flex flex-1 flex-col gap-2'>
-          <Label>Category</Label>
+          <Label>{dict.calendarPage.formCategory}</Label>
           <Select 
             value={formData.category} 
             onValueChange={(value) => setFormData({ ...formData, category: value })}
           >
             <SelectTrigger className='w-full'>
-              <SelectValue placeholder='Category' className='w-full' />
+              <SelectValue placeholder={dict.calendarPage.formCategoryPlaceholder} className='w-full' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='production'>Production</SelectItem>
@@ -671,10 +839,81 @@ function TodoForm({
         </div>
       </div>
       <div className="flex items-center ml-auto gap-2">
+        {mode === 'update' && (
+          <Button variant='destructive' className='w-fit ml-auto' onClick={handleDelete}>
+            <Trash2 className='h-4 w-4' />
+          </Button>
+        )}
         <Button type='submit' variant='black' className='w-fit ml-auto'>
-          {mode === 'update' ? 'Update Event' : 'Add Event'}
+          {mode === 'update' ? dict.calendarPage.formUpdate : dict.calendarPage.formSubmit}
         </Button>
       </div>
     </form>
   )
 }
+
+// Add this component at the end of the file
+type DatePickerWithPreventProps = {
+  selected: Date;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSelect: (date: Date | undefined) => void;
+};
+
+const DatePickerWithPrevent = ({ 
+  selected, 
+  open, 
+  onOpenChange, 
+  onSelect 
+}: DatePickerWithPreventProps) => {
+  // Handler that ensures the date is properly propagated
+  const handleSelectDate = (date: Date | undefined) => {
+    if (date) {
+      // Create a new date instance to avoid reference issues
+      const newDate = new Date(date);
+      onSelect(newDate);
+      // Close the calendar after selection
+      onOpenChange(false);
+    }
+  };
+
+  return (
+    <div className="relative w-full">
+      <Button
+        type="button"
+        variant="outline" 
+        className={cn(
+          "w-full justify-start text-left font-normal py-5",
+          "cursor-pointer hover:bg-muted/50 active:scale-[0.98] transition-all",
+          "rounded-lg border border-input shadow-sm",
+          "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+        )}
+        onClick={() => onOpenChange(!open)}
+      >
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <CalendarIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">{format(selected, 'MMM dd, yyyy')}</span>
+          </div>
+          <ChevronDown className={cn(
+            "h-4 w-4 text-muted-foreground transition-transform",
+            open && "rotate-180"
+          )} />
+        </div>
+      </Button>
+      {open && (
+        <div className="absolute top-full left-0 mt-2 z-50">
+          <div className="rounded-lg border bg-card p-2 shadow-lg backdrop-blur-sm">
+            <Calendar
+              mode="single"
+              selected={selected}
+              onSelect={handleSelectDate}
+              initialFocus
+              className="rounded-md"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};

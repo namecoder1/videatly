@@ -7,7 +7,7 @@ import logo from '@/assets/logo.png'
 import tobi from '@/assets/tobi-logo.png'
 import { handleScrollToElement } from '@/lib/utils'
 
-const Footer = () => {
+const Footer = ({ dict }: { dict: any }) => {
 	const year = new Date().getFullYear()
 	
 	return (
@@ -20,26 +20,26 @@ const Footer = () => {
 							<h1 className="text-3xl font-black">Videatly</h1>
 						</Link>
 						<div className="flex items-center gap-4 justify-center sm:justify-start">
-							<p className='text-sm text-gray-300 max-w-[300px]'>Create, Analyze and Grow your YouTube channel with the Power of AI</p>
+							<p className='text-sm text-gray-300 max-w-[300px]'>{dict.footer.description}</p>
 						</div>
 						<div className='text-center sm:text-left'>
-							<p className='text-xs text-gray-400'>© {year} Videatly. All rights reserved.</p>
+							<p className='text-xs text-gray-400'>© {year} Videatly. {dict.footer.copyright}</p>
 						</div>
 					</div>
 					<div className='lg:col-span-2 text-center sm:text-left'>
 						<h2 className='text-lg font-bold mb-4'>LINKS</h2>
 						<ul className='space-y-3'>
 							<li>
-								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>Home</Link>
+								<Link href="/" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.links[0]}</Link>
 							</li>
 							<li>
-								<Link href="mailto:support@videatly.ai" className='text-gray-300 hover:text-white transition-colors'>Support</Link>
+								<Link href="mailto:support@videatly.ai" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.links[1]}</Link>
 							</li>
 							<li>
 								<Link onClick={(e) => handleScrollToElement(e, 'pricing')} href="#pricing" className='text-gray-300 hover:text-white transition-colors'>Pricing</Link>
 							</li>
 							<li>
-								<Link href="/documentation" className='text-gray-300 hover:text-white transition-colors'>Documentation</Link>
+								<Link href="/documentation" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.links[3]}</Link>
 							</li>
 						</ul>
 					</div>
@@ -47,13 +47,13 @@ const Footer = () => {
 						<h2 className='text-lg font-bold mb-4'>LEGAL</h2>
 						<ul className='space-y-3'>
 							<li>
-								<Link href="/privacy-policy" className='text-gray-300 hover:text-white transition-colors'>Privacy Policy</Link>
+								<Link href="/privacy-policy" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.legal[0]}</Link>
 							</li>
 							<li>
-								<Link href="/terms-of-service" className='text-gray-300 hover:text-white transition-colors'>Terms of Service</Link>
+								<Link href="/terms-of-service" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.legal[1]}</Link>
 							</li>
 							<li>
-								<Link href="/cookie-policy" className='text-gray-300 hover:text-white transition-colors'>Cookie Policy</Link>
+								<Link href="/cookie-policy" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.legal[2]}</Link>
 							</li>
 						</ul>
 					</div>
@@ -61,10 +61,10 @@ const Footer = () => {
 						<h2 className='text-lg font-bold mb-4'>MORE</h2>
 						<ul className='space-y-3'>
 							<li>
-								<Link href="/about-us" className='text-gray-300 hover:text-white transition-colors'>About Us</Link>
+								<Link href="/about-us" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.more[0]}</Link>
 							</li>
 							<li>
-								<Link href="/contact-us" className='text-gray-300 hover:text-white transition-colors'>Contact Us</Link>
+								<Link href="/contact-us" className='text-gray-300 hover:text-white transition-colors'>{dict.footer.more[1]}</Link>
 							</li>
 							<li>
 								<Link href="https://www.instagram.com/videatly/" target='_blank' className='text-gray-300 hover:text-white transition-colors'>Instagram</Link>
@@ -79,7 +79,7 @@ const Footer = () => {
 					<p className='text-sm text-gray-300 flex flex-col sm:flex-row items-center gap-2 justify-center sm:justify-start text-center sm:text-left'>
 						<Image src={tobi} alt='Tobi' width={33} height={33} className='rounded-full' />
 						<span>
-							Hey everybody! I&apos;m <Link href='https://tob.codes' target='_blank' className='underline underline-offset-2 hover:text-white transition-colors'>Tobi</Link> and I&apos;m the creator of Videatly. You can find more about me on my website.
+							{dict.footer.tobi1} <Link href='https://tob.codes' target='_blank' className='underline underline-offset-2 hover:text-white transition-colors'>Tobi</Link> {dict.footer.tobi2}
 						</span>
 					</p>
 				</div>

@@ -384,7 +384,24 @@
     "formCategoryPlaceholder": "Select a category",
     "formSubmit": "Add Event",
     "formUpdate": "Update Event",
-    "noEvents": "No events scheduled for this day"
+    "noEvents": "No events scheduled for this day",
+    "modes": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "days": {
+      "Mon": "Monday",
+      "Tue": "Tuesday",
+      "Wed": "Wednesday",
+      "Thu": "Thursday",
+      "Fri": "Friday",
+      "Sat": "Saturday",
+      "Sun": "Sunday"
+    },
+    "more": "more",
+    "tasks": "Tasks",
+    "noTasks": "No tasks scheduled for this day"
   },
   "ideasPage": {
     "title": "Ideas",

@@ -11,6 +11,7 @@ export type CalendarProps = {
   onTodoUpdate?: () => Promise<void>
   ideas?: any[]
   daysWithTodos?: string[]
+  dict: any
 }
 
 export type CalendarContextType = CalendarProps & {

@@ -8,7 +8,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 export default function CalendarHeaderActionsMode() {
-  const { mode, setMode } = useCalendarContext()
+  const { mode, setMode, dict } = useCalendarContext()
 
   return (
     <LayoutGroup>
@@ -114,7 +114,7 @@ export default function CalendarHeaderActionsMode() {
                           },
                         }}
                       >
-                        {modeValue.charAt(0).toUpperCase() + modeValue.slice(1)}
+                        {dict.calendarPage.modes[modeValue]}
                       </motion.p>
                     )}
                   </AnimatePresence>

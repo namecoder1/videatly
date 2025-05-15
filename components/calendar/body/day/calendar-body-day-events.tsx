@@ -3,7 +3,7 @@ import { format, isSameDay } from 'date-fns'
 import { TodoProps } from '@/types/types'
 
 export default function CalendarBodyDayEvents() {
-  const { events, date, setManageEventDialogOpen, setSelectedEvent } =
+  const { events, date, setManageEventDialogOpen, setSelectedEvent, dict } =
     useCalendarContext()
 
   // Filter events for the selected day
@@ -42,7 +42,7 @@ export default function CalendarBodyDayEvents() {
 
   return !!dayEvents.length ? (
     <div className="flex flex-col gap-2 bg-card pl-1">
-      <p className="font-medium p-2 pb-0 font-heading">Tasks ({dayEvents.length})</p>
+      <p className="font-medium p-2 pb-0 font-heading">{dict.calendarPage.tasks} ({dayEvents.length})</p>
       <div className="flex flex-col gap-2">
         {dayEvents.map((todo: TodoProps) => (
           <div
@@ -74,6 +74,6 @@ export default function CalendarBodyDayEvents() {
       </div>
     </div>
   ) : (
-    <div className="p-2 text-muted-foreground">No tasks today...</div>
+    <div className="p-2 text-muted-foreground">{dict.calendarPage.noTasks}</div>
   )
 }

@@ -26,35 +26,29 @@ import { CalendarPlus, Clock, Link2, Calendar as CalendarIcon, ChevronDown, Tras
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "./textarea"
 import { createTodo, deleteTodo, updateTodo } from "@/app/[lang]/(protected)/production/[id]/actions"
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { TodoProps, IdeaData, ScriptData } from "@/types/types"
+import { TodoProps, IdeaWithScripts, TodoMode, TodoFormProps } from "@/types/types"
 import { Checkbox } from "./checkbox"
-import { formatStringDate } from "@/lib/utils"
 import TodoLittle from "../blocks/(protected)/todo-little"
 import { Card } from "./card"
 import Link from "next/link"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Badge } from "@/components/ui/badge"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
-// Import the IdeaWithScripts interface
-interface IdeaWithScripts extends IdeaData {
-  scripts: ScriptData[];
-}
+
 
 // Generate time slots for every 30 minutes
-const generateTimeSlots = () => {
+const generateTimeSlots = (dict: any) => {
   const slots = [];
-  for (let hour = 0; hour < 24; hour++) {
+  for (let hour = 5; hour < 24; hour++) {
     const period = hour < 12 ? 'am' : 'pm';
     const displayHour = hour % 12 || 12;
     
     // Add slots for :00 and :30
     slots.push({
-      label: getTimeLabel(hour),
+      label: getTimeLabel(hour, dict),
       time: `${hour.toString().padStart(2, '0')}:00`,
       period,
       displayHour,
@@ -62,7 +56,7 @@ const generateTimeSlots = () => {
     });
     
     slots.push({
-      label: getTimeLabel(hour),
+      label: getTimeLabel(hour, dict),
       time: `${hour.toString().padStart(2, '0')}:30`,
       period,
       displayHour,
@@ -73,20 +67,19 @@ const generateTimeSlots = () => {
 };
 
 // Helper to get time of day label
-const getTimeLabel = (hour: number) => {
-  if (hour >= 5 && hour < 8) return 'Early Morning';
-  if (hour >= 8 && hour < 10) return 'Morning';
-  if (hour >= 10 && hour < 12) return 'Late Morning';
-  if (hour >= 12 && hour < 13) return 'Noon';
-  if (hour >= 13 && hour < 16) return 'Afternoon';
-  if (hour >= 16 && hour < 19) return 'Late Afternoon';
-  if (hour >= 19 && hour < 22) return 'Evening';
-  return 'Night';
+const getTimeLabel = (hour: number, dict: any) => {
+  if (hour >= 5 && hour < 8) return dict.calendarPage.hours[0];
+  if (hour >= 8 && hour < 10) return dict.calendarPage.hours[1];
+  if (hour >= 10 && hour < 12) return dict.calendarPage.hours[2];
+  if (hour >= 12 && hour < 13) return dict.calendarPage.hours[3];
+  if (hour >= 13 && hour < 16) return dict.calendarPage.hours[4];
+  if (hour >= 16 && hour < 19) return dict.calendarPage.hours[5];
+  if (hour >= 19 && hour < 22) return dict.calendarPage.hours[6];
+  return dict.calendarPage.hours[7];
 };
 
-const TIME_SLOTS = generateTimeSlots();
 
-type TodoMode = 'create' | 'update'
+
 
 export function TodoCreator({ 
   className, 
@@ -392,7 +385,7 @@ export function TodoCreator({
 
     return (
       <Button className={cn('w-fit hidden', className)} variant="black" size="sm" >
-        <CalendarPlus className="h-4 w-4 mr-2" /> {dict?.calendarPage?.addEvent || "Add Event"}
+        <CalendarPlus className="h-4 w-4 mr-2" /> {dict.calendarPage.addEvent}
       </Button>
     )
   }
@@ -532,23 +525,7 @@ export function TodoCreator({
   )
 }
 
-interface TodoFormProps extends React.ComponentProps<"form"> {
-  onSubmit: (formData: any) => void;
-  mode: TodoMode;
-  todo?: TodoProps;
-  handleDelete: () => void;
-  ideas?: IdeaWithScripts[];
-  onIdeaSelect?: (idea: IdeaWithScripts) => void;
-  ideaId: number;
-  dict: any;
-  startDate: Date;
-  endDate: Date;
-  onStartDateChange: (date: Date | undefined) => void;
-  onEndDateChange: (date: Date | undefined) => void;
-  onStartTimeChange: (time: string) => void;
-  onEndTimeChange: (time: string) => void;
-  className?: string;
-}
+
 
 const IdeaDatas = ({ ideas, ideaId, mobile=false, dict }: { ideas: IdeaWithScripts[] | undefined, ideaId: number, mobile?: boolean, dict: any }) => {
   return (
@@ -595,6 +572,8 @@ function TodoForm({
     idea_id: todo?.idea_id?.toString() || ideaId.toString(),
   })
   const [editTime, setEditTime] = useState(false)
+  const TIME_SLOTS = generateTimeSlots(dict);
+
   
   // State for popover open status
   const [startPickerOpen, setStartPickerOpen] = useState(false)
@@ -697,7 +676,7 @@ function TodoForm({
                 <Label className="text-xs text-muted-foreground">{dict.calendarPage.formStartTime}</Label>
                 <div className="flex flex-col sm:flex-row gap-2">
                   {/* Date Picker */}
-                  <div className="z-10 w-full sm:w-auto">
+                  <div className="relative z-10 w-full sm:w-auto">
                     <DatePickerWithPrevent
                       selected={startDate}
                       open={startPickerOpen}
@@ -878,14 +857,14 @@ const DatePickerWithPrevent = ({
   };
 
   return (
-    <div className="relative w-full">
+    <div className=" w-full">
       <Button
         type="button"
         variant="outline" 
         className={cn(
           "w-full justify-start text-left font-normal py-5",
           "cursor-pointer hover:bg-muted/50 active:scale-[0.98] transition-all",
-          "rounded-lg border border-input shadow-sm",
+          "border border-input shadow-sm",
           "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
         )}
         onClick={() => onOpenChange(!open)}
@@ -902,14 +881,13 @@ const DatePickerWithPrevent = ({
         </div>
       </Button>
       {open && (
-        <div className="absolute top-full left-0 mt-2 z-50">
-          <div className="rounded-lg border bg-card p-2 shadow-lg backdrop-blur-sm">
+        <div className="absolute bottom-full left-0 mt-2 z-50">
+          <div className="rounded-3xl border bg-card p-2 shadow-lg backdrop-blur-sm">
             <Calendar
               mode="single"
               selected={selected}
               onSelect={handleSelectDate}
               initialFocus
-              className="rounded-md"
             />
           </div>
         </div>

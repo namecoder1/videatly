@@ -136,3 +136,27 @@ export interface TodoProps {
   category: string;
   created_at?: string;
 }
+
+export interface IdeaWithScripts extends IdeaData {
+  scripts: ScriptData[];
+}
+
+export type TodoMode = 'create' | 'update'
+
+export interface TodoFormProps extends React.ComponentProps<"form"> {
+  onSubmit: (formData: any) => void;
+  mode: TodoMode;
+  todo?: TodoProps;
+  handleDelete: () => void;
+  ideas?: IdeaWithScripts[];
+  onIdeaSelect?: (idea: IdeaWithScripts) => void;
+  ideaId: number;
+  dict: any;
+  startDate: Date;
+  endDate: Date;
+  onStartDateChange: (date: Date | undefined) => void;
+  onEndDateChange: (date: Date | undefined) => void;
+  onStartTimeChange: (time: string) => void;
+  onEndTimeChange: (time: string) => void;
+  className?: string;
+}

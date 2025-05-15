@@ -11,7 +11,7 @@ export interface ProcessedEvent extends TodoProps {
 }
 
 export default function CalendarBodyDayContent({ date }: { date: Date }) {
-  const { events } = useCalendarContext()
+  const { events, dict } = useCalendarContext()
 
   const processedDayTodos: ProcessedEvent[] = events
     .filter((todo) => {
@@ -59,7 +59,7 @@ export default function CalendarBodyDayContent({ date }: { date: Date }) {
 
   return (
     <div className="flex flex-col flex-grow bg-card">
-      <CalendarBodyHeader date={date} />
+      <CalendarBodyHeader date={date} dict={dict} />
 
       <div className="flex-1 relative">
         {hours.map((hour) => (

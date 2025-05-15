@@ -233,7 +233,7 @@ const SettingsPage = () => {
 							</CardTitle>
 							<CardDescription>
 								<span>{dict.settingsPage.fields.userPlan.span}</span>
-								<span className='font-semibold text-green-500 underline underline-offset-2'>{userProfile?.subscription === 'pro' ? '$15' : userProfile?.subscription === 'ultra' ? '$30' : '$0'} / month</span>
+								<span className='font-semibold text-green-500 underline underline-offset-2'>{userProfile?.subscription === 'pro' ? '$15' : userProfile?.subscription === 'ultra' ? '$30' : '$0'} / {dict.settingsPage.fields.userPlan.month}</span>
 							</CardDescription>
 						</CardHeader>
 						<CardContent>

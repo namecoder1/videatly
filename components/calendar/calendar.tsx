@@ -18,6 +18,7 @@ export default function Calendar({
   onTodoUpdate,
   ideas = [],
   daysWithTodos = [],
+  dict,
 }: CalendarProps) {
   return (
     <CalendarProvider
@@ -31,6 +32,7 @@ export default function Calendar({
       onTodoUpdate={onTodoUpdate}
       ideas={ideas}
       daysWithTodos={daysWithTodos}
+      dict={dict}
     >
       <CalendarHeader>
         <CalendarHeaderDate />

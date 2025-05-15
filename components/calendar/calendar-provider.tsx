@@ -16,6 +16,7 @@ export default function CalendarProvider({
   ideas = [],
   daysWithTodos = [],
   children,
+  dict,
 }: {
   events: TodoProps[]
   setEvents: (events: TodoProps[]) => void
@@ -28,6 +29,7 @@ export default function CalendarProvider({
   ideas?: any[]
   daysWithTodos?: string[]
   children: React.ReactNode
+  dict: any
 }) {
   const [newEventDialogOpen, setNewEventDialogOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<TodoProps | null>(null)
@@ -38,45 +40,6 @@ export default function CalendarProvider({
   const defaultScriptId = ideas && ideas.length > 0 && ideas[0].scripts && ideas[0].scripts.length > 0 
     ? ideas[0].scripts[0].id : 0
   const userId = ideas && ideas.length > 0 ? ideas[0].user_id : ''
-
-  // Get dictionary for translations (this might need adjusting based on your app structure)
-  const dict = {
-    calendarPage: {
-      addEvent: "Add Event",
-      editEvent: "Edit Event",
-      toast: {
-        fillFields: ["Please fill in all fields", "All fields are required"],
-        creationSuccess: ["Success", "Todo created successfully"],
-        updateSuccess: ["Success", "Todo updated successfully"],
-        deleteSuccess: ["Success", "Todo deleted successfully"],
-        creationError: ["Error", "Failed to create todo"],
-        updateError: ["Error", "Failed to update todo"],
-        deleteError: ["Error", "Failed to delete todo"],
-        randomError: ["Error", "An error occurred"],
-        invalidDateRange: ["Invalid date range", "End date cannot be before start date"],
-        invalidTimeRange: ["Invalid time range", "End time must be after start time"]
-      },
-      formTitle: "Title",
-      formDescription: "Description",
-      formTime: "Time",
-      formCurrentTime: "Current Time",
-      formEditTime: "Edit Time",
-      formStartTime: "Start Time",
-      formEndTime: "End Time", 
-      formStartTimePlaceholder: "Select start time",
-      formEndTimePlaceholder: "Select end time",
-      formPriority: "Priority",
-      formPriorityPlaceholder: "Select priority",
-      formCategory: "Category",
-      formCategoryPlaceholder: "Select category",
-      formSubmit: "Submit",
-      formUpdate: "Update",
-      production: "Production",
-      productionPlaceholder: "Select production",
-      viewIdea: "View Idea",
-      noDate: "No date"
-    }
-  }
 
   // Handle closing todo creator when done
   const handleTodoUpdate = async () => {
@@ -106,6 +69,7 @@ export default function CalendarProvider({
         onTodoUpdate,
         ideas,
         daysWithTodos,
+        dict,
       }}
     >
       {/* TodoCreator for creating new events */}

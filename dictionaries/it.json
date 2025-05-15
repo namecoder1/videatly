@@ -231,10 +231,10 @@
     "title": "Impostazioni",
     "fields": {
       "languagePicker": {
-      "language": "Lingua",
-      "languageDescription": "Abbiamo bisogno di conoscere la tua lingua per personalizzare la tua esperienza con l'app e le funzionalità dell'IA.",
-      "languagePlaceholder": "Seleziona lingua",
-      "languageSearchPlaceholder": "Cerca lingua..."  
+        "language": "Lingua",
+        "languageDescription": "Abbiamo bisogno di conoscere la tua lingua per personalizzare la tua esperienza con l'app e le funzionalità dell'IA.",
+        "languagePlaceholder": "Seleziona lingua",
+        "languageSearchPlaceholder": "Cerca lingua..."  
       },
       "personalInfo": {
         "title": "Informazioni personali",
@@ -248,7 +248,7 @@
       "userPlan": {
         "description1": "Non memorizziamo le tue informazioni di pagamento. Tutti i pagamenti vengono elaborati da ",
         "description2": ". Clicca sul pulsante qui sotto per essere reindirizzato alla pagina di pagamento.",
-        "span": "Stai pagando a noi: ",
+        "span": "Ci stai pagando: ",
         "month": "mese",
         "button": "Impostazioni del piano"
       },
@@ -321,7 +321,7 @@
     "title": "Dashboard"
   },
   "calendarPage": {
-    "locale": "it-IT",
+    "locale": "it",
     "title": "Calendario",
     "toast": {
       "fillFields": [
@@ -384,7 +384,35 @@
     "formCategoryPlaceholder": "Seleziona una categoria",
     "formSubmit": "Crea",
     "formUpdate": "Aggiorna",
-    "noEvents": "Nessun evento programmato per questa data"
+    "noEvents": "Nessun evento programmato per questa data",
+    "modes": {
+      "day": "Giorno",
+      "week": "Settimana",
+      "month": "Mese"
+    },
+    "more": "altri",
+    "days": {
+      "Mon": "Lunedì",
+      "Tue": "Martedì",
+      "Wed": "Mercoledì",
+      "Thu": "Giovedì",
+      "Fri": "Venerdì",
+      "Sat": "Sabato",
+      "Sun": "Domenica"
+    },
+    "hours": [
+      "Mattina Preto",
+      "Mattina",
+      "Tarda Mattina",
+      "Pranzo",
+      "Pomeriggio",
+      "Tardo Pomeriggio",
+      "Cena",
+      "Sera",
+      "Notte"
+    ],
+    "noTasks": "Nessuna attività programmata per questa data",
+    "tasks": "Attività"
   },
   "ideasPage": {
     "title": "Idee",

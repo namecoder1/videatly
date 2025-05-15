@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import CustomIcon from '@/components/ui/custom-icon'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import Loader from '@/components/blocks/loader'
+import { useDictionary } from '@/app/context/dictionary-context'
 
 const CalendarPage = () => {
 	const [ideas, setIdeas] = useState<any[]>([])
@@ -16,6 +17,7 @@ const CalendarPage = () => {
 	const [mode, setMode] = useState<Mode>('month')
 	const [date, setDate] = useState<Date>(new Date())
 	const [daysWithTodos, setDaysWithTodos] = useState<string[]>([])
+  const dict = useDictionary()
 
 	// Fetch data from Supabase
   useEffect(() => {
@@ -138,7 +140,7 @@ const CalendarPage = () => {
       <div className='flex flex-col'>
         <div className='flex items-center gap-3'>
           <CustomIcon icon={<CalendarIcon />} color='red' />
-          <h1 className='text-lg sm:text-2xl md:text-3xl font-bold tracking-tight mr-16'>Calendar</h1>
+          <h1 className='text-lg sm:text-2xl md:text-3xl font-bold tracking-tight mr-16'>{dict.calendarPage.title}</h1>
         </div>
         <Separator className='my-2' />
       </div>
@@ -154,6 +156,7 @@ const CalendarPage = () => {
           onTodoUpdate={handleTodoUpdate}
           ideas={ideas}
           daysWithTodos={daysWithTodos}
+          dict={dict}
         />
     </section>
 	)

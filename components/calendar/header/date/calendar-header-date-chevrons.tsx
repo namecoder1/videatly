@@ -10,9 +10,10 @@ import {
   subMonths,
   subWeeks,
 } from 'date-fns'
+import { formatDateWithLocale } from '@/lib/utils'
 
 export default function CalendarHeaderDateChevrons() {
-  const { mode, date, setDate } = useCalendarContext()
+  const { mode, date, setDate, dict } = useCalendarContext()
 
   function handleDateBackward() {
     switch (mode) {
@@ -53,7 +54,7 @@ export default function CalendarHeaderDateChevrons() {
       </Button>
 
       <span className="min-w-[140px] text-center font-medium">
-        {format(date, 'MMMM d, yyyy')}
+        {formatDateWithLocale(date, 'normal', dict.calendarPage.locale)} 
       </span>
 
       <Button

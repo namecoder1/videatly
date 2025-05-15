@@ -90,7 +90,8 @@
         "100.000 tokens video",
         "200.000 tokens script",
         "Análisis avanzado",
-        "Soporte prioritario"
+        "Soporte prioritario",
+        "Generador de thumbnails"
       ],
       "action": "Comenzar ahora"
     }
@@ -108,8 +109,300 @@
     "q5": "¿Puedo cancelar mi suscripción en cualquier momento?",
     "a5": "Sí, puedes cancelar tu suscripción en cualquier momento. No hay cargos ocultos y no se te cobrará por el mes en curso. Simplemente cierra tu cuenta en la sección de 'Configuración' y sigue las instrucciones para cancelar.",
     "q6": "¿Qué pasa si tengo más preguntas?",
-    "a6": "Si tienes más preguntas, no dudes en contactarnos a través de nuestro formulario de contacto o nuestro correo electrónico de soporte. Estamos aquí para ayudarte en lo que necesited."
+    "a6": "Si tienes más preguntas, no dudes en contactarnos a través de nuestro formulario de contacto o nuestro correo electrónico de soporte. Estamos aquí para ayudarte en lo que necesited.",
+    "q7": "¿Ofrece soporte?",
+    "a7": "Sí, ofrecemos soporte dedicado a través de nuestro centro de atención al cliente y correo electrónico. Nuestro equipo responde generalmente en menos de 24 horas para cualquier pregunta o preocupación."
   },  
+  "mainSidebar": {
+    "manage": {
+      "title": "Gestionar",
+      "label1": "Dashboard",
+      "label2": "Análisis",
+      "label3": "Calendario"
+    },
+    "create": {
+      "title": "Crear",
+      "label1": [
+        "Ideas",
+        "Crear Idea",
+        "Tus Ideas"
+      ],
+      "label2": "Script",
+      "label3": "Producción"
+    },
+    "settings": {
+      "title": "Configuración",
+      "label1": "Tienda",
+      "label2": "Docs"
+    }
+  },
+  "docSidebar": {
+    "description": "Modifica esta página en ",
+    "documentation": [
+      "Inicio",
+      "Introducción",
+      "Uso",
+      "Configuración",
+      "Caso de uso"
+    ],
+    "specific": [
+      "Ideas",
+      "Script",
+      "Token & Planes"
+    ],
+    "platform": [
+      "Guía de la plataforma",
+      "Guía de ideas",
+      "Guía de scripts"
+    ]
+  },
+  "userInfo": {
+    "profile": "Perfil",
+    "profileDescription": "Gestiona tus ajustes",
+    "settings": "Configuración",
+    "settingsDescription": "Personaliza tu experiencia"
+  },
+  "profilePage": {
+    "title": "Perfil",
+    "toast": {
+      "fetchError": [
+        "Error al cargar los datos del usuario",
+        "Ocurrió un error al cargar los datos del usuario. Por favor, inténtalo de nuevo más tarde."
+      ],
+      "noChanges": [
+        "No se encontraron cambios",
+        "No se encontraron cambios en los datos del usuario"
+      ],
+      "updateSuccess": [
+        "Datos actualizados con éxito",
+        "Los datos del usuario se han actualizado con éxito"
+      ],
+      "updateError": [
+        "Error al actualizar los datos",
+        "Ocurrió un error al actualizar los datos del usuario. Por favor, inténtalo de nuevo más tarde."
+      ]
+    },
+    "youtubeProfileSettings": {
+      "title": "Configuración del perfil de YouTube",
+      "yt_username": "Nombre de usuario de YouTube",
+      "yt_usernamePlaceholder": "Ingresa tu nombre de usuario de YouTube",
+      "contentStyle": "Estilo de contenido",
+      "contentStylePlaceholder": "Selecciona un estilo",
+      "contentStyleSearchPlaceholder": "Buscar un estilo",
+      "videoLength": "Longitud del video",
+      "videoLengthPlaceholder": "Selecciona una longitud",
+      "videoLengthSearchPlaceholder": "Buscar una longitud",
+      "targetInterest": "Interés del objetivo",
+      "targetInterestPlaceholder": "Selecciona un interés",
+      "targetInterestSearchPlaceholder": "Buscar un interés",
+      "videoType": "Tipo de video",
+      "videoTypePlaceholder": "Selecciona un tipo",
+      "videoTypeSearchPlaceholder": "Buscar un tipo",
+      "experienceLevel": "Nivel de experiencia",
+      "experienceLevelPlaceholder": "Selecciona un nivel",
+      "experienceLevelSearchPlaceholder": "Buscar un nivel",
+      "submit": "Guardar cambios",
+      "languageSettings": {
+        "title": "Es necesario establecer el idioma",
+        "description": "Para personalizar tus recomendaciones de videos, es necesario establecer el idioma en la página de Configuración.",
+        "button": "Establecer idioma"
+      },
+      "info": {
+        "title": "Información del perfil",
+        "description": "Esta sección te permite configurar tus preferencias de notificaciones y ajustes de privacidad.",
+        "fields": [
+          {
+            "title": "Longitud del video",
+            "description": "La longitud del video es un factor importante para el éxito de tu video. Si tu video es demasiado corto, puede no ser suficiente para captar la atención de tu público. Si es demasiado largo, puede ser aburrido y hacer que tus espectadores salten el video."
+          },
+          {
+            "title": "Interés del objetivo",
+            "description": "El interés del objetivo es el público que te gusta. Si tu video es demasiado corto, puede no ser suficiente para captar la atención de tu público. Si es demasiado largo, puede ser aburrido y hacer que tus espectadores salten el video."
+          },
+          {
+            "title": "Tipo de video",
+            "description": "El tipo de video es un factor importante para el éxito de tu video. Si tu video es demasiado corto, puede no ser suficiente para captar la atención de tu público. Si es demasiado largo, puede ser aburrido y hacer que tus espectadores salten el video."
+          }
+        ]
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Configuración",
+    "fields": {
+      "languagePicker": {
+        "language": "Idioma",
+        "languageDescription": "Necesitamos conocer tu idioma para personalizar tu experiencia con la aplicación y sus funciones.",
+        "languagePlaceholder": "Selecciona un idioma",
+        "languageSearchPlaceholder": "Buscar un idioma..."
+      },
+      "personalInfo": {
+        "title": "Información personal",
+        "nameEdit": "Editar nombre",
+        "nameSave": "Guardar",
+        "nameCancel": "Cancelar",
+        "namePlaceholder": "Ingresa tu nombre",
+        "created": "Creado",
+        "lastUpdated": "Última actualización"
+      },
+      "userPlan": {
+        "description1": "No memorizamos tus datos de pago. Todos los pagos se procesan a través de ",
+        "description2": ". Haz clic en el botón aquí abajo para ser redirigido a la página de pago.",
+        "span": "Estás pagando: ",
+        "month": "mes",
+        "button": "Configuración del plan"
+      },
+      "deleteCard": {
+        "title": "Zona peligrosa",
+        "description": "Eliminar tu cuenta eliminará todos tus datos de nuestros servidores. Al eliminar tu cuenta, ya no podrás acceder a tu cuenta o a ninguno de sus contenidos.",
+        "button": "Eliminar cuenta"
+      }
+    },
+    "info": {
+      "title": "Cuenta & Privacidad",
+      "description": "Gestiona tus ajustes de cuenta y preferencias",
+      "fields": {
+        "privacy": {
+          "title": "Datos & Privacidad",
+          "description": "Recopilamos y memorizamos solo los datos esenciales necesarios para proporcionar nuestros servicios. Tus datos están cifrados y almacenados de manera segura."
+        },
+        "account": {
+          "title": "Seguridad de la cuenta",
+          "description": "Tu cuenta está protegida con autenticación de Google. Te recomendamos activar la autenticación de dos factores para un nivel de seguridad mayor."
+        },
+        "data": {
+          "title": "Gestión de datos",
+          "description": "Tus datos están memorizados y gestionados de manera segura en nuestros sistemas. Automatizamos todas las operaciones de datos para garantizar una entrega de servicio fluida."
+        }
+      }
+    }
+  },
+  "shopPage": {
+    "title": "Tienda",
+    "button": "Comprar por ",
+    "ideaTokens": {
+      "title": "Tokens de ideas",
+      "description": "Genera ideas de video únicas para tu próximo proyecto.",
+      "fields": [
+        {
+          "title": "Básico",
+          "description": "Para empezar"
+        },
+        {
+          "title": "Estándar",
+          "description": "Para usuarios más activos"
+        },
+        {
+          "title": "Premium",
+          "description": "Para usuarios más experimentados"
+        }
+      ]
+    },
+    "scriptTokens": {
+      "title": "Tokens de script",
+      "description": "Genera scripts de video cautivantes para tu próximo proyecto.",
+      "fields": [
+        {
+          "title": "Básico",
+          "description": "Para principiantes"
+        },
+        {
+          "title": "Estándar",
+          "description": "Para content creators"
+        },
+        {
+          "title": "Premium",
+          "description": "Para usuarios profesionales"
+        }
+      ]
+    }
+  },
+  "dashboardPage": {
+    "title": "Dashboard"
+  },
+  "calendarPage": {
+    "locale": "es",
+    "title": "Calendario",
+    "toast": {
+      "fillFields": [
+        "Por favor, rellena todos los campos",
+        "Por favor, rellena todos los campos del calendario"
+      ],
+      "fetchError": [
+        "Error al cargar el calendario",
+        "Ocurrió un error al cargar el calendario. Por favor, inténtalo de nuevo más tarde."
+      ],
+      "creationError": [
+        "Error al crear el todo",
+        "Ocurrió un error al crear el todo. Por favor, inténtalo de nuevo más tarde."
+      ],
+      "updateError": [
+        "Error al actualizar el todo",
+        "Ocurrió un error al actualizar el todo. Por favor, inténtalo de nuevo más tarde."
+      ],
+      "creationSuccess": [
+        "Todo creado con éxito",
+        "El todo se ha creado con éxito"
+      ],
+      "updateSuccess": [
+        "Todo actualizado con éxito",
+        "El todo se ha actualizado con éxito"
+      ],
+      "deleteSuccess": [
+        "Todo eliminado con éxito",
+        "El todo se ha eliminado con éxito"
+      ],
+      "deleteError": [
+        "Error al eliminar el todo",
+        "Ocurrió un error al eliminar el todo. Por favor, inténtalo de nuevo más tarde."
+      ],
+      "randomError": [
+        "Error",
+        "Ocurrió un error durante la operación. Por favor, inténtalo de nuevo más tarde."
+      ]
+    },
+    "today": "Hoy",
+    "publishingDateFor": "Fecha de publicación para",
+    "viewIdea": "Ver Idea",
+    "noDate": "Ninguna fecha",
+    "selectDate": "Seleccionar una fecha",
+    "selectDateMessage": "Selecciona una fecha para visualizar tus eventos",
+    "addEvent": "Agregar Evento",
+    "editEvent": "Editar Evento",
+    "production": "Producción",
+    "productionPlaceholder": "Selecciona una producción",
+    "formTitle": "Título",
+    "formDescription": "Descripción",
+    "formEditTime": "Editar hora",
+    "formStartTime": "Hora de inicio",
+    "formStartTimePlaceholder": "Selecciona una hora",
+    "formEndTime": "Hora de fin",
+    "formEndTimePlaceholder": "Selecciona una hora",
+    "formPriority": "Prioridad",
+    "formPriorityPlaceholder": "Selecciona una prioridad",
+    "formCategory": "Categoría",
+    "formCategoryPlaceholder": "Selecciona una categoría",
+    "formSubmit": "Crear",
+    "formUpdate": "Actualizar",
+    "noEvents": "No hay eventos programados para esta fecha",
+    "modes": {
+      "day": "Día",
+      "week": "Semana",
+      "month": "Mes"
+    },
+    "days": {
+      "Mon": "Lunes",
+      "Tue": "Martes",
+      "Wed": "Miércoles",
+      "Thu": "Jueves",
+      "Fri": "Viernes",
+      "Sat": "Sábado",
+      "Sun": "Domingo"
+    },
+    "more": "más",
+    "tasks": "Tareas",
+    "noTasks": "No hay tareas programadas para esta fecha"
+  },
   "components": {
     "translatableSelect": {
       "noResults": "No se encontraron resultados."

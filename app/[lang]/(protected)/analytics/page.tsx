@@ -2,8 +2,26 @@ import React from 'react'
 import CustomIcon from '@/components/ui/custom-icon'
 import { BarChartIcon } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { Chart } from '@/components/blocks/(protected)/chart'
 
 const AnalyticsPage = () => {
+
+	const chartData = [
+		{
+			name: 'Ideas',
+			value: 100,
+			percentage: 100,
+			percentageColor: 'red',
+			percentageText: '100%',
+		},
+		{
+			name: 'Scripts',
+			value: 100,
+			percentage: 100,
+			percentageColor: 'red',
+			percentageText: '100%',
+		}
+	]
 	
 	return (
 		<section>
@@ -14,6 +32,7 @@ const AnalyticsPage = () => {
 				</div>
 				<Separator className='my-4' />
 			</div>
+			<Chart title='Analytics' chartData={chartData} />
 		</section>
 	)
 }

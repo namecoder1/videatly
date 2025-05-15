@@ -18,7 +18,7 @@ import { TodoProps } from '@/types/types'
 import { ProcessedEvent } from '../day/calendar-body-day-content'
 
 export default function CalendarBodyMonth() {
-  const { date, events, setDate, setMode, daysWithTodos = [] } = useCalendarContext()
+  const { date, events, setDate, setMode, daysWithTodos = [], dict } = useCalendarContext()
 
   // Get the first day of the month
   const monthStart = startOfMonth(date)
@@ -105,7 +105,7 @@ export default function CalendarBodyMonth() {
             key={day}
             className="py-2 text-center text-sm font-medium text-muted-foreground border-b border-border"
           >
-            {day}
+            {dict.calendarPage.days[day]}
           </div>
         ))}
       </div>
@@ -186,7 +186,7 @@ export default function CalendarBodyMonth() {
                           setMode('day')
                         }}
                       >
-                        +{dayEvents.length - 3} more
+                        +{dayEvents.length - 3} {dict.calendarPage.more}
                       </motion.div>
                     )}
                   </div>

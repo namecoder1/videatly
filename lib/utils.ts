@@ -2,6 +2,8 @@ import { toast } from "@/hooks/use-toast"
 import { Token } from "@/types/types"
 import { SupabaseClient } from "@supabase/supabase-js"
 import { clsx, type ClassValue } from "clsx"
+import { format, Locale } from "date-fns"
+import { enUS, es, fr, de, it, pt, ja, ko, zhCN } from 'date-fns/locale'
 import { encode } from "gpt-tokenizer/model/gpt-3.5-turbo-0125"
 import { twMerge } from "tailwind-merge"
 
@@ -11,6 +13,45 @@ export function cn(...inputs: ClassValue[]) {
 
 // ------------------------------------------------------------------------------------------------
 // DATE FORMATTING
+
+// Map of supported locales
+const localeMap: Record<string, Locale> = {
+  'en-US': enUS,
+  'es': es,
+  'fr': fr,
+  'de': de,
+  'it': it,
+  'pt': pt,
+  'ja': ja,
+  'ko': ko,
+  'zh-CN': zhCN,
+}
+
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function formatDateWithLocale(
+  date: string | Date,
+  dateCase: 'normal' | 'full' | 'short',
+  locale: string = 'en-US'
+) {
+  const d = new Date(date);
+  const dateLocale = localeMap[locale] || enUS;
+
+  let formatted = '';
+
+  if (dateCase === 'normal') {
+    formatted = format(d, 'MMMM d, yyyy', { locale: dateLocale });
+  } else if (dateCase === 'full') {
+    formatted = format(d, 'MMMM d, yyyy HH:mm', { locale: dateLocale });
+  } else if (dateCase === 'short') {
+    formatted = format(d, 'EEE', { locale: dateLocale });
+  }
+
+  return capitalizeFirstLetter(formatted);
+}
+
 
 export function formatDate(date: string | Date, dateCase: 'normal' | 'full') {
   const d = new Date(date)
@@ -29,14 +70,6 @@ export function formatDate(date: string | Date, dateCase: 'normal' | 'full') {
       minute: 'numeric'
     })
   }
-}
-
-function formatTime(date: string | Date) {
-  const d = new Date(date)
-  return d.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: 'numeric'
-  })
 }
 
 export const formatStringDate = (date: string) => {

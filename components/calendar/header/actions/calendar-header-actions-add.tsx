@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react'
 import { useCalendarContext } from '../../calendar-context'
 
 export default function CalendarHeaderActionsAdd() {
-  const { newEventDialogOpen, setNewEventDialogOpen } = useCalendarContext()
+  const { newEventDialogOpen, setNewEventDialogOpen, dict } = useCalendarContext()
   
   // Toggle the dialog state when button is clicked
   const handleClick = () => {
@@ -17,7 +17,7 @@ export default function CalendarHeaderActionsAdd() {
       className='h-full'
     >
       <Plus />
-      Add Event
+      {dict.calendarPage.addEvent}
     </Button>
   )
 }

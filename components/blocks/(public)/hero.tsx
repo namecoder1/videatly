@@ -1,12 +1,11 @@
 'use client'
 
-import { Check, ChevronRight, Play } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, Play } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { Button } from '../../ui/button'
 import AvatarStack from '../../ui/avatar-stack'
 import { handleScrollToElement } from '@/lib/utils'
-import { signInWithGoogleAction } from '@/app/(authentication)/actions'
 import { creator1, creator2, creator3, creator4, creator5 } from '@/assets/home'
 const avatars = [
   {
@@ -36,43 +35,33 @@ const avatars = [
   }
 ]
 
-const Hero = ({ creators, dict }: { creators: number, dict: any }) => {
+const Hero = () => {
 	return (
-			<div className="w-full flex flex-col items-center justify-center text-center mt-56">
-				<h1 className="text-6xl font-black tracking-tight max-w-3xl sm:mx-auto mx-4">{dict.home.title}</h1>
+			<div className="w-full flex flex-col items-center justify-center text-center mt-56 h-[57vh]">
+				<div className='border border-red-500 rounded-full w-fit bg-red-100 shadow-red-100 shadow-md'>
+					<p className='text-sm font-medium text-red-500 px-3 py-2'>Available soon, don't miss out!</p>
+				</div>
+				<h1 className="text-5xl lg:text-7xl sm:text-6xl font-black tracking-tight max-w-3xl sm:mx-auto mx-4 mt-6">Create video ideas and scripts for your YouTube channel</h1>
 				<p className="my-8 text-lg max-w-lg sm:mx-auto mx-4">
-				{dict.home.description}        
+					Boost your YouTube channel with AI-powered video ideas and scripts, better analytics and a solid video planner to empower your productivity.
 				</p>
 
-				<div className="p-4 rounded flex flex-col items-start w-fit mb-8">
-					<p><Check className="size-6 text-green-500 inline-block mr-1" /> {dict.home.uniqueVideoIdeas}</p>
-					<p><Check className="size-6 text-green-500 inline-block mr-1" /> {dict.home.craftViralScripts}</p>
-					<p><Check className="size-6 text-green-500 inline-block mr-1" /> {dict.home.analyzeOptimizeDominate}</p>
-				</div>
-
-				<div className="flex flex-col sm:flex-row gap-4 mb-8">
-					<form >
-						<Button className='w-full group' size='lg' formAction={signInWithGoogleAction}>
-							<Play className='size-4 mr-2 group-hover:scale-125 transition-transform duration-500' />
-							{dict.home.startNow}
-						</Button>
-					</form>
+				<div className="flex flex-row gap-2 mb-8">
 					<Button asChild className="w-full group" variant="outline" size="lg">
 						<Link
 							href="#features"
 							onClick={(e) => handleScrollToElement(e, 'features')}
 						>
-							{dict.home.learnMore}
+							Learn more
+							<ChevronDown className='size-4 group-hover:translate-y-0.5 transition-transform duration-200 mt-0.5' />
+						</Link>
+					</Button>
+					<Button asChild className="w-full group" variant="link" size="lg">
+						<Link href="#features">
+							Contact us
 							<ChevronRight className='size-4 group-hover:translate-x-1 transition-transform duration-200' />
 						</Link>
 					</Button>
-				</div>
-				
-				<div className="flex items-center justify-center space-x-3 w-full max-w-md mb-8">
-					<AvatarStack avatars={avatars} />
-					<p className="text-sm">
-						<span className="font-bold">{creators}</span> {dict.home.creatorsJoined}
-					</p>
 				</div>
 			</div>
 	)

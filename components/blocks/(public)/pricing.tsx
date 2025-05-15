@@ -1,43 +1,42 @@
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import React from 'react'
-import { signInWithGoogleAction } from '@/app/(authentication)/actions'
 
 
 
 
-const Pricing = ({ dict }: { dict: any }) => {
+const Pricing = () => {
 
 	const PRICING_PLANS = [
 		{
-			name: dict.pricing.free.title,
+			name: 'Free',
 			price: '0',
 			period: 'month',
-			description: dict.pricing.free.description,
-			features: dict.pricing.free.features,
+			description: 'Free to try',
+			features: ['10 video ideas', '10 scripts', '1000 views'],
 			popular: false,
 			variant: 'outline',
-			action: dict.pricing.free.action
+			action: 'Try for free'
 		},	
 		{
-			name: dict.pricing.pro.title,
+			name: 'Pro',
 			price: '15',
 			period: 'month',
-			description: dict.pricing.pro.description,
-			features: dict.pricing.pro.features,
+			description: 'Pro plan',
+			features: ['100 video ideas', '100 scripts', '10000 views'],
 			popular: true,
 			variant: 'default',
-			action: dict.pricing.pro.action
+			action: 'Try for free'
 		},
 		{
-			name: dict.pricing.ultra.title,
+			name: 'Ultra',
 			price: '30',
 			period: 'month',
-			description: dict.pricing.ultra.description,
-			features: dict.pricing.ultra.features,
+			description: 'Ultra plan',
+			features: ['1000 video ideas', '1000 scripts', '100000 views'],
 			popular: false,
 			variant: 'outline',
-			action: dict.pricing.ultra.action
+			action: 'Try for free'
 		}
 	]
 
@@ -45,10 +44,10 @@ const Pricing = ({ dict }: { dict: any }) => {
 			<div className="mx-4 sm:mx-6 md:mx-8 lg:mx-10 my-12 sm:my-16 lg:my-20" id="pricing">
 				<div className="text-center mb-10 sm:mb-12 lg:mb-16">
 					<h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-						{dict.pricing.title}
+						Pricing
 					</h1>
 					<p className="text-lg sm:text-xl text-zinc-600 max-w-2xl mx-auto px-4">
-						{dict.pricing.description}
+						Choose the plan that's right for you.
 					</p>
 				</div>
 
@@ -64,7 +63,7 @@ const Pricing = ({ dict }: { dict: any }) => {
 							{plan.popular && (
 								<div className="absolute -top-4 left-1/2 -translate-x-1/2">
 									<span className="bg-gray-800 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-sm">
-										{dict.pricing.popular}
+										Popular
 									</span>
 								</div>
 							)}
@@ -91,7 +90,6 @@ const Pricing = ({ dict }: { dict: any }) => {
 								{plan.name === 'Free' ? (
 									<Button
 										type='submit' 
-										formAction={signInWithGoogleAction}
 										className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
 										variant={plan.variant as any}
 										size="lg"

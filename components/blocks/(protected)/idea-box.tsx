@@ -41,14 +41,14 @@ const IdeaBox = ({
 			if (element) element.remove();
 			
 			toast({
-				title: dict.ideaBox?.toast?.deleteSuccess?.[0] || 'Success',
-				description: dict.ideaBox?.toast?.deleteSuccess?.[1] || 'Idea deleted successfully',
+				title: dict.ideaBox.toast.deleteSuccess?.[0],
+				description: dict.ideaBox.toast.deleteSuccess?.[1],
 				variant: 'success'
 			});
 		} else {
 			toast({
-				title: dict.ideaBox?.toast?.deleteError?.[0] || 'Error',
-				description: (dict.ideaBox?.toast?.deleteError?.[1] || 'Failed to delete idea: ') + result.error,
+				title: dict.ideaBox.toast.deleteError?.[0],
+				description: (dict.ideaBox.toast.deleteError?.[1] + result.error),
 				variant: 'destructive'
 			});
 		}

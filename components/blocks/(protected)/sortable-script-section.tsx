@@ -4,7 +4,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronDown, ChevronUp, Plus, Trash2, GripVertical, Clock } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import { SortableScriptSectionProps } from "@/types/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -19,9 +18,11 @@ const SortableScriptSection = ({
   onToggleCollapse,
   script,
   setScript,
+  dict,
 }: SortableScriptSectionProps & {
   script: any;
   setScript: React.Dispatch<React.SetStateAction<any>>;
+  dict: any;
 }) => {
   const {
     attributes,
@@ -80,7 +81,7 @@ const SortableScriptSection = ({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Drag to reorder</p>
+                  <p>{dict.components.sortableScriptSection.dragToReorder}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -106,7 +107,7 @@ const SortableScriptSection = ({
                 />
               </div>
               <div className="text-sm text-muted-foreground">
-                {section.points.length} {section.points.length === 1 ? 'point' : 'points'}
+                {section.points.length} {section.points.length === 1 ? dict.components.sortableScriptSection.point : dict.components.sortableScriptSection.points}
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -124,7 +125,7 @@ const SortableScriptSection = ({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Delete section</p>
+                      <p>{dict.components.sortableScriptSection.deleteSection}</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -162,7 +163,7 @@ const SortableScriptSection = ({
                     }}
                     disabled={!isEditing}
                     className="min-h-[80px] p-4 text-sm transition-all focus:ring-1 focus:ring-accent"
-                    placeholder="Enter your script point here..."
+                    placeholder={dict.components.sortableScriptSection.placeholder}
                   />
                   {isEditing && (
                     <TooltipProvider>
@@ -178,7 +179,7 @@ const SortableScriptSection = ({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Delete point</p>
+                          <p>{dict.components.sortableScriptSection.deletePoint}</p>
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -194,7 +195,7 @@ const SortableScriptSection = ({
                 onClick={() => onAddPoint(sectionIndex)}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add Point
+                {dict.components.sortableScriptSection.addPoint}
               </Button>
             )}
           </div>

@@ -230,7 +230,7 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
           }}
           layoutId={`event-${animationKey}-${month ? 'month' : 'day'}`}
         >
-          <div className={cn(`w-full h-full flex flex-col ${priorityClasses.text}`,
+          <div className={cn(`w-full h-fit flex flex-col ${priorityClasses.text}`,
              // Layout verticale se l'evento è molto stretto, per cercare di far stare il testo
              eventWidthPercent < 30 && !month ? 'justify-around' : 'justify-center' 
             )}
@@ -241,7 +241,7 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
               // Riduci la dimensione del testo se l'evento è molto stretto
               !month && eventWidthPercent < 40 ? 'text-xs' : (!month ? 'text-sm' : '')
             )}>
-              {event.title || "Event Title"}
+              {event.title || "Event Title"} 
             </p>
             {/* Non mostrare orario/categoria se l'evento è estremamente stretto e non è la vista mensile */}
             {(!month && eventWidthPercent < 25) ? null : (

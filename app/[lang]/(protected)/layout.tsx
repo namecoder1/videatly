@@ -9,9 +9,15 @@ export default async function ServerProtectedLayout({
 	params: { lang: string }
 }) {
 	const dict = await getDictionary(params.lang)
+	
+	// Aggiungiamo la lingua al dizionario per renderla disponibile ovunque
+	const enhancedDict = { 
+		...dict, 
+		locale: params.lang 
+	};
 
 	return (
-		<ProtectedLayout params={{ dict }}>
+		<ProtectedLayout params={{ dict: enhancedDict, lang: params.lang }}>
 			{children}
 		</ProtectedLayout>
 	)

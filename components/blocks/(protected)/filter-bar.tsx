@@ -36,7 +36,7 @@ const FilterBar = ({ activeFilters, onReset, onOpenSheet, dict }: FilterBarProps
           
           return (
             <div key={key} className='text-sm bg-gray-100 px-2 py-1 rounded-md'>
-              {getEnumTranslation(value, dict.locale) || value.charAt(0).toUpperCase() + value.slice(1)}
+              {getEnumTranslation(value as string, dict.locale) || (value as string).charAt(0).toUpperCase() + (value as string).slice(1)}
             </div>
           );
         })}

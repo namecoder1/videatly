@@ -7,7 +7,7 @@ import { TagsInputProps } from "@/types/types";
 import { X } from "lucide-react";
 import { useRef, useState, KeyboardEvent, useEffect } from "react";
 
-const TagsInput = ({ name, label, placeholder, description }: TagsInputProps) => {
+const TagsInput = ({ name, label, placeholder, description, addTags }: TagsInputProps) => {
 	const [tags, setTags] = useState<string[]>([]);
 	const [inputValue, setInputValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +85,7 @@ const TagsInput = ({ name, label, placeholder, description }: TagsInputProps) =>
 					onChange={(e) => setInputValue(e.target.value)}
 					onKeyDown={handleKeyDown}
 					onBlur={handleBlur}
-					placeholder={tags.length === 0 ? placeholder : 'Add more tags...'}
+					placeholder={tags.length === 0 ? placeholder : addTags}
 					className="flex-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 px-2 py-1 min-w-[120px] h-8"
 				/>
 			</div>

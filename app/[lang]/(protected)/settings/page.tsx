@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { Trash2, Mail, User, Phone, CalendarClock, CalendarPlus, TriangleAlert, Shield, Lock, KeyRound, Database, Settings, Languages, CreditCard } from 'lucide-react'
+import { Trash2, Mail, User, CalendarClock, CalendarPlus, TriangleAlert, Shield, Lock, KeyRound, Database, Settings, Languages, CreditCard } from 'lucide-react'
 import Loader from '@/components/blocks/loader'
 import { Button } from '@/components/ui/button'
 import { deleteAccount } from '@/app/(authentication)/actions'

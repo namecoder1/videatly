@@ -18,7 +18,7 @@ import { TodoProps } from '@/types/types'
 import { ProcessedEvent } from '../day/calendar-body-day-content'
 
 export default function CalendarBodyMonth() {
-  const { date, events, setDate, setMode, daysWithTodos = [], dict } = useCalendarContext()
+  const { date, events, setDate, setMode, daysWithTodos = [], dict, dayClassNames, getDayContent } = useCalendarContext()
 
   // Get the first day of the month
   const monthStart = startOfMonth(date)
@@ -97,6 +97,13 @@ export default function CalendarBodyMonth() {
     })
   }
 
+  // Get total number of days in grid (7 columns x number of rows)
+  const totalDays = calendarDays.length;
+  // Get number of rows (7 days per row)
+  const numberOfRows = Math.ceil(totalDays / 7);
+  // Bottom row starts at index (number of rows - 1) * 7
+  const bottomRowStartIndex = (numberOfRows - 1) * 7;
+
   return (
     <div className="flex flex-col flex-grow overflow-hidden bg-card rounded-3xl">
       <div className="hidden md:grid grid-cols-7 border-border divide-x divide-border">
@@ -122,7 +129,7 @@ export default function CalendarBodyMonth() {
             ease: 'easeInOut',
           }}
         >
-          {calendarDays.map((day) => {
+          {calendarDays.map((day, index) => {
             const dayEvents = visibleEvents.filter((todo: TodoProps) => {
               if (!todo.start_date || !todo.end_date) return false;
               
@@ -136,6 +143,17 @@ export default function CalendarBodyMonth() {
             const isToday = isSameDay(day, today)
             const isCurrentMonth = isSameMonth(day, date)
             const dayHasTodos = dayEvents.length > 0;
+            
+            // Get custom class names for days if the function is provided
+            const customClasses = dayClassNames ? dayClassNames(day) : '';
+            
+            // Get content for publication dates
+            const dayContent = getDayContent ? getDayContent(day) : null;
+
+            // Check if this is a bottom corner cell
+            const isBottomRow = index >= bottomRowStartIndex;
+            const isBottomLeftCell = index === bottomRowStartIndex;
+            const isBottomRightCell = index === totalDays - 1;
 
             return (
               <div
@@ -143,7 +161,10 @@ export default function CalendarBodyMonth() {
                 className={cn(
                   'relative flex flex-col border-b border-r p-2 aspect-square cursor-pointer',
                   !isCurrentMonth && 'bg-muted/50 hidden md:flex',
-                  dayHasTodos && isCurrentMonth && 'bg-gray-50/50'
+                  dayHasTodos && isCurrentMonth && 'bg-gray-50/50',
+                  isBottomLeftCell && 'rounded-bl-3xl',
+                  isBottomRightCell && 'rounded-br-3xl',
+                  customClasses // Apply custom classes
                 )}
                 onClick={(e) => {
                   e.stopPropagation()
@@ -160,6 +181,13 @@ export default function CalendarBodyMonth() {
                 >
                   {format(day, 'd')}
                 </div>
+                
+                {dayContent && (
+                  <div className="mt-1 text-xs line-clamp-2 font-medium text-red-700 dark:text-red-400">
+                    {dayContent}
+                  </div>
+                )}
+                
                 <AnimatePresence mode="wait">
                   <div className="flex flex-col gap-1 mt-1">
                     {dayEvents.slice(0, 3).map((todo: TodoProps) => (

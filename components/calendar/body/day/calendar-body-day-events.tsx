@@ -41,13 +41,13 @@ export default function CalendarBodyDayEvents() {
   }
 
   return !!dayEvents.length ? (
-    <div className="flex flex-col gap-2 bg-card pl-1">
-      <p className="font-medium p-2 pb-0 font-heading">{dict.calendarPage.tasks} ({dayEvents.length})</p>
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 bg-card rounded-3xl">
+      <p className="font-semibold text-lg p-4 pb-0 font-heading">{dict.calendarPage.tasks} ({dayEvents.length})</p>
+      <div className="flex flex-col gap-2 p-1.5">
         {dayEvents.map((todo: TodoProps) => (
           <div
             key={todo.id}
-            className="flex flex-col gap-1 px-2 py-1 hover:bg-muted rounded-md cursor-pointer"
+            className="flex flex-col gap-1 px-3 py-2 hover:bg-muted rounded-3xl cursor-pointer"
             onClick={() => {
               setSelectedEvent(todo)
               setManageEventDialogOpen(true)

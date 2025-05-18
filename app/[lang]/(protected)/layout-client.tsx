@@ -12,11 +12,20 @@ const ProtectedLayout = ({
 }: { 
 	children: React.ReactNode,
 	params: { 
-		dict: any 
+		dict: any,
+		lang?: string 
 	}
 }) => {
+	// Assicuriamoci che locale sia impostato correttamente nel dizionario
+	const enhancedDict = {
+		...params.dict,
+		locale: params.dict.locale || params.lang || 'en'
+	};
+	
+	console.log('ProtectedLayout - Using locale:', enhancedDict.locale);
+	
 	return (
-		<DictionaryContext.Provider value={params.dict}>
+		<DictionaryContext.Provider value={enhancedDict}>
 			<SheetProvider>
 				<SidebarProvider>
 					<ProtectedSidebar />

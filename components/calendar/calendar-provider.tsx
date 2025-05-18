@@ -17,6 +17,8 @@ export default function CalendarProvider({
   daysWithTodos = [],
   children,
   dict,
+  dayClassNames,
+  getDayContent,
 }: {
   events: TodoProps[]
   setEvents: (events: TodoProps[]) => void
@@ -30,6 +32,8 @@ export default function CalendarProvider({
   daysWithTodos?: string[]
   children: React.ReactNode
   dict: any
+  dayClassNames?: (date: Date) => string
+  getDayContent?: (date: Date) => string | null
 }) {
   const [newEventDialogOpen, setNewEventDialogOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<TodoProps | null>(null)
@@ -70,6 +74,8 @@ export default function CalendarProvider({
         ideas,
         daysWithTodos,
         dict,
+        dayClassNames,
+        getDayContent,
       }}
     >
       {/* TodoCreator for creating new events */}

@@ -1,5 +1,4 @@
 import { arrayMove } from "@dnd-kit/sortable";
-
 import { DragEndEvent } from "@dnd-kit/core";
 import { ScriptSection } from "@/types/types";
 

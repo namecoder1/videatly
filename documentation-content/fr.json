@@ -1,0 +1,67 @@
+{
+  "introduction": {
+    "title": "Introduction",
+    "breadcrumbs": [
+      {
+        "label": "Home",
+        "href": "/"
+      },
+      {
+        "label": "Documentation",
+        "href": "/documentation"
+      }
+    ],
+    "introduction": {
+      "title": "Introduction",
+      "content": "Videatly est une plateforme qui vous permet de créer et de gérer vos idées, vos scripts et vos workflows. L'idée est de créer une plateforme qui vous permet d'améliorer votre workflow de production vidéo et de votre productivité en utilisant des fonctionnalités et des outils AI construits exactement pour ce but. Chaque fonctionnalité est construite pour améliorer une partie spécifique du workflow de production vidéo. Dans la section guides, vous pouvez trouver plus d'informations sur chaque fonctionnalité et comment les utiliser."
+    },
+    "core_features": {
+      "title": "Fonctionnalités principales",
+      "content": "Videatly couvre diverses parties du workflow de production vidéo. Vous commencez par créer une idée, puis à partir de cette idée vous pouvez créer un script; chaque script est une chronologie de segments vidéo, vous pouvez en ajouter, en supprimer, en modifier et en réorganiser. À partir du script, vous pouvez créer un workflow pour produire la vidéo; les workflows sont comme des groupes de données détaillés que vous avez produits lors de la création de la vidéo globale.",
+      "features": {
+        "title": "Voici nos fonctionnalités principales:",
+        "ideas": {
+          "title": "Idées",
+          "description": "Les idées sont la première étape pour créer une vidéo.",
+          "hint": "Pour créer une nouvelle idée, cliquez sur le bouton Créer une idée dans la section idées."
+        },
+        "scripts": {
+          "title": "Scripts",
+          "description": "Les scripts sont la deuxième étape pour créer une vidéo.",
+          "hint": "Vous pouvez créer un script en cliquant sur l'idée que vous souhaitez utiliser et en cliquant sur le bouton Créer un script."
+        },
+        "production": {
+          "title": "Production",
+          "description": "La production est la troisième étape pour créer une vidéo.",
+          "hint": "Pour créer une production, cliquez sur le script que vous souhaitez utiliser et en cliquant sur le bouton Créer une production."
+        }
+      }
+    },
+    "platform_guides": {
+      "title": "Guides de la plateforme",
+      "content": "Les guides de la plateforme sont une collection de guides qui vous aideront à comprendre comment utiliser la plateforme. Chaque fonctionnalité importante a un guide qui vous aidera à comprendre comment l'utiliser. Pour toute autre information non couverte dans les guides, vous pouvez toujours nous contacter à support@videatly.com.",
+      "guidesPhrase": "Dans l'ordre, vous devriez lire les guides comme suit:",
+      "guides": [
+        {
+          "title": "Guide des idées",
+          "description": "Apprenez à créer et à gérer vos idées",
+          "link": "/documentation/guides/ideas"
+        },
+        {
+          "title": "Guide des scripts",
+          "description": "Apprenez à créer et à gérer vos scripts",
+          "link": "/documentation/guides/scripts"
+        },
+        {
+          "title": "Guide de la production",
+          "description": "Apprenez à créer et à gérer vos productions",
+          "link": "/documentation/guides/production"
+        }
+      ]
+    },
+    "tokens_plans": {
+      "title": "Tokens & Plans",
+      "content": "Chaque utilisateur commence avec 7500 tokens au total, 5000 pour la création de scripts et 2500 pour la création d'idées. Cette quantité est suffisante pour créer 4 vidéos et au moins 4 scripts. Les tokens dans chaque plan sont renouvelés tous les 30 jours. Si vous n'avez plus de tokens, vous pouvez en acheter plus dans la page de tarification."
+    }
+  }
+}

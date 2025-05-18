@@ -1,6 +1,5 @@
 'use client'
 
-import SearchableSelect from '@/components/blocks/(protected)/searchable-select'
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle, CardHeader, CardContent, CardDescription } from '@/components/ui/card'
 import CustomIcon from '@/components/ui/custom-icon'
@@ -12,10 +11,12 @@ import { IdeaData } from '@/types/types'
 import { createClient } from '@/utils/supabase/client'
 import { CircleHelp, Clock4, ExternalLink, Film, Link2, Loader2, NotepadText } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { Checkbox } from '@/components/ui/checkbox'
 import Loader from '@/components/blocks/loader'
+import { useDictionary } from '@/app/context/dictionary-context'
+import CustomLink from '@/components/blocks/custom-link'
+import SimpleTranslatableSelect from '@/components/blocks/(protected)/simple-translatable-select'
 
 
 const ScriptPage = ({ params }: { params: { id: string } }) => {
@@ -23,6 +24,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [ideaData, setIdeaData] = useState<IdeaData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+	const dict = useDictionary()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,8 +84,8 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 
 		if (!script.tone || !script.verbosity || !script.target_audience || !script.script_type || !script.duration || !script.persona || !script.structure) {
 			toast({
-				title: 'Error creating script',
-				description: 'Please fill in all fields',
+				title: dict.scriptCreatePage.toast.creatingError.title,
+				description: dict.scriptCreatePage.toast.creatingError.description,
 				variant: 'destructive'
 			})
 			return
@@ -96,10 +98,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 			.single()
 
 		if (error) {
-			console.error('Error creating script:', error)
+			console.error(`${dict.scriptCreatePage.toast.creatingError.title}: ${error}`)
 			toast({
-				title: 'Error creating script',
-				description: error.message,
+				title: dict.scriptCreatePage.toast.creatingError.title,
+				description: dict.scriptCreatePage.toast.creatingError.description,
 				variant: 'destructive'
 			})
 			return
@@ -108,8 +110,6 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 		router.push(`/scripts/create/${data.id}/chat`)
 	}
 
-
-
   if (isLoading) return <Loader position='full' />
 
 	return (
@@ -117,7 +117,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 			<div className='flex flex-col'>
         <div className='flex items-center gap-3'>
           <CustomIcon icon={<NotepadText />} color='red' />
-          <h1 className='text-3xl font-bold tracking-tight'>Create Script</h1>
+          <h1 className='text-3xl font-bold tracking-tight'>{dict.scriptCreatePage.title}</h1>
         </div>
         <Separator className='my-4' />
       </div>
@@ -129,13 +129,13 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 						<span className='p-1 rounded-lg bg-blue-100 border border-blue-300'>
 							<Link2 className='w-4 h-4 text-blue-500' /> 
 						</span>
-						<span>Related Idea</span>
+						<span>{dict.scriptCreatePage.relatedIdea}</span>
 					</p>
 					<Button size='sm' variant='outline'>
-						<Link href={`/ideas/${ideaData?.id}`} target='_blank' className='flex items-center gap-2'>
+						<CustomLink href={`/ideas/${ideaData?.id}`} className='flex items-center gap-2'>
 							<ExternalLink className='w-4 h-4' />
-							View Idea
-						</Link>
+							{dict.scriptCreatePage.viewIdea}
+						</CustomLink>
 					</Button>
 				</div>
 				<CardTitle className='text-lg font-semibold mt-1'>{ideaData?.title}</CardTitle>
@@ -165,79 +165,81 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 						<div className="grid gap-4">
 							
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<SearchableSelect
+								<SimpleTranslatableSelect
 									name="tone"
-									label="Tone"
-									placeholder="Select a tone"
-									searchPlaceholder="Search tone..."
+									label={dict.scriptCreatePage.form.tone}
+									placeholder={dict.scriptCreatePage.form.tonePlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.toneSearchPlaceholder}
 									options={Object.values(ScriptTone)}
 									required
 								/>
 
-								<SearchableSelect
+								<SimpleTranslatableSelect
 									name="verbosity"
-									label="Verbosity"
-									placeholder="Select a verbosity"
-									searchPlaceholder="Search verbosity..."
+									label={dict.scriptCreatePage.form.verbosity}
+									placeholder={dict.scriptCreatePage.form.verbosityPlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.verbositySearchPlaceholder}
 									options={Object.values(ScriptVerbosity)}
 									required
 								/>
 							</div>
 							
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<SearchableSelect
+								<SimpleTranslatableSelect
 									name="target_audience"
-									label="Target Audience"
-									placeholder="Select a target audience"
-									searchPlaceholder="Search target audience..."
+									label={dict.scriptCreatePage.form.targetAudience}
+									placeholder={dict.scriptCreatePage.form.targetAudiencePlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.targetAudienceSearchPlaceholder}
 									options={Object.values(ScriptTarget)}
 									required
 								/>
-								<SearchableSelect
+
+								<SimpleTranslatableSelect
 									name="script_type"
-									label="Script Type"
-									placeholder="Select a script type"
-									searchPlaceholder="Search script type..."
+									label={dict.scriptCreatePage.form.scriptType}
+									placeholder={dict.scriptCreatePage.form.scriptTypePlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.scriptTypeSearchPlaceholder}
 									options={Object.values(ScriptType)}
 									required
 								/>
 							</div>
 							
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-								<SearchableSelect
+								<SimpleTranslatableSelect
 									name="duration"
-									label="Duration"
-									placeholder="Select a duration"
-									searchPlaceholder="Search duration..."
+									label={dict.scriptCreatePage.form.duration}
+									placeholder={dict.scriptCreatePage.form.durationPlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.durationSearchPlaceholder}
 									options={Object.values(ScriptDuration)}
 									required
 								/>
-								<SearchableSelect
+
+								<SimpleTranslatableSelect
 									name="persona"
-									label="Persona"
-									placeholder="Select a persona"
-									searchPlaceholder="Search persona..."
+									label={dict.scriptCreatePage.form.persona}
+									placeholder={dict.scriptCreatePage.form.personaPlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.personaSearchPlaceholder}
 									options={Object.values(ScriptPersona)}
 									required
 								/>
 							</div>
 							
 							<div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-								<SearchableSelect
+								<SimpleTranslatableSelect
 									name="structure"
-									label="Structure"
-									placeholder="Select a structure"
-									searchPlaceholder="Search structure..."
+									label={dict.scriptCreatePage.form.structure}
+									placeholder={dict.scriptCreatePage.form.structurePlaceholder}
+									searchPlaceholder={dict.scriptCreatePage.form.structureSearchPlaceholder}
 									options={Object.values(ScriptStructure)}
 								/>
 
 								<div className='flex flex-col gap-2'>
-									<Label>Call to Action</Label>
+									<Label>{dict.scriptCreatePage.form.callToAction}</Label>
 									<div className='flex items-center gap-2'>
 										<Checkbox
 											name='call_to_action'
 										/>
-										<p className='text-sm'>Add a call to action</p>
+										<p className='text-sm'>{dict.scriptCreatePage.form.addCallToAction}</p>
 									</div>
 								</div>
 							</div>
@@ -253,14 +255,14 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 							onClick={() => router.back()}
 							className="min-w-[100px]"
 						>
-							Cancel
+							{dict.scriptCreatePage.form.cancel}
 						</Button>
 						<Button
 							type="submit"
 							className="min-w-[100px] bg-black text-white hover:bg-black/90"
 							disabled={isLoading}
 						>
-							{isLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : 'Create Script'}
+							{isLoading ? <Loader2 className='w-4 h-4 animate-spin' /> : dict.scriptCreatePage.form.create}
 						</Button>
 					</div>
 				</form>
@@ -268,10 +270,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
 							<CircleHelp className="w-5 h-5" />
-							Script Details
+							{dict.scriptCreatePage.form.info.title}
 						</CardTitle>
 						<CardDescription>
-							Here you can find the details about the script you want to create.
+							{dict.scriptCreatePage.form.info.description}
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6">
@@ -280,10 +282,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 								<span className="text-blue-600 p-1.5 rounded-xl bg-blue-100">
 									<CircleHelp className="w-5 h-5" />
 								</span>
-								Tone & Verbosity
+								{dict.scriptCreatePage.form.info.fields[0].title}
 							</h3>
 							<p className="text-sm text-muted-foreground">
-								Insert here the tone and verbosity for your script. The tone is the personality of the person who is speaking, while the verbosity is the level of detail in the script.
+								{dict.scriptCreatePage.form.info.fields[0].description}
 							</p>
 						</div>
 						<div className="space-y-2">
@@ -291,10 +293,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 								<span className="text-orange-600 p-1.5 rounded-xl bg-orange-100">
 									<CircleHelp className="w-5 h-5" />
 								</span>
-								Duration & Persona
+								{dict.scriptCreatePage.form.info.fields[1].title}
 							</h3>
 							<p className="text-sm text-muted-foreground">
-								Choose a duration that matches your content and audience. Educational videos work well with explainer formats, while entertainment may benefit from storytelling. Consider platform-specific lengths - shorter for social media, longer for in-depth topics.
+								{dict.scriptCreatePage.form.info.fields[1].description}
 							</p>
 						</div>
 						<div className="space-y-2">
@@ -302,10 +304,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 								<span className="text-purple-600 p-1.5 rounded-xl bg-purple-100">
 									<CircleHelp className="w-5 h-5" />
 								</span>
-								Script Type & Target Audience
+								{dict.scriptCreatePage.form.info.fields[2].title}
 							</h3>
 							<p className="text-sm text-muted-foreground">
-								Select a script type that aligns with your content goals. Different types have different engagement patterns. Define your target audience&apos;s interests to optimize content discovery and reach the right viewers.
+								{dict.scriptCreatePage.form.info.fields[2].description}
 							</p>
 						</div>
 						<div className="space-y-2">
@@ -313,10 +315,10 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 								<span className="text-green-600 p-1.5 rounded-xl bg-green-100">
 									<CircleHelp className="w-5 h-5" />
 								</span>
-								Structure & Call to Action
+								{dict.scriptCreatePage.form.info.fields[3].title}
 							</h3>
 							<p className="text-sm text-muted-foreground">
-								Select a structure that aligns with your content goals. Different structures have different engagement patterns. Define your target audience&apos;s interests to optimize content discovery and reach the right viewers.
+								{dict.scriptCreatePage.form.info.fields[3].description}
 							</p>
 						</div>
 					</CardContent>

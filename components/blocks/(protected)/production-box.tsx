@@ -9,7 +9,8 @@ import { toneIcon } from '@/assets/home'
 import Link from 'next/link'
 import { cn, formatDate } from '@/lib/utils'
 import { useSidebarViewport } from '@/hooks/use-sidebar-viewport'
-
+import { getEnumTranslation } from '@/utils/enum-translations'
+import { useDictionary } from '@/app/context/dictionary-context'
 
 const ProductionBox = ({ idea, script, isActive, setSelectedIdea }: { 
   idea: IdeaData, 
@@ -19,6 +20,8 @@ const ProductionBox = ({ idea, script, isActive, setSelectedIdea }: {
 }) => {
 	const { cardClasses } = useSidebarViewport()
 	const { base, active, inactive, background } = cardClasses
+	const dict = useDictionary()
+	const locale = dict.locale
 
   return (
     <Card onClick={() => setSelectedIdea(idea)} className={cn(
@@ -44,35 +47,35 @@ const ProductionBox = ({ idea, script, isActive, setSelectedIdea }: {
       <CardContent className="grid grid-cols-2 gap-x-4 gap-y-2">
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Image src={toneIcon} alt="Tone Icon" width={16} height={16} />
-					<p className="text-sm text-gray-500">{script?.tone}</p>
+					<p className="text-sm text-gray-500">{getEnumTranslation(script?.tone, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<TextQuote size={16} className=" text-green-500" />
-					<p className="text-sm text-gray-500 ">{script?.verbosity}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.verbosity, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Users size={16} className=" text-cyan-500" />
-					<p className="text-sm text-gray-500 ">{script?.target_audience}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.target_audience, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Image src={typeIcon} alt="Type Icon" width={16} height={16} className="" />
-					<p className="text-sm text-gray-500 ">{script?.script_type}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.script_type, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Hourglass size={16} className=" text-orange-500" />
-					<p className="text-sm text-gray-500 ">{script?.duration}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.duration, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Image src={personaIcon} alt="Persona Icon" width={16} height={16} className="" />
-					<p className="text-sm text-gray-500 ">{script?.persona}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.persona, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Image src={structureIcon} alt="Structure Icon" width={16} height={16} className="" />
-					<p className="text-sm text-gray-500 ">{script?.structure}</p>
+					<p className="text-sm text-gray-500 ">{getEnumTranslation(script?.structure, locale)}</p>
 				</div>
 				<div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
 					<Image src={ctaIcon} alt="CTA Icon" width={16} height={16} className="" />
-					<p className="text-sm text-gray-500 ">{script?.call_to_action === true ? 'CTA: Yes' : 'CTA: No'}</p>
+					<p className="text-sm text-gray-500 ">{script?.call_to_action === true ? dict.scriptPage.ctaYes : dict.scriptPage.ctaNo}</p>
 				</div>
 			</CardContent>
       

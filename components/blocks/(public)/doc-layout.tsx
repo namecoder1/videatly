@@ -5,7 +5,7 @@ import React from 'react'
 import Breadcrumbs from '../breadcrumbs'	
 import CustomIcon from '@/components/ui/custom-icon'
 
-const DocLayout = ({ icon, title, breadcrumbs, sections, children }: { icon: React.ReactNode, title: string, breadcrumbs: any, sections: any, children: React.ReactNode }) => {
+const DocLayout = ({ icon, title, breadcrumbs, sections, children } : { icon: React.ReactNode, title: string, breadcrumbs: any, sections: any, children: React.ReactNode }) => {
 	return (
 		<section className="flex flex-col md:grid lg:grid-cols-8 xl:grid-cols-10 w-fit">
 			<div className="col-span-full shrink-0">

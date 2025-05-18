@@ -16,14 +16,18 @@ import ReactMarkdown from 'react-markdown'
 import { Button } from '@/components/ui/button'
 import { deleteScript, fetchScriptData, fetchUserProfile } from '@/app/actions'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import Link from 'next/link'
 import { updateScriptTokens } from '@/lib/utils'
 import { handleKeyDown, handleInputWithResize } from '@/lib/utils'
 import Loader from '@/components/blocks/loader'
 import ErrorMessage from '@/components/blocks/(protected)/error-message'
 import { Textarea } from '@/components/ui/textarea'
+import { useDictionary } from '@/app/context/dictionary-context'
+import { getEnumTranslation } from '@/utils/enum-translations'
+import CustomLink from '@/components/blocks/custom-link'
+import TokensChat from '@/components/blocks/(protected)/tokens-chat'
 
 const ScriptsPage = ({ params }: { params: { id: string } }) => {
+	const dict = useDictionary()
 	const { id } = params;
   const supabase = createClient()
   const router = useRouter();
@@ -73,8 +77,11 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
       {
         id: 'init',
         role: 'assistant',
-        content: scriptData ? 
-          `Ciao, ${profile?.name}. Creiamo lo script per questo video. Hai gia in mente una scaletta?` : 
+        content: scriptData && profile?.spoken_language === 'it' ? 
+          `Ciao, ${profile?.name}. Creiamo lo script per questo video. In base alle informazioni che hai fornito hai gia in mente una scaletta?` : profile?.spoken_language === 'en' ?
+          `Hello, ${profile?.name}. Let's create the script for this video. Based on the information you provided, do you already have a script in mind?` : profile?.spoken_language === 'es' ?
+          `Hola, ${profile?.name}. Creemos el script para este video. ¿Ya tienes una escala en mente?` : profile?.spoken_language === 'fr' ?
+          `Bonjour, ${profile?.name}. Créons le script pour cette vidéo. En fonction des informations que vous avez fournies, as-tu déjà un script en tête?` :
           'Caricamento...'
       }
     ],
@@ -88,7 +95,7 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 
 	useEffect(() => {
 		if (!id) {
-			setError('No script ID provided')
+			setError(dict.scriptChatPage.toast.noIdProvided)
 			return
 		}
 
@@ -97,8 +104,8 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 			if (scriptResult.error) {
 				setError(scriptResult.error)
 				toast({
-					title: "Error",
-					description: "Failed to load script data",
+					title: dict.scriptChatPage.toast.scriptLoadingError.title,
+					description: dict.scriptChatPage.toast.scriptLoadingError.description,
 					variant: "destructive"
 				})
 				return
@@ -130,16 +137,16 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 				router.back();
 			} else {
 				toast({
-					title: "Error",
-					description: result.error || "Failed to delete the script",
+					title: dict.scriptChatPage.toast.deleteError.title,
+					description: result.error || dict.scriptChatPage.toast.deleteError.description,
 					variant: "destructive"
 				});
 			}
 		} catch (error) {
 			console.error('Error deleting script:', error);
 			toast({
-				title: "Error",
-				description: "Failed to delete the script",
+				title: dict.scriptChatPage.toast.deleteError.title,
+				description: dict.scriptChatPage.toast.deleteError.description,
 				variant: "destructive"
 			});
 		}
@@ -158,8 +165,8 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 
       if (!lastAssistantMessage) {
         toast({
-          title: "Error",
-          description: "No script content found to save",
+          title: dict.scriptChatPage.toast.noContentFound.title,
+          description: dict.scriptChatPage.toast.noContentFound.description,
           variant: "destructive"
         });
         return;
@@ -173,8 +180,8 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
       // If the content is empty after removing the marker, don't save
       if (!content) {
         toast({
-          title: "Error",
-          description: "No valid script content found to save",
+          title: dict.scriptChatPage.toast.noContentFound.title,
+          description: dict.scriptChatPage.toast.noContentFound.description,
           variant: "destructive"
         });
         return;
@@ -212,15 +219,15 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
       setCanSave(false);
       
       toast({
-        title: "Success",
-        description: "Script saved successfully!",
+        title: dict.scriptChatPage.toast.saveSuccess.title,
+        description: dict.scriptChatPage.toast.saveSuccess.description,
         variant: "success"
       });
     } catch (error) {
-      console.error('Error saving script:', error);
+      console.error(dict.scriptChatPage.toast.errorSaving, error);
       toast({
-        title: "Error",
-        description: "Failed to save the script. Please try again.",
+        title: dict.scriptChatPage.toast.saveError.title,
+        description: dict.scriptChatPage.toast.saveError.description,
         variant: "destructive"
       });
     } finally {
@@ -233,7 +240,7 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 	if (!profile || !scriptData) return <Loader position='full' />
 
 	return (
-		<section className="flex flex-col w-full max-w-4xl items-center mx-auto py-24">
+		<section className="flex flex-col  max-w-4xl items-center mx-auto py-24">
 			<div className="pb-[120px] space-y-6">
 				<Button 
 					onClick={handleBack}
@@ -241,11 +248,11 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 					className="flex items-center gap-2"
 				>
 					<ArrowLeft className="w-4 h-4" />
-					Back
+					{dict.scriptChatPage.chat.back}
 				</Button>
 
-        <ScriptInfo scriptData={scriptData} />
-
+        <ScriptInfo scriptData={scriptData} dict={dict} profile={profile} />
+        
         {messages.map(m => {
           const isScriptMessage = m.role === 'assistant' && m.content.includes('[00:00]');
           if (isScriptMessage) {
@@ -270,9 +277,9 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 								>
 									{m.content}
 								</ReactMarkdown>
-								{m.role === 'assistant' && (
+								{m.role === 'assistant' && messages.length > 0 && (
 									<div className="text-xs text-muted-foreground mt-1">
-										{`Token output: ${tokenCount}`}
+										{messages.findIndex(msg => msg.id === m.id) > 0 && `${dict.ideaChatPage.tokens.tokenOutput}: ${tokenCount}`}
 									</div>
 								)}
 							</div>
@@ -290,12 +297,12 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
               {isSaving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
+                  {dict.ideaChatPage.chat.isSaving}
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4 mr-2" />
-                  Save Script
+                  {dict.ideaChatPage.chat.save}
                 </>
               )}
             </Button>
@@ -309,24 +316,24 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
               variant='black'
               className="text-white w-full"
             >
-              <Link href={`/scripts/${id}`}>
-                View Script
+              <CustomLink href={`/scripts/${id}`}>
+                {dict.scriptChatPage.chat.viewScript}
                 <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
+              </CustomLink>
             </Button>
           </div>
         )}
 
+      </div>
+
       {tokensToSubtract > totalTokens && (
 				<div className="text-sm text-muted-foreground">
-					<p>You don&apos;t have enough tokens to continue.</p>
+					<p>{dict.scriptChatPage.chat.noTokens}</p>
 				</div>
 			)}
 
 			{tokensToSubtract <= totalTokens && (
-				<div className="text-sm text-muted-foreground">
-					<p>You have {totalTokens} tokens left.</p>
-				</div>
+        <TokensChat slot1={dict.ideaChatPage.tokens.tokensLeft1} tokens={totalTokens} slot2={dict.ideaChatPage.tokens.tokensLeft2} />
 			)}
 
         <form onSubmit={handleSubmit} className="fixed bottom-2 w-full max-w-2xl mx-auto rounded-3xl backdrop-blur">
@@ -337,7 +344,7 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 						type="button"
 					>
 						<CirclePause className='inline-block mr-2' size={20} />
-						Stop generating
+						{dict.ideaChatPage.chat.stop}
 					</button>
 				)}
 				<div className='flex items-start gap-x-1.5 p-2 border border-zinc-300 dark:border-zinc-800 rounded-3xl shadow-xl bg-card z-50'>
@@ -348,7 +355,7 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 								scrollbar-thin scrollbar-thumb-zinc-400 dark:scrollbar-thumb-zinc-600 scrollbar-track-transparent hover:scrollbar-thumb-zinc-500 dark:hover:scrollbar-thumb-zinc-500
 								${isLoading ? 'cursor-not-allowed' : ''}`}
 							value={input}
-							placeholder={isLoading ? "Assistant is thinking..." : "Chat with the assistant..."}
+							placeholder={isLoading ? dict.ideaChatPage.chat.placeholder2 : dict.ideaChatPage.chat.placeholder1}
 							onChange={(e) => {
 								handleInputChange(e);
 								handleInputWithResize(e);
@@ -366,65 +373,64 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 					</div>
 				</div>
 			</form>
-
-      </div>
 		</section>
 	)
 }
 
-const ScriptInfo = ({ scriptData }: { scriptData: ScriptData }) => {
+const ScriptInfo = ({ scriptData, dict, profile }: { scriptData: ScriptData, dict: any, profile: ProfileData }) => {
   const { tone, verbosity, target_audience, script_type, duration, persona, structure } = scriptData;
+  const locale = profile.spoken_language || 'en';
 
   return (
-    <Card className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950">
+    <Card className="w-xl bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950">
       <CardHeader className="space-y-4">
         <CardTitle>
           <h3 className="text-xl font-semibold flex items-center gap-2">
             <Brain className="w-5 h-5 text-primary" />
-            Script Details
+            {dict.scriptChatPage.chat.details}
           </h3>
         </CardTitle>
         <CardDescription className="text-sm">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <ScriptInfoItem 
-              label="Tone" 
-              value={tone} 
+              label={dict.scriptCreatePage.form.tone} 
+              value={getEnumTranslation(tone, locale)} 
               icon={<Brain size={16} />} 
               color="bg-red-500/10 text-red-500"
             />
             <ScriptInfoItem 
-              label="Verbosity" 
-              value={verbosity} 
+              label={dict.scriptCreatePage.form.verbosity} 
+              value={getEnumTranslation(verbosity, locale)} 
               icon={<LetterText size={16} />}
               color="bg-blue-500/10 text-blue-500"
             />
             <ScriptInfoItem 
-              label="Target Audience" 
-              value={target_audience} 
+              label={dict.scriptCreatePage.form.targetAudience} 
+              value={getEnumTranslation(target_audience, locale)} 
               icon={<Target size={16} />}
               color="bg-green-500/10 text-green-500"
             />
             <ScriptInfoItem 
-              label="Script Type" 
-              value={script_type} 
+              label={dict.scriptCreatePage.form.scriptType} 
+              value={getEnumTranslation(script_type, locale)} 
               icon={<Film size={16} />}
               color="bg-purple-500/10 text-purple-500"
             />
             <ScriptInfoItem 
-              label="Duration" 
-              value={duration} 
+              label={dict.scriptCreatePage.form.duration} 
+              value={getEnumTranslation(duration, locale)} 
               icon={<Clock4 size={16} />}
               color="bg-orange-500/10 text-orange-500"
             />
             <ScriptInfoItem 
-              label="Persona" 
-              value={persona} 
+              label={dict.scriptCreatePage.form.persona} 
+              value={getEnumTranslation(persona, locale)} 
               icon={<User size={16} />}
               color="bg-yellow-500/10 text-yellow-500"
             />
             <ScriptInfoItem 
-              label="Structure" 
-              value={structure} 
+              label={dict.scriptCreatePage.form.structure} 
+              value={getEnumTranslation(structure, locale)} 
               icon={<Paintbrush size={16} />}
               color="bg-indigo-500/10 text-indigo-500"
             />

@@ -129,6 +129,33 @@ const CalendarPage = () => {
     }
   };
 
+  // Function to add custom classes to calendar days
+  const dayClassNames = (date: Date) => {
+    // Check if the date is any idea's publication date
+    for (const idea of ideas) {
+      if (idea.pub_date) {
+        const pubDate = new Date(idea.pub_date)
+        if (pubDate.toLocaleDateString() === date.toLocaleDateString()) {
+          return 'bg-red-100 dark:bg-red-900/20 border border-red-500'
+        }
+      }
+    }
+    return ''
+  }
+
+  // Function to get idea titles for publication dates
+  const getDayContent = (date: Date) => {
+    for (const idea of ideas) {
+      if (idea.pub_date) {
+        const pubDate = new Date(idea.pub_date)
+        if (pubDate.toLocaleDateString() === date.toLocaleDateString()) {
+          return idea.title
+        }
+      }
+    }
+    return null
+  }
+
   if (isLoading) {
     return (
       <Loader position='full' />
@@ -157,6 +184,8 @@ const CalendarPage = () => {
           ideas={ideas}
           daysWithTodos={daysWithTodos}
           dict={dict}
+          dayClassNames={dayClassNames}
+          getDayContent={getDayContent}
         />
     </section>
 	)

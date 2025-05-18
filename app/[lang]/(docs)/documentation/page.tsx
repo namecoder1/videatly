@@ -4,59 +4,6 @@ import DocLayout from "@/components/blocks/(public)/doc-layout"
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { getDocumentationContent } from "@/documentation-content"
 
-const breadcrumbs = [
-  { label: 'Home', href: '/' },
-  { label: 'Documentation', href: '/documentation' },
-]
-	
-const sections = [
-  { id: 'introduction', title: 'Introduction' },
-  { id: 'core-features', title: 'Core Features' },
-  { id: 'platform-guides', title: 'Platform Guides' },
-  { id: 'tokens-&-plans', title: 'Tokens & Plans' },
-  { id: 'help', title: 'Need Help?' },
-]
-
-// const features = [
-// 	{
-// 		title: "Ideas",
-// 		description: "Understand how to use our ideas platform",
-// 		features: ["Creating beautiful ideas", "Setting up workflows", "Managing idea executions", "Best practices and examples"],
-// 		buttonText: "Learn More",
-// 		buttonLink: "/documentation/ideas",
-// 		icon: <Lightbulb className="w-4 h-4 text-blue-500" />,
-// 		iconBackground: "bg-blue-100",
-// 		iconBorder: "border-blue-200",
-// 		guideName: "ideas",
-// 	},
-// 	{
-// 		title: "Scripts",
-// 		description: "Understand how to use our scripts platform",
-// 		features: ["Creating beautiful scripts", "Setting up workflows", "Managing script executions", "Best practices and examples"],
-// 		buttonText: "Learn More",
-// 		buttonLink: "/documentation/scripts",
-// 		icon: <NotepadText className="w-4 h-4 text-yellow-500" />,
-// 		iconBackground: "bg-yellow-100",
-// 		iconBorder: "border-yellow-200",
-// 		guideName: "scripts",
-// 	}
-// ]
-
-// const guides = [
-// 	{
-// 		title: "Ideas",
-// 		description: "Detailed guide to using the ideas platform",
-// 		link: "/documentation/guides/ideas",
-// 		icon: <Lightbulb className="w-4 h-4 text-blue-500" />
-// 	},
-// 	{
-// 		title: "Scripts",
-// 		description: "Detailed guide to using the scripts platform",
-// 		link: "/documentation/guides/scripts",
-// 		icon: <NotepadText className="w-4 h-4 text-yellow-500" />
-// 	}
-// ]
-
 interface DocumentationPageProps {
   params: {
     lang: string
@@ -65,12 +12,19 @@ interface DocumentationPageProps {
 
 const DocumentationPage = async ({ params }: DocumentationPageProps) => {
 	const content = await getDocumentationContent(params.lang);
+
+	const sections = [
+		{ id: 'introduction', title: content.introduction.title },
+		{ id: 'core-features', title: content.introduction.core_features.title },
+		{ id: 'platform-guides', title: content.introduction.platform_guides.title },
+		{ id: 'tokens-&-plans', title: content.introduction.tokens_plans.title },
+	]
 	
 	return (
 		<DocLayout 
 			icon={<BookIcon />} 
 			title={content.introduction.title} 
-			breadcrumbs={breadcrumbs} 
+			breadcrumbs={content.introduction.breadcrumbs} 
 			sections={sections}
 		>
 			<div className='flex-1'>

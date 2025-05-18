@@ -3,6 +3,7 @@ export interface TagsInputProps {
 	label: string;
 	placeholder: string;
 	description?: string;
+	addTags: string;
 }
 
 export interface SearchableSelectProps {

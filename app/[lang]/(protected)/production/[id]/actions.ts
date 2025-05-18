@@ -1,18 +1,5 @@
 import { createClient } from "@/utils/supabase/client"
-import { parse, format, isValid } from 'date-fns'
 
-// Funzione helper per gestire sia 12h che 24h
-const parseTimeFlexible = (timeStr: string | null | undefined) => {
-  if (!timeStr) return null;
-  let parsed = parse(timeStr, 'hh:mm a', new Date())
-  if (!isValid(parsed)) {
-    parsed = parse(timeStr, 'HH:mm', new Date())
-  }
-  if (!isValid(parsed)) {
-    parsed = parse(timeStr, 'HH:mm:ss', new Date())
-  }
-  return isValid(parsed) ? parsed : null;
-}
 
 const fetchTodos = async (date: string) => {
   const supabase = createClient()

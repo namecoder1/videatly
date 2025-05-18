@@ -28,7 +28,13 @@ const IdeasPage = () => {
   const [filteredIdeas, setFilteredIdeas] = useState<IdeaData[]>([])
   const dict = useDictionary()
 
+  useEffect(() => {
+    console.log('Ideas page - Current locale:', dict.locale);
+    console.log('Ideas page - Active filters:', activeFilters);
+  }, [dict.locale, activeFilters]);
+
   const handleFilter = (type: keyof FilterType, value: string) => {
+    console.log(`Applying filter ${type}: ${value}`);
     const newFilters = { ...activeFilters, [type]: value === 'all' ? null : value }
     setActiveFilters(newFilters)
 
@@ -124,7 +130,7 @@ const IdeasPage = () => {
         isSheetOpen={isSheetOpen}
         title={dict.components.filterSheet?.filterIdeas || "Filter Ideas"}
         showIdeaFilters={true}
-        dict={{...dict, locale: dict.locale || 'en'}}
+        dict={{...dict, locale: dict.locale}}
       />
 
       <div className='fixed bottom-5 right-5 flex flex-col gap-2 items-end z-[5]'>

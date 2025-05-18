@@ -32,10 +32,14 @@ import CustomIcon from '@/components/ui/custom-icon'
 import TodoLittle from '@/components/blocks/(protected)/todo-little'
 import Link from 'next/link'
 import { structureIcon, personaIcon, toneIcon, typeIcon, ctaIcon } from '@/assets/home'
-
+import { useDictionary } from '@/app/context/dictionary-context'
+import CustomLink from '@/components/blocks/custom-link'
+import { getEnumTranslation } from '@/utils/enum-translations'
 
 const ScriptPage = ({ params }: { params: { id: string } }) => {
   const { id } = params;
+	const dict = useDictionary();
+	const locale = dict.locale || 'it';
   const supabase = createClient();
   const [script, setScript] = useState<any>(null);
   const [idea, setIdea] = useState<any>(null);
@@ -100,7 +104,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 
       if (todosError) {
         toast({
-          title: "Error loading todos",
+          title: dict.scriptPage.toast.todoLoadingError.title,
           description: todosError.message,
           variant: "destructive"
         });
@@ -110,7 +114,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
         setIdea(ideaData);
         setTodos(todosData || []);
       } catch (err) {
-        setError('Failed to load script');
+        setError(dict.scriptPage.toast.scriptLoadingError.title);
         console.error(err);
       } finally {
         setLoading(false);
@@ -118,7 +122,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
     };
 
     fetchData();
-  }, [id, supabase, toast]);
+  }, [id, supabase, toast, dict.scriptPage.toast.scriptLoadingError.title, dict.scriptPage.toast.todoLoadingError.title]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -128,11 +132,18 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
         .update({ content: script.content })
         .eq("id", id);
 
-      if (error) throw error;
+      if (error) {
+        toast({
+          title: dict.scriptPage.toast.scriptSavedError.title,
+          description: dict.scriptPage.toast.scriptSavedError.description,
+          variant: "destructive"
+        });
+        return;
+      };
       
       toast({
-        title: "Script saved successfully!",
-        description: "Your script has been saved successfully.",
+        title: dict.scriptPage.toast.scriptSavedSuccess.title,
+        description: dict.scriptPage.toast.scriptSavedSuccess.description,
         variant: "success"
       });
       setIsEditing(false);
@@ -159,8 +170,8 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
   };
 
   if (loading) return <Loader position='full' />
-  if (error) return <ErrorMessage error={`There was an error loading the script, it might not exist or you dont have access to it.`} />
-  if (!script || !idea) return <ErrorMessage error="Script or idea not found" />
+  if (error) return <ErrorMessage error={dict.scriptPage.errorMessage} />
+  if (!script || !idea) return <ErrorMessage error={dict.scriptPage.errorMessage2} />
 
   const content = script.content as ScriptSection[];
 
@@ -175,50 +186,56 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
       </div>		
 
       <div className='flex flex-col 2xl:flex-row items-start gap-4'>
-        <Card className="mb-8 shadow-lg w-full">
-          <CardHeader className="flex flex-col items-start md:items-center justify-between bg-accent/30 space-y-4 md:space-y-0 pb-0">
+        <Card className="mb-8 shadow-sm w-full">
+          <CardHeader className="flex flex-col items-start justify-between bg-accent/30 space-y-4 md:space-y-0 pb-0">
             <div className="flex justify-between items-center gap-2 w-full mb-2">
-              <CardTitle className="text-xl font-bold">
+              <CardTitle className="text-2xl font-bold">
                 {idea.title}
               </CardTitle>
             </div>
             <CardDescription className="text-sm text-muted-foreground line-clamp-2">
               {idea.description}
             </CardDescription>
-            <div className='grid grid-cols-8 items-center gap-2'>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Image src={toneIcon} alt="Tone Icon" width={16} height={16} />
-                <p className="text-xs text-gray-500">{script.tone}</p>
+            
+            <div className='block 2xl:hidden w-full'>
+              <Separator className='mt-4' />
+              <div className='flex flex-wrap items-start justify-start gap-4 py-4'>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Image src={toneIcon} alt="Tone Icon" width={16} height={16} />
+                  <p className="text-xs text-gray-500">{getEnumTranslation(script.tone, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <TextQuote size={16} className=" text-green-500" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.verbosity, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Users size={16} className=" text-cyan-500" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.target_audience, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Image src={typeIcon} alt="Type Icon" width={16} height={16} className="" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.script_type, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Hourglass size={16} className=" text-orange-500" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.duration, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Image src={personaIcon} alt="Persona Icon" width={16} height={16} className="" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.persona, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Image src={structureIcon} alt="Structure Icon" width={16} height={16} className="" />
+                  <p className="text-xs text-gray-500 ">{getEnumTranslation(script.structure, locale as string)}</p>
+                </div>
+                <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                  <Image src={ctaIcon} alt="CTA Icon" width={16} height={16} className="" />
+                  <p className="text-xs text-gray-500 ">{script.call_to_action === true ? dict.scriptPage.ctaYes : dict.scriptPage.ctaNo}</p>
+                </div>
               </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <TextQuote size={16} className=" text-green-500" />
-                <p className="text-xs text-gray-500 ">{script.verbosity}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Users size={16} className=" text-cyan-500" />
-                <p className="text-xs text-gray-500 ">{script.target_audience}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Image src={typeIcon} alt="Type Icon" width={16} height={16} className="" />
-                <p className="text-xs text-gray-500 ">{script.script_type}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Hourglass size={16} className=" text-orange-500" />
-                <p className="text-xs text-gray-500 ">{script.duration}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Image src={personaIcon} alt="Persona Icon" width={16} height={16} className="" />
-                <p className="text-xs text-gray-500 ">{script.persona}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Image src={structureIcon} alt="Structure Icon" width={16} height={16} className="" />
-                <p className="text-xs text-gray-500 ">{script.structure}</p>
-              </div>
-              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <Image src={ctaIcon} alt="CTA Icon" width={16} height={16} className="" />
-                <p className="text-xs text-gray-500 ">{script.call_to_action === true ? 'CTA: Yes' : 'CTA: No'}</p>
-              </div>
+              <Separator className='mb-4' />
             </div>
+
           </CardHeader>
           <CardContent className="p-3 md:p-4">
             <DndContext
@@ -234,6 +251,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
                 <div className="space-y-2 rounded-lg">
                   {content.map((section, sectionIndex) => (
                     <SortableScriptSection
+                      dict={dict}
                       key={sectionIndex}
                       section={section}
                       sectionIndex={sectionIndex}
@@ -283,41 +301,84 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
                 onClick={() => handleAddSection(script, setScript)}
               >
                 <Plus className="w-4 h-4 mr-2" />
-                Add New Section
+                {dict.scriptPage.addSection}
               </Button>
             )}
           </CardContent>
         </Card>
-        <Card className='max-w-sm w-full h-full'>
-          <CardHeader className='flex flex-row justify-between items-center'>
-            <CardTitle>Todos</CardTitle>
-            <CardDescription>
-              <Link href={`/production/${id}`} className='flex items-center gap-2 hover:underline underline-offset-4'>
-                <Link2 className='w-4 h-4' />
-                View Production
-              </Link>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className='flex flex-col gap-2'>
-              {todos.length > 0 ? (
-                todos.map((todo) => (
-                  <TodoLittle key={todo.id} todo={todo} />
-                ))
-              ) : (
-                <div className='text-sm text-muted-foreground flex flex-col items-center gap-1'>
-                  <CircleHelp size={24} />
-                  <p>No todos found</p>
-                  <Button variant='black' size='sm' className='mt-2' asChild>
-                    <Link href={`/production/${id}`}>
-                      Create Todos
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className='flex flex-row 2xl:flex-col gap-4 w-full 2xl:w-auto'>
+          <Card className='w-full h-full hidden 2xl:block'>
+            <CardHeader>
+              <CardTitle>
+                {dict.scriptPage.scriptInfo}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className='grid grid-cols-2 gap-y-6 gap-x-16'>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Image src={toneIcon} alt="Tone Icon" width={16} height={16} />
+                <p className="text-xs text-gray-500">{getEnumTranslation(script.tone, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <TextQuote size={16} className=" text-green-500" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.verbosity, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Users size={16} className=" text-cyan-500" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.target_audience, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Image src={typeIcon} alt="Type Icon" width={16} height={16} className="" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.script_type, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Hourglass size={16} className=" text-orange-500" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.duration, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Image src={personaIcon} alt="Persona Icon" width={16} height={16} className="" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.persona, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Image src={structureIcon} alt="Structure Icon" width={16} height={16} className="" />
+                <p className="text-xs text-gray-500 ">{getEnumTranslation(script.structure, locale as string)}</p>
+              </div>
+              <div className="flex items-center p-1.5 gap-2 rounded-md bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <Image src={ctaIcon} alt="CTA Icon" width={16} height={16} className="" />
+                <p className="text-xs text-gray-500 ">{script.call_to_action === true ? dict.scriptPage.ctaYes : dict.scriptPage.ctaNo}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className='2xl:max-w-sm w-full h-full'>
+            <CardHeader className='flex flex-row justify-between items-center'>
+              <CardTitle>Todos</CardTitle>
+              <CardDescription>
+                <CustomLink href={`/production/${id}`} className='flex items-center gap-2 hover:underline underline-offset-4'>
+                  <Link2 className='w-4 h-4' />
+                  {dict.scriptPage.viewProduction}
+                </CustomLink>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='w-full'>
+              <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:flex 2xl:flex-col gap-2'>
+                {todos.length > 0 ? (
+                  todos.map((todo) => (
+                    <TodoLittle key={todo.id} todo={todo} />
+                  ))
+                ) : (
+                  <div className='text-sm text-muted-foreground flex flex-col items-center gap-1'>
+                    <CircleHelp size={24} />
+                    <p>{dict.scriptPage.noTodosFound}</p>
+                    <Button variant='black' size='sm' className='mt-2' asChild>
+                      <Link href={`/production/${id}`}>
+                        {dict.scriptPage.createTodos}
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <div className='fixed right-4 bottom-4 flex flex-col justify-center items-end gap-2'>
@@ -330,12 +391,12 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
           {allCollapsed ? (
             <>
               <ChevronDown className="w-4 h-4" />
-              {!isMobile && "Expand All"}
+              {!isMobile && dict.scriptPage.expandAll}
             </>
           ) : (
             <>
               <ChevronUp className="w-4 h-4" />
-              {!isMobile && "Collapse All"}
+              {!isMobile && dict.scriptPage.collapseAll}
             </>
           )}
         </Button>
@@ -352,7 +413,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
             ) : (
               <Save className="w-4 h-4" />
             )}
-            {!isMobile && "Save Changes"}
+            {!isMobile && dict.scriptPage.saveChanges}
           </Button>
         ) : (
           <Button 
@@ -362,7 +423,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
             className="gap-2"
           >
             <Edit className="w-4 h-4" />
-            {!isMobile && "Edit"}
+            {!isMobile && dict.scriptPage.edit}
           </Button>
         )}
       </div>

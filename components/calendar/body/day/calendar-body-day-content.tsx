@@ -4,6 +4,7 @@ import { hours } from './calendar-body-margin-day-margin'
 import CalendarBodyHeader from '../calendar-body-header'
 import CalendarEvent from '../../calendar-event'
 import { TodoProps } from '@/types/types'
+import { cn } from '@/lib/utils'
 
 export interface ProcessedEvent extends TodoProps {
   effectiveStartDate: Date;
@@ -11,7 +12,7 @@ export interface ProcessedEvent extends TodoProps {
 }
 
 export default function CalendarBodyDayContent({ date }: { date: Date }) {
-  const { events, dict } = useCalendarContext()
+  const { events, dict, dayClassNames, getDayContent } = useCalendarContext()
 
   const processedDayTodos: ProcessedEvent[] = events
     .filter((todo) => {
@@ -57,13 +58,28 @@ export default function CalendarBodyDayContent({ date }: { date: Date }) {
       };
     });
 
-  return (
-    <div className="flex flex-col flex-grow bg-card">
-      <CalendarBodyHeader date={date} dict={dict} />
+  // Get custom class names for this day
+  const customClasses = dayClassNames ? dayClassNames(date) : '';
+  
+  // Get content for publication date if available
+  const dayContent = getDayContent ? getDayContent(date) : null;
 
-      <div className="flex-1 relative">
+  return (
+    <div className={cn(
+      "flex flex-col flex-grow bg-card rounded-r-3xl relative",
+      customClasses
+    )}>
+      <CalendarBodyHeader date={date} dict={dict} />
+      
+      {dayContent && (
+        <div className="px-4 py-2 text-sm font-medium text-red-700 bg-red-50 dark:bg-red-900/10 border-b  dark:border-red-900/20">
+          {dayContent}
+        </div>
+      )}
+
+      <div className="flex-1 relative rounded-r-3xl">
         {hours.map((hour) => (
-          <div key={hour} className="h-32 border-b border-border/50 group" />
+          <div key={hour} className="h-32 border-b border-border/50 group " />
         ))}
 
         {processedDayTodos.map((processedEvent: ProcessedEvent) => (

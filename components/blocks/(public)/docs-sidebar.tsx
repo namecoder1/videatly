@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { EditIcon } from 'lucide-react'
@@ -17,9 +16,8 @@ interface Section {
 
 export function DocsSidebar({ sections }: { sections: Section[] }) {
   const [activeSection, setActiveSection] = useState<string>('')
-  const pathname = usePathname()
 
-  const { dict } = useDictionary()
+  const dict = useDictionary()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -54,7 +52,7 @@ export function DocsSidebar({ sections }: { sections: Section[] }) {
       <div className="flex h-fit">
         <Separator className='h-full' orientation="vertical" />
         <div className="flex-1 pl-4">
-          <h2 className="text-xl font-semibold mb-4">In this section</h2>
+          <h2 className="text-xl font-semibold mb-4">{dict?.docSidebar?.title}</h2>
           <div className="space-y-2">
             {sections.map((section) => (
               <CustomLink

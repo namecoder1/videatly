@@ -12,10 +12,12 @@ import { useState } from "react"
 
 const ToolsManager = ({ 
 	tools, 
-	onChange
+	onChange,
+	dict
 }: { 
 	tools: Tool[], 
-	onChange: (tools: Tool[]) => Promise<void>
+	onChange: (tools: Tool[]) => Promise<void>,
+	dict: any
 }) => {
 	const [newTool, setNewTool] = useState<Tool>({ name: '', description: '', url: '' })
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -42,44 +44,44 @@ const ToolsManager = ({
 	return (
 		<div className='space-y-4'>
 			<div className='flex items-center justify-between'>
-				<Label className='text-md font-medium'>Tools Recommendations</Label>
+				<Label className='text-md font-medium'>{dict.ideaPage.details.fields.toolsRecommendation}</Label>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button variant="ghost" size="sm">
-							<Plus size={16} className="mr-2" /> Add Tool
+							<Plus size={16} className="mr-2" /> {dict.ideaPage.details.fields.addTool}
 						</Button>
 					</DialogTrigger>
 					<DialogContent>
 						<DialogHeader>
-							<DialogTitle>Add New Tool</DialogTitle>
+							<DialogTitle>{dict.ideaPage.details.fields.addNewTool}</DialogTitle>
 						</DialogHeader>
 						<div className='space-y-4 mt-4'>
 							<div className='space-y-2'>
-								<Label htmlFor='toolName'>Tool Name</Label>
+								<Label htmlFor='toolName'>{dict.ideaPage.details.fields.toolName}</Label>
 								<Input
 									id='toolName'
 									value={newTool.name}
 									onChange={(e) => setNewTool({ ...newTool, name: e.target.value })}
-									placeholder="Enter tool name"
+									placeholder={dict.ideaPage.details.fields.toolNamePlaceholder}
 								/>
 							</div>
 							<div className='space-y-2'>
-								<Label htmlFor='toolDescription'>Description</Label>
+								<Label htmlFor='toolDescription'>{dict.ideaPage.details.fields.toolDescription}</Label>
 								<Textarea
 									id='toolDescription'
 									value={newTool.description}
 									onChange={(e) => setNewTool({ ...newTool, description: e.target.value })}
-									placeholder="Enter tool description"
+									placeholder={dict.ideaPage.details.fields.toolDescriptionPlaceholder}
 									className='h-[100px]'
 								/>
 							</div>
 							<div className='space-y-2'>
-								<Label htmlFor='toolUrl'>URL (optional)</Label>
+								<Label htmlFor='toolUrl'>{dict.ideaPage.details.fields.urlTool}</Label>
 								<Input
 									id='toolUrl'
 									value={newTool.url}
 									onChange={(e) => setNewTool({ ...newTool, url: e.target.value })}
-									placeholder="Enter tool URL"
+									placeholder={dict.ideaPage.details.fields.urlToolPlaceholder}
 								/>
 							</div>
 							<Button 
@@ -87,7 +89,7 @@ const ToolsManager = ({
 								className='w-full'
 								disabled={!newTool.name || !newTool.description}
 							>
-								Add Tool
+								{dict.ideaPage.details.fields.addTool}
 							</Button>
 						</div>
 					</DialogContent>
@@ -119,7 +121,7 @@ const ToolsManager = ({
 						</Card>
 					))
 				) : (
-					<p className="text-muted-foreground text-sm col-span-2">No tools recommendations added yet.</p>
+					<p className="text-muted-foreground text-sm col-span-2">{dict.ideaPage.details.fields.noTools}</p>
 				)}
 			</div>
 		</div>

@@ -137,6 +137,7 @@
     }
   },
   "docSidebar": {
+    "title": "In this section",
     "description": "Edit this page on ",
     "documentation": [
       "Home",
@@ -279,6 +280,7 @@
   },
   "shopPage": {
     "title": "Shop",
+    "button": "Buy for ",
     "ideaTokens": {
       "title": "Idea Tokens",
       "description": "Generate unique video ideas for your next project.",
@@ -299,7 +301,6 @@
     },
     "scriptTokens": {
       "title": "Script Tokens",
-      "button": "Buy for ",
       "description": "Generate engaging scripts for your next project.",
       "fields": [
         {
@@ -315,6 +316,16 @@
           "description": "For professional users"
         }
       ]
+    },
+    "toast": {
+      "purchaseSuccess": {
+        "title": "Purchase successful",
+        "description": " tokens have been added to your account. You can now use them to generate ideas and scripts."
+      },
+      "purchaseError": {
+        "title": "Error in purchase",
+        "description": "An error occurred during the purchase. Please try again later."
+      }
     }
   },
   "dashboardPage": {
@@ -390,6 +401,7 @@
       "week": "Week",
       "month": "Month"
     },
+    "more": "more",
     "days": {
       "Mon": "Monday",
       "Tue": "Tuesday",
@@ -399,9 +411,126 @@
       "Sat": "Saturday",
       "Sun": "Sunday"
     },
-    "more": "more",
+    "hours": [
+      "Early morning",
+      "Morning",
+      "Late morning",
+      "Lunchtime",
+      "Afternoon",
+      "Late afternoon",
+      "Dinner",
+      "Evening",
+      "Night"
+    ],
     "tasks": "Tasks",
     "noTasks": "No tasks scheduled for this day"
+  },
+  "ideaPage": {
+    "toast": {
+      "scriptNotFound": [
+        "Script not found",
+        "The script you are looking for does not exist or has been moved."
+      ],
+      "setError": "Error loading idea",
+      "setErrorNotFound": "Idea not found.",
+      "updateIdeaSuccess": {
+        "title": "Idea updated successfully",
+        "description": "The idea has been updated successfully"
+      },
+      "updateIdeaError": {
+        "title": "Error updating idea",
+        "description": "An error occurred while updating the idea. Please try again later."
+      },
+      "updateTopicsError": {
+        "title": "Error updating topics",
+        "description": "An error occurred while updating the topics. Please try again later."
+      },
+      "updateTopicsSuccess": {
+        "title": "Topics updated successfully",
+        "description": "The topics have been updated successfully"
+      },
+      "updateSponsorshipsError": {
+        "title": "Error updating sponsorships",
+        "description": "An error occurred while updating the sponsorships. Please try again later."
+      },
+      "updateSponsorshipsSuccess": {
+        "title": "Sponsorships updated successfully",
+        "description": "The sponsorships have been updated successfully"
+      },
+      "updateToolsError": {
+        "title": "Error updating tools",
+        "description": "An error occurred while updating the tools. Please try again later."
+      },
+      "updateToolsSuccess": {
+        "title": "Tools updated successfully",
+        "description": "The tools have been updated successfully"
+      },
+      "pubDateUpdateError": {
+        "title": "Error updating publication date",
+        "description": "An error occurred while updating the publication date. Please try again later."
+      },
+      "pubDateUpdateSuccess": {
+        "title": "Publication date updated successfully",
+        "description": "The publication date has been updated successfully"
+      }
+    },
+    "errorMessage": "An error occurred while performing the action. Please try again later.",
+    "tabs": {
+      "general": "General",
+      "details": "Details",
+      "content": "Content"
+    },
+    "general": {
+      "title": "General Info",
+      "fields": {
+        "title": "Video Title",
+        "description": "Description",
+        "metaDescription": "Meta Description",
+        "topics": "Topics",
+        "topicsPlaceholder": "Enter a new topics and press enter.",
+        "notTopics": "No topics found. Add a new one.",
+        "tipTopics": "Tip: You can drag and drop to reorder the topics."
+      }
+    },
+    "details": {
+      "title": "Details",
+      "fields": {
+        "thumbnailIdea": "Thumbnail Idea",
+        "musicSuggestions": "Music Suggestions",
+        "sponsors": "Sponsors",
+        "toolsRecommendation": "Tools Recommendation",
+        "addTool": "Add Tool",
+        "addNewTool": "Add a new tool",
+        "toolName": "Tool Name",
+        "toolNamePlaceholder": "Enter a tool name",
+        "toolDescription": "Tool Description",
+        "toolDescriptionPlaceholder": "Enter a tool description",
+        "urlTool": "URL Tool",
+        "urlToolPlaceholder": "Enter a tool URL",
+        "noTools": "No tools found. Add a new one.",
+        "sponsorships": "Sponsorships",
+        "addSponsorship": "Add Sponsorship",
+        "addNewSponsorship": "Add a new sponsorship",
+        "sponsorshipName": "Sponsorship Name",
+        "sponsorshipNamePlaceholder": "Enter a sponsorship name",
+        "sponsorshipDescription": "Sponsorship Description",
+        "sponsorshipDescriptionPlaceholder": "Enter a sponsorship description",
+        "sponsorshipUrl": "URL Sponsorship",
+        "sponsorshipUrlPlaceholder": "Enter a sponsorship URL",
+        "noSponsorships": "No sponsorships found. Add a new one.",
+        "toolRecommendationBlocked": "To view tool recommendations, you need to have a Pro or Ultra account",
+        "sponsorshipRecommendationBlocked": "To view sponsorship recommendations, you need to have a Pro or Ultra account"
+      }
+    },
+    "content": {
+      "title": "Content",
+      "fields": {
+        "script": "Script",
+        "editScript": "Edit script",
+        "noScript": "No script",
+        "createScript": "Create script"
+      }
+    }
   },
   "ideasPage": {
     "title": "Ideas",
@@ -412,6 +541,7 @@
   },
   "ideaCreatePage": {
     "title": "Create Idea",
+    "creatingError": "Error creating idea",
     "form": {
       "suggestions": "Suggestions",
       "suggestionsPlaceholder": "Enter your suggestions for the idea to create",
@@ -429,6 +559,7 @@
       "videoTypeSearchPlaceholder": "Search video type...",
       "keywords": "Keywords",
       "keywordsPlaceholder": "Write and press space or comma to add keywords",
+      "addTags": "Add more keywords",
       "cancel": "Cancel",
       "create": "Create Idea",
       "info": {
@@ -505,6 +636,142 @@
     "createScript": "Create Script"
   },
   "scriptCreatePage": {
+    "toast": {
+      "creatingError": {
+        "title": "Error creating script",
+        "description": "An error occurred while creating the script. Please try again later."
+      }
+    },
+    "title": "Create Script",
+    "relatedIdea": "Related idea",
+    "viewIdea": "View Idea",
+    "form": {
+      "tone": "Tone",
+      "tonePlaceholder": "Select a tone",
+      "toneSearchPlaceholder": "Search a tone",
+      "verbosity": "Verbosity",
+      "verbosityPlaceholder": "Select a verbosity",
+      "verbositySearchPlaceholder": "Search a verbosity",
+      "targetAudience": "Target Audience",
+      "targetAudiencePlaceholder": "Select a target audience",
+      "targetAudienceSearchPlaceholder": "Search a target audience",
+      "scriptType": "Script Type",
+      "scriptTypePlaceholder": "Select a script type",
+      "scriptTypeSearchPlaceholder": "Search a script type",
+      "duration": "Duration",
+      "durationPlaceholder": "Select a duration",
+      "durationSearchPlaceholder": "Search a duration",
+      "persona": "Persona",
+      "personaPlaceholder": "Select a persona",
+      "personaSearchPlaceholder": "Search a persona",
+      "structure": "Structure",
+      "structurePlaceholder": "Select a structure",
+      "structureSearchPlaceholder": "Search a structure",
+      "callToAction": "Call to action",
+      "addCallToAction": "Add call to action",
+      "cancel": "Cancel",
+      "create": "Create Script",
+      "info": {
+        "title": "Script Details",
+        "description": "Here you can find information about the fields available to create a script",
+        "fields": [
+          {
+            "title": "Tone & Verbosity",
+            "description": "Choose a tone and verbosity that suits your content and your audience. The tone sets the mood of your content, while verbosity determines how detailed your content will be."
+          },
+          {
+            "title": "Duration & Persona",
+            "description": "Choose a duration and persona that suits your content and your audience. The duration determines the length of your content, while the persona defines the character or voice of your content."
+          },
+          {
+            "title": "Script Type & Target Audience",
+            "description": "Choose a script type and target audience that suits your content and your audience. The script type determines the structure of your content, while the target audience defines who your content is for."
+          },
+          {
+            "title": "Structure & Call to Action",
+            "description": "Choose a structure and call to action that suits your content and your audience. The structure organizes your content, while the call to action encourages viewer engagement."
+          }
+        ]
+      }
+    }
+  },
+  "scriptPage": {
+    "toast": {
+      "todoLoadingError": {
+        "title": "Error loading todos",
+        "description": "An error occurred while loading the todos. Please try again later."
+      },
+      "scriptLoadingError": {
+        "title": "Error loading script",
+        "description": "An error occurred while loading the script. Please try again later."
+      },
+      "scriptSavedSuccess": {
+        "title": "Script saved successfully",
+        "description": "The script has been saved successfully"
+      },
+      "scriptSavedError": {
+        "title": "Error saving script",
+        "description": "An error occurred while saving the script. Please try again later."
+      }
+    },
+    "errorMessage": "An error occurred while performing the action, you might not have access to the script or it might not exist.",
+    "errorMessage2": "Script or idea not found",
+    "viewProduction": "View Production",
+    "ctaYes": "CTA: Yes",
+    "ctaNo": "CTA: No",
+    "addSection": "Add section",
+    "noTodosFound": "No todos found",
+    "createTodos": "Create Todos",
+    "expandAll": "Expand all",
+    "collapseAll": "Collapse all",
+    "saveChanges": "Save changes",
+    "edit": "Edit",
+    "scriptInfo": "Script info"
+  },
+  "scriptChatPage": {
+    "info": {
+      "title": "Script Details"
+    },
+    "toast": {
+      "scriptLoadingError": {
+        "title": "Error loading data",
+        "description": "An error occurred while loading the data. Please try again later."
+      },
+      "deleteError": {
+        "title": "Error deleting script",
+        "description": "An error occurred while deleting the script. Please try again later."
+      },
+      "noContentFound": {
+        "title": "No content found",
+        "description": "No content was found for this script. Please try again later."
+      },
+      "saveError": {
+        "title": "Error saving script",
+        "description": "An error occurred while saving the script. Please try again later."
+      },
+      "saveSuccess": {
+        "title": "Script saved successfully",
+        "description": "The script has been saved successfully"
+      },
+      "errorSaving": "Error saving script:",
+      "noIdProvided": "No script ID provided"
+    },
+    "chat": {
+      "back": "Back",
+      "details": "Script details",
+      "viewScript": "View Script"
+    }
+  },
+  "productionsPage": {
+    "title": "Productions",
+    "filterBy": "Filter by",
+    "resetFilter": "Reset",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "productionsTitle": "Contents available for production",
+    "createProduction": "Create Production"
+  },
+  "productionPage": {
 
   },
   "components": {
@@ -517,6 +784,7 @@
       "oldest": "Oldest",
       "filterIdeas": "Filter Ideas",
       "filterScripts": "Filter Scripts",
+      "filterProductions": "Filter Productions",
 
       "duration": "Duration",
       "selectDuration": "Select Duration",
@@ -525,6 +793,10 @@
       "scriptType": "Script Type",
       "selectScriptType": "Select Script Type",
       "allTypes": "All script type...",
+
+      "scriptVerbosity": "Verbosity",
+      "selectVerbosity": "Select Verbosity",
+      "allVerbosities": "All verbosity...",
 
       "scriptPersona": "Script Persona",
       "selectPersona": "Select Script Persona",
@@ -589,6 +861,15 @@
           "An error occurred while deleting the script. Please try again later."
         ]
       }
+    },
+    "sortableScriptSection": {
+      "dragToReorder": "Drag to reorder",
+      "points": "points",
+      "point": "point",
+      "deleteSection": "Remove section",
+      "placeholder": "Enter your script point here...",
+      "deletePoint": "Remove point",
+      "addPoint": "Add point"
     }
   },
   "notFound": {

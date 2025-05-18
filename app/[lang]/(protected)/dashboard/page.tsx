@@ -62,7 +62,7 @@ const DashboardPage = () => {
 			}
 		}
 		fetchData()
-	}, [supabase])
+	}, [supabase, currentLang])
 
 	if (userData?.yt_username === null) {
 		redirect(`/${currentLang}/profile`)

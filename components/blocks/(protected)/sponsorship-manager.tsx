@@ -13,10 +13,12 @@ import { Card } from "@/components/ui/card"
 
 const SponsorshipManager = ({ 
 	sponsorships, 
-	onChange
+	onChange,
+	dict
 }: { 
 	sponsorships: Sponsorship[], 
-	onChange: (sponsorships: Sponsorship[]) => Promise<void>
+	onChange: (sponsorships: Sponsorship[]) => Promise<void>,
+	dict: any
 }) => {
 	const [newSponsorship, setNewSponsorship] = useState<Sponsorship>({ name: '', description: '', url: '' })
 	const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -43,44 +45,44 @@ const SponsorshipManager = ({
 	return (
 		<div className='space-y-4'>
 			<div className='flex items-center justify-between'>
-				<Label className='text-md font-medium'>Sponsorship Opportunities</Label>
+				<Label className='text-md font-medium'>{dict.ideaPage.details.fields.sponsorships}</Label>
 				<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 					<DialogTrigger asChild>
 						<Button variant="ghost" size="sm">
-							<Plus size={16} className="mr-2" /> Add Sponsorship
+							<Plus size={16} className="mr-2" /> {dict.ideaPage.details.fields.addSponsorship}
 						</Button>
 					</DialogTrigger>
 					<DialogContent>
 						<DialogHeader>
-							<DialogTitle>Add New Sponsorship</DialogTitle>
+							<DialogTitle>{dict.ideaPage.details.fields.addNewSponsorship}</DialogTitle>
 						</DialogHeader>
 						<div className='space-y-4 mt-4'>
 							<div className='space-y-2'>
-								<Label htmlFor='sponsorName'>Sponsor Name</Label>
+								<Label htmlFor='sponsorName'>{dict.ideaPage.details.fields.sponsorshipName}</Label>
 								<Input
 									id='sponsorName'
 									value={newSponsorship.name}
 									onChange={(e) => setNewSponsorship({ ...newSponsorship, name: e.target.value })}
-									placeholder="Enter sponsor name"
+									placeholder={dict.ideaPage.details.fields.sponsorshipNamePlaceholder}
 								/>
 							</div>
 							<div className='space-y-2'>
-								<Label htmlFor='sponsorDescription'>Description</Label>
+								<Label htmlFor='sponsorDescription'>{dict.ideaPage.details.fields.sponsorshipDescription}</Label>
 								<Textarea
 									id='sponsorDescription'
 									value={newSponsorship.description}
 									onChange={(e) => setNewSponsorship({ ...newSponsorship, description: e.target.value })}
-									placeholder="Enter sponsorship description"
+									placeholder={dict.ideaPage.details.fields.sponsorshipDescriptionPlaceholder}
 									className='h-[100px]'
 								/>
 							</div>
 							<div className='space-y-2'>
-								<Label htmlFor='sponsorUrl'>URL (optional)</Label>
+								<Label htmlFor='sponsorUrl'>{dict.ideaPage.details.fields.sponsorshipUrl}</Label>
 								<Input
 									id='sponsorUrl'
 									value={newSponsorship.url}
 									onChange={(e) => setNewSponsorship({ ...newSponsorship, url: e.target.value })}
-									placeholder="Enter sponsor URL"
+									placeholder={dict.ideaPage.details.fields.sponsorshipUrlPlaceholder}
 								/>
 							</div>
 							<Button 
@@ -88,7 +90,7 @@ const SponsorshipManager = ({
 								className='w-full'
 								disabled={!newSponsorship.name || !newSponsorship.description}
 							>
-								Add Sponsorship
+								{dict.ideaPage.details.fields.addSponsorship}
 							</Button>
 						</div>
 					</DialogContent>
@@ -120,7 +122,7 @@ const SponsorshipManager = ({
 						</Card>
 					))
 				) : (
-					<p className="text-muted-foreground text-sm col-span-2">No sponsorship opportunities added yet.</p>
+					<p className="text-muted-foreground text-sm col-span-2">{dict.ideaPage.details.fields.noSponsorships}</p>
 				)}
 			</div>
 		</div>

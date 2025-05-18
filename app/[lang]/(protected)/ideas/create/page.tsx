@@ -43,7 +43,7 @@ const CreateIdeaPage = () => {
 			.single()
 
 		if (error) {
-			console.error('Error creating idea:', error)
+			console.error(dict.ideaCreatePage.creatingError, error)
 			return
 		}
 
@@ -119,6 +119,7 @@ const CreateIdeaPage = () => {
 									name="keywords"
 									label={dict.ideaCreatePage.form.keywords}
 									placeholder={dict.ideaCreatePage.form.keywordsPlaceholder}
+									addTags={dict.ideaCreatePage.form.addTags}
 								/>
 							</div>
 						</div>

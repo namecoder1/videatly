@@ -12,6 +12,8 @@ export type CalendarProps = {
   ideas?: any[]
   daysWithTodos?: string[]
   dict: any
+  dayClassNames?: (date: Date) => string
+  getDayContent?: (date: Date) => string | null
 }
 
 export type CalendarContextType = CalendarProps & {

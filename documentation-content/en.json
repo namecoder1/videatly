@@ -1,6 +1,16 @@
 {
   "introduction": {
     "title": "Introduction",
+    "breadcrumbs": [
+      {
+        "label": "Home",
+        "href": "/"
+      },
+      {
+        "label": "Documentation",
+        "href": "/documentation"
+      }
+    ],
     "introduction": {
       "title": "Introduction",
       "content": "Videatly is a platform that allows you to create and manage your ideas, scripts, and workflows. The idea is to create a platform that allows you to improve your Video Production workflow and overall productivity by using AI features and tools built exactly for this purpose. Each feature is built to improve a specific part of the Video Production workflow. In the guides section you can find more information about each feature and how to use them."

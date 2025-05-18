@@ -91,7 +91,8 @@
         "20.000 tokens vidéo",
         "40.000 tokens script",
         "Analyse avancée",
-        "Support prioritaire"
+        "Support prioritaire",
+        "Générateur de miniatures"
       ],
       "action": "Commencer maintenant"
     }
@@ -113,9 +114,767 @@
     "q7": "Offrez-vous un support?",
     "a7": "Oui, nous offrons un support dédié via notre centre d'assistance et notre email. Notre équipe répond généralement dans les 24 heures pour toute question ou préoccupation."
   },
+  "mainSidebar": {
+    "manage": {
+      "title": "Gérer",
+      "label1": "Tableau de bord",
+      "label2": "Analyse",
+      "label3": "Calendrier"
+    },
+    "create": {
+      "title": "Créer",
+      "label1": [
+        "Idées",
+        "Créer une idée",
+        "Vos idées"
+      ],
+      "label2": "Scripts",
+      "label3": "Production"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "label1": "Boutique",
+      "label2": "Documentation"
+    }
+  },
+  "docSidebar": {
+    "title": "Dans cette section",
+    "description": "Modifier cette page sur ",
+    "documentation": [
+      "Accueil",
+      "Getting Started",
+      "Usage",
+      "Configuration",
+      "Use Cases"
+    ],
+    "specific": [
+      "Idées",
+      "Scripts",
+      "Tokens & Plans"
+    ],
+    "platform": [
+      "Guide de la plateforme",
+      "Guide des idées",
+      "Guide des scripts"
+    ]
+  },
+  "userInfo": {
+    "profile": "Profil",
+    "profileDescription": "Gérer vos paramètres",
+    "settings": "Paramètres",
+    "settingsDescription": "Personnaliser votre expérience"
+  },
+  "profilePage": {
+    "title": "Profil",
+    "toast": {
+      "fetchError": [
+        "Erreur lors du chargement des données utilisateur",
+        "Une erreur s'est produite lors du chargement des données utilisateur. Veuillez réessayer plus tard."
+      ],
+      "noChanges": [
+        "Aucun changement détecté",
+        "Aucun changement n'a été apporté aux données du profil"
+      ],
+      "updateSuccess": [
+        "Données mises à jour avec succès",
+        "Les données du profil ont été mises à jour avec succès"
+      ],
+      "updateError": [
+        "Erreur lors de la mise à jour des données",
+        "Une erreur s'est produite lors de la mise à jour des données du profil. Veuillez réessayer plus tard."
+      ]
+    },
+    "youtubeProfileSettings": {
+      "title": "Paramètres du profil YouTube",
+      "yt_username": "Nom d'utilisateur YouTube",
+      "yt_usernamePlaceholder": "Entrez votre nom d'utilisateur YouTube",
+      "contentStyle": "Style de contenu",
+      "contentStylePlaceholder": "Sélectionnez un style",
+      "contentStyleSearchPlaceholder": "Rechercher un style...",
+      "videoLength": "Longueur de vidéo",
+      "videoLengthPlaceholder": "Sélectionnez une longueur",
+      "videoLengthSearchPlaceholder": "Rechercher une longueur...",
+      "targetInterest": "Intérêt cible",
+      "targetInterestPlaceholder": "Sélectionnez un intérêt",
+      "targetInterestSearchPlaceholder": "Rechercher un intérêt...",
+      "videoType": "Type de vidéo",
+      "videoTypePlaceholder": "Sélectionnez un type",
+      "videoTypeSearchPlaceholder": "Rechercher un type...",
+      "experienceLevel": "Niveau d'expérience",
+      "experienceLevelPlaceholder": "Sélectionnez un niveau",
+      "experienceLevelSearchPlaceholder": "Rechercher un niveau...",
+      "submit": "Enregistrer les modifications",
+      "languageSettings": {
+        "title": "Il est nécessaire de définir la langue",
+        "description": "Pour personnaliser vos recommandations vidéo, il est nécessaire de définir la langue dans la page Paramètres.",
+        "button": "Définir la langue"
+      },
+      "info": {
+        "title": "Comprendre vos options",
+        "description": "Un guide pour vous aider à choisir les bons paramètres pour vos vidéos",
+        "fields": [
+          {
+            "title": "Longueur de vidéo",
+            "description": "La longueur de la vidéo est un facteur important pour le succès de votre vidéo. Si votre vidéo est trop courte, elle peut ne pas suffire à capter l'attention de votre public. Si elle est trop longue, elle peut être ennuyeuse et pousser vos spectateurs à passer la vidéo."
+          },
+          {
+            "title": "Intérêt cible",
+            "description": "L'intérêt cible est le public que vous aimez. Si votre vidéo est trop courte, elle peut ne pas suffire à capter l'attention de votre public. Si elle est trop longue, elle peut être ennuyeuse et pousser vos spectateurs à passer la vidéo."
+          },
+          {
+            "title": "Type de vidéo",
+            "description": "Le type de vidéo est un facteur important pour le succès de votre vidéo. Si votre vidéo est trop courte, elle peut ne pas suffire à capter l'attention de votre public. Si elle est trop longue, elle peut être ennuyeuse et pousser vos spectateurs à passer la vidéo."
+          }
+        ]
+      }
+    }
+  },
+  "settingsPage": {
+    "title": "Paramètres",
+    "fields": {
+      "languagePicker": {
+        "language": "Langue",
+        "languageDescription": "Nous avons besoin de connaître votre langue pour personnaliser votre expérience avec l'application et les fonctionnalités d'IA.",
+        "languagePlaceholder": "Sélectionnez une langue",
+        "languageSearchPlaceholder": "Rechercher une langue..."
+      },
+      "personalInfo": {
+        "title": "Informations personnelles",
+        "nameEdit": "Modifier le nom",
+        "nameSave": "Enregistrer",
+        "nameCancel": "Annuler",
+        "namePlaceholder": "Entrez votre nom",
+        "created": "Créé",
+        "lastUpdated": "Dernière mise à jour"
+      },
+      "userPlan": {
+        "description1": "Nous ne stockons pas vos informations de paiement. Tous les paiements sont traités par ",
+        "description2": ". Cliquez sur le bouton ci-dessous pour être redirigé vers la page de paiement.",
+        "span": "Vous nous payez : ",
+        "month": "mois",
+        "button": "Paramètres du plan"
+      },
+      "deleteCard": {
+        "title": "Zone dangereuse",
+        "description": "La suppression de votre compte supprimera toutes vos données de nos serveurs. En supprimant votre compte, vous ne pourrez plus accéder à votre compte ou à son contenu.",
+        "button": "Supprimer le compte"
+      }
+    },
+    "info": {
+      "title": "Compte & Confidentialité",
+      "description": "Gérez les paramètres de votre compte et votre confidentialité",
+      "fields": {
+        "privacy": {
+          "title": "Données & Confidentialité",
+          "description": "Nous collectons et stockons uniquement les données essentielles nécessaires à la fourniture de nos services. Vos données sont cryptées et stockées en toute sécurité."
+        },
+        "account": {
+          "title": "Sécurité du compte",
+          "description": "Votre compte est protégé par l'authentification Google. Nous vous recommandons d'activer l'authentification à deux facteurs pour une sécurité supplémentaire."
+        },
+        "data": {
+          "title": "Gestion des données",
+          "description": "Vos données sont stockées et gérées en toute sécurité dans nos systèmes. Nous automatisons toutes les opérations de données pour garantir une livraison de service fluide."
+        }
+      }
+    }
+  },
+  "shopPage": {
+    "title": "Boutique",
+    "button": "Acheter pour ",
+    "ideaTokens": {
+      "title": "Tokens d'idées",
+      "description": "Générez des idées de vidéo uniques pour votre prochain projet.",
+      "fields": [
+        {
+          "title": "Basique",
+          "description": "Pour débuter"
+        },
+        {
+          "title": "Standard",
+          "description": "Pour les utilisateurs actifs"
+        },
+        {
+          "title": "Premium",
+          "description": "Pour les utilisateurs expérimentés"
+        }
+      ]
+    },
+    "scriptTokens": {
+      "title": "Tokens de script",
+      "description": "Générez des scripts captivants pour votre prochain projet.",
+      "fields": [
+        {
+          "title": "Basique",
+          "description": "Pour les débutants"
+        },
+        {
+          "title": "Standard",
+          "description": "Pour les créateurs de contenu"
+        },
+        {
+          "title": "Premium",
+          "description": "Pour les utilisateurs professionnels"
+        }
+      ]
+    },
+    "toast": {
+      "purchaseSuccess": {
+        "title": "Achat effectué avec succès",
+        "description": " tokens ont été ajoutés à votre compte. Vous pouvez maintenant les utiliser pour générer des idées et des scripts."
+      },
+      "purchaseError": {
+        "title": "Erreur lors de l'achat",
+        "description": "Une erreur s'est produite lors de l'achat. Veuillez réessayer plus tard."
+      }
+    }
+  },
+  "dashboardPage": {
+    "title": "Tableau de bord"
+  },
+  "calendarPage": {
+    "locale": "fr",
+    "title": "Calendrier",
+    "toast": {
+      "fillFields": [
+        "Veuillez remplir tous les champs",
+        "Veuillez remplir tous les champs du calendrier"
+      ],
+      "fetchError": [
+        "Erreur lors du chargement du calendrier",
+        "Une erreur s'est produite lors du chargement du calendrier. Veuillez réessayer plus tard."
+      ],
+      "creationError": [
+        "Erreur lors de la création de la tâche",
+        "Une erreur s'est produite lors de la création de la tâche. Veuillez réessayer plus tard."
+      ],
+      "updateError": [
+        "Erreur lors de la mise à jour de la tâche",
+        "Une erreur s'est produite lors de la mise à jour de la tâche. Veuillez réessayer plus tard."
+      ],
+      "creationSuccess": [
+        "Tâche créée avec succès",
+        "La tâche a été créée avec succès"
+      ],
+      "updateSuccess": [
+        "Tâche mise à jour avec succès",
+        "La tâche a été mise à jour avec succès"
+      ],
+      "deleteSuccess": [
+        "Tâche supprimée avec succès",
+        "La tâche a été supprimée avec succès"
+      ],
+      "deleteError": [
+        "Erreur lors de la suppression de la tâche",
+        "Une erreur s'est produite lors de la suppression de la tâche. Veuillez réessayer plus tard."
+      ],
+      "randomError": [
+        "Erreur",
+        "Une erreur s'est produite pendant l'opération. Veuillez réessayer plus tard."
+      ]
+    },
+    "today": "Aujourd'hui",
+    "publishingDateFor": "Date de publication pour",
+    "viewIdea": "Voir l'idée",
+    "noDate": "Aucune date",
+    "selectDate": "Sélectionner une date",
+    "selectDateMessage": "Sélectionnez une date pour visualiser vos événements",
+    "addEvent": "Ajouter un événement",
+    "editEvent": "Modifier l'événement",
+    "production": "Production",
+    "productionPlaceholder": "Sélectionnez une production",
+    "formTitle": "Titre",
+    "formDescription": "Description",
+    "formEditTime": "Modifier l'heure",
+    "formStartTime": "Heure de début",
+    "formStartTimePlaceholder": "Sélectionnez une heure",
+    "formEndTime": "Heure de fin",
+    "formEndTimePlaceholder": "Sélectionnez une heure",
+    "formPriority": "Priorité",
+    "formPriorityPlaceholder": "Sélectionnez une priorité",
+    "formCategory": "Catégorie",
+    "formCategoryPlaceholder": "Sélectionnez une catégorie",
+    "formSubmit": "Créer",
+    "formUpdate": "Mettre à jour",
+    "noEvents": "Aucun événement programmé pour cette date",
+    "modes": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "days": {
+      "Mon": "Lundi",
+      "Tue": "Mardi",
+      "Wed": "Mercredi",
+      "Thu": "Jeudi",
+      "Fri": "Vendredi",
+      "Sat": "Samedi",
+      "Sun": "Dimanche"
+    },
+    "hours": [
+      "Petit matin",
+      "Matin",
+      "Fin de matinée",
+      "Déjeuner",
+      "Après-midi",
+      "Fin d'après-midi",
+      "Dîner",
+      "Soirée",
+      "Nuit"
+    ],
+    "more": "plus",
+    "tasks": "Tâches",
+    "noTasks": "Aucune tâche programmée pour cette date"
+  },
+  "ideaPage": {
+    "toast": {
+      "scriptNotFound": {
+        "title": "Script non trouvé",
+        "description": "Le script lié à cette idée n'a pas été trouvé. Veuillez réessayer plus tard."
+      },
+      "setError": "Erreur lors du chargement de l'idée",
+      "setErrorNotFound": "Idée non trouvée",
+      "updateIdeaSuccess": {
+        "title": "Idée mise à jour avec succès",
+        "description": "L'idée a été mise à jour avec succès"
+      },
+      "updateIdeaError": {
+        "title": "Erreur lors de la mise à jour de l'idée",
+        "description": "Une erreur s'est produite lors de la mise à jour de l'idée. Veuillez réessayer plus tard."
+      },
+      "updateTopicsError": {
+        "title": "Erreur lors de la mise à jour des sujets",
+        "description": "Une erreur s'est produite lors de la mise à jour des sujets. Veuillez réessayer plus tard."
+      },
+      "updateTopicsSuccess": {
+        "title": "Sujets mis à jour avec succès",
+        "description": "Les sujets ont été mis à jour avec succès"
+      },
+      "updateSponsorshipsError": {
+        "title": "Erreur lors de la mise à jour des sponsors",
+        "description": "Une erreur s'est produite lors de la mise à jour des sponsors. Veuillez réessayer plus tard."
+      },
+      "updateSponsorshipsSuccess": {
+        "title": "Sponsors mis à jour avec succès",
+        "description": "Les sponsors ont été mis à jour avec succès"
+      },
+      "updateToolsError": {
+        "title": "Erreur lors de la mise à jour des outils",
+        "description": "Une erreur s'est produite lors de la mise à jour des outils. Veuillez réessayer plus tard."
+      },
+      "updateToolsSuccess": {
+        "title": "Outils mis à jour avec succès",
+        "description": "Les outils ont été mis à jour avec succès"
+      },
+      "pubDateUpdateError": {
+        "title": "Erreur lors de la mise à jour de la date de publication",
+        "description": "Une erreur s'est produite lors de la mise à jour de la date de publication. Veuillez réessayer plus tard."
+      },
+      "pubDateUpdateSuccess": {
+        "title": "Date de publication mise à jour avec succès",
+        "description": "La date de publication a été mise à jour avec succès"
+      }
+    },
+    "errorMessage": "Une erreur s'est produite pendant l'opération. Veuillez réessayer plus tard.",
+    "tabs": {
+      "general": "Informations générales",
+      "details": "Détails",
+      "content": "Contenu"
+    },
+    "general": {
+      "title": "Informations générales",
+      "fields": {
+        "title": "Titre de la vidéo",
+        "description": "Description de l'idée",
+        "metaDescription": "Meta description de l'idée",
+        "topics": "Sujets",
+        "topicsPlaceholder": "Entrez un nouveau sujet et appuyez sur entrée",
+        "noTopics": "Pas encore de sujet. Ajoutez-en un et organisez vos idées !",
+        "tipTopics": "Astuce : faites glisser un sujet pour le réorganiser"
+      }
+    },
+    "details": {
+      "title": "Détails",
+      "fields": {
+        "thumbnailIdea": "Idée de miniature",
+        "musicSuggestions": "Suggestions de musique",
+        "sponsors": "Sponsors",
+        "toolsRecommendation": "Recommandations d'outils",
+        "addTool": "Ajouter un outil",
+        "addNewTool": "Ajouter un nouvel outil",
+        "toolName": "Nom de l'outil",
+        "toolNamePlaceholder": "Entrez le nom de l'outil",
+        "toolDescription": "Description de l'outil",
+        "toolDescriptionPlaceholder": "Entrez la description de l'outil",
+        "urlTool": "URL de l'outil",
+        "urlToolPlaceholder": "Entrez l'URL de l'outil",
+        "noTools": "Aucun outil ajouté",
+        "sponsorships": "Recommandations de sponsors",
+        "addSponsorship": "Ajouter un sponsor",
+        "addNewSponsorship": "Ajouter un nouveau sponsor",
+        "sponsorshipName": "Nom du sponsor",
+        "sponsorshipNamePlaceholder": "Entrez le nom du sponsor",
+        "sponsorshipDescription": "Description du sponsor",
+        "sponsorshipDescriptionPlaceholder": "Entrez la description du sponsor",
+        "sponsorshipUrl": "URL du sponsor",
+        "sponsorshipUrlPlaceholder": "Entrez l'URL du sponsor",
+        "noSponsorships": "Aucun sponsor ajouté",
+        "toolRecommendationBlocked": "Pour voir les recommandations d'outils, vous devez avoir un compte Pro ou Ultra",
+        "sponsorshipRecommendationBlocked": "Pour voir les recommandations de sponsors, vous devez avoir un compte Pro ou Ultra"
+      }
+    },
+    "content": {
+      "title": "Contenu",
+      "fields": {
+        "script": "Script",
+        "editScript": "Modifier le script",
+        "noScript": "Pas de script",
+        "createScript": "Créer un script"
+      }
+    }
+  },
+  "ideasPage": {
+    "title": "Idées",
+    "newIdea": "Nouvelle idée",
+    "yourIdeas": "Vos idées",
+    "noIdeasFound": "Aucune idée trouvée",
+    "noIdeasFoundDescription": "Commencez à créer des idées en cliquant sur le bouton ci-dessous"
+  },
+  "ideaCreatePage": {
+    "title": "Créer une idée",
+    "form": {
+      "suggestions": "Suggestions",
+      "suggestionsPlaceholder": "Entrez vos suggestions pour l'idée à créer",
+      "contentStyle": "Style de contenu",
+      "contentStylePlaceholder": "Sélectionnez un style",
+      "contentStyleSearchPlaceholder": "Rechercher un style...",
+      "videoLength": "Longueur de vidéo",
+      "videoLengthPlaceholder": "Sélectionnez une longueur",
+      "videoLengthSearchPlaceholder": "Rechercher une longueur...",
+      "targetInterest": "Intérêt cible",
+      "targetInterestPlaceholder": "Sélectionnez un intérêt",
+      "targetInterestSearchPlaceholder": "Rechercher un intérêt...",
+      "videoType": "Type de vidéo",
+      "videoTypePlaceholder": "Sélectionnez un type",
+      "videoTypeSearchPlaceholder": "Rechercher un type...",
+      "keywords": "Mots-clés",
+      "keywordsPlaceholder": "Écrivez et appuyez sur espace ou virgule pour ajouter des mots-clés",
+      "addTags": "Ajouter d'autres mots-clés",
+      "cancel": "Annuler",
+      "create": "Créer l'idée",
+      "info": {
+        "title": "Détails de l'idée",
+        "description": "Vous pouvez trouver ici des informations sur les champs disponibles pour créer une nouvelle idée",
+        "fields": [
+          {
+            "title": "Suggestions",
+            "description": "Entrez vos suggestions pour l'idée à créer, vous pourrez en ajouter d'autres plus tard lorsque vous serez dans le chat avec l'IA"
+          },
+          {
+            "title": "Style de contenu & Longueur",
+            "description": "Choisissez un style qui correspond à votre contenu et à votre public. Les vidéos éducatives fonctionnent bien avec des formats explicatifs, tandis que le divertissement peut bénéficier de la narration. Considérez la durée en fonction de la plateforme : plus courte pour les médias sociaux, plus longue pour les sujets approfondis."
+          },
+          {
+            "title": "Type de vidéo & Intérêt cible",
+            "description": "Choisissez des formats qui correspondent à vos objectifs de contenu. Différents types génèrent différents niveaux d'engagement. Définissez les intérêts de votre public pour optimiser la découverte de contenu et atteindre les bons spectateurs."
+          },
+          {
+            "title": "Mots-clés",
+            "description": "Incluez 5 à 7 mots-clés pertinents que votre public pourrait rechercher. Mélangez des termes spécifiques avec des concepts plus larges. Envisagez d'ajouter des variations de votre sujet principal et des concepts connexes pour améliorer le référencement et la découverte de contenu."
+          }
+        ]
+      }
+    }
+  },
+  "ideaChatPage": {
+    "info": {
+      "title": "Détails de l'idée"
+    },
+    "tokens": {
+      "tokenOutput": "Tokens consommés",
+      "tokensLeft1": "Vous avez ",
+      "tokensLeft2": " tokens restants"
+    },
+    "toast": {
+      "fetchError": [
+        "Erreur lors du chargement des tokens",
+        "Une erreur s'est produite lors du chargement des tokens. Veuillez réessayer plus tard."
+      ],
+      "saveSuccess": [
+        "Succès",
+        "L'idée a été enregistrée avec succès"
+      ],
+      "saveError": [
+        "Erreur lors de l'enregistrement de l'idée",
+        "Une erreur s'est produite lors de l'enregistrement de l'idée. Veuillez réessayer plus tard."
+      ],
+      "deleteError": [
+        "Erreur lors de la suppression de l'idée",
+        "Une erreur s'est produite lors de la suppression de l'idée. Veuillez réessayer plus tard."
+      ]
+    },
+    "chat": {
+      "back": "Retour",
+      "placeholder1": "Discutez avec l'assistant",
+      "placeholder2": "Je réfléchis...",
+      "stop": "Arrêter",
+      "save": "Enregistrer l'idée",
+      "isSaving": "Enregistrement de l'idée...",
+      "viewIdea": "Voir l'idée",
+      "createScript": "Créer un script",
+      "noTokens": "Vous n'avez pas assez de tokens pour envoyer un message"
+    }
+  },
+  "scriptsPage": {
+    "title": "Scripts",
+    "yourScripts": "Vos scripts",
+    "yourIdeas": "Vos idées",
+    "noScriptsFound": "Aucun script trouvé",
+    "noScriptsFoundDescription": "Commencez à créer des scripts en cliquant sur le bouton ci-dessous",
+    "noIdeasFound": "Aucune idée trouvée",
+    "noIdeasFoundDescription": "Commencez à créer des idées en cliquant sur le bouton ci-dessous",
+    "createScript": "Créer un script"
+  },
+  "scriptCreatePage": {
+    "toast": {
+      "creatingError": {
+        "title": "Erreur lors de la création du script",
+        "description": "Une erreur s'est produite lors de la création du script. Veuillez réessayer plus tard."
+      }
+    },
+    "title": "Créer un script",
+    "relatedIdea": "Idée liée",
+    "viewIdea": "Voir l'idée",
+    "form": {
+      "tone": "Ton",
+      "tonePlaceholder": "Sélectionnez un ton",
+      "toneSearchPlaceholder": "Rechercher un ton",
+      "verbosity": "Verbosité",
+      "verbosityPlaceholder": "Sélectionnez une verbosité",
+      "verbositySearchPlaceholder": "Rechercher une verbosité",
+      "targetAudience": "Public cible",
+      "targetAudiencePlaceholder": "Sélectionnez un public cible",
+      "targetAudienceSearchPlaceholder": "Rechercher un public cible",
+      "scriptType": "Type de script",
+      "scriptTypePlaceholder": "Sélectionnez un type de script",
+      "scriptTypeSearchPlaceholder": "Rechercher un type de script",
+      "duration": "Durée",
+      "durationPlaceholder": "Sélectionnez une durée",
+      "durationSearchPlaceholder": "Rechercher une durée",
+      "persona": "Personnage",
+      "personaPlaceholder": "Sélectionnez un personnage",
+      "personaSearchPlaceholder": "Rechercher un personnage",
+      "structure": "Structure",
+      "structurePlaceholder": "Sélectionnez une structure",
+      "structureSearchPlaceholder": "Rechercher une structure",
+      "callToAction": "Appel à l'action",
+      "addCallToAction": "Ajouter un appel à l'action",
+      "cancel": "Annuler",
+      "create": "Créer le script",
+      "info": {
+        "title": "Détails du script",
+        "description": "Vous pouvez trouver ici des informations sur les champs disponibles pour créer un script",
+        "fields": [
+          {
+            "title": "Ton et Verbosité",
+            "description": "Choisissez un ton et une verbosité adaptés à votre contenu et à votre public. Le ton détermine l'ambiance de votre contenu, tandis que la verbosité détermine la quantité de détails que votre contenu aura."
+          },
+          {
+            "title": "Durée et Personnage",
+            "description": "Choisissez une durée et un personnage adaptés à votre contenu et à votre public. La durée détermine la longueur de votre contenu, tandis que le personnage définit le caractère ou la voix de votre contenu."
+          },
+          {
+            "title": "Type de script et Public cible",
+            "description": "Choisissez un type de script et un public cible adaptés à votre contenu et à votre public. Le type de script détermine la structure de votre contenu, tandis que le public cible définit à qui s'adresse votre contenu."
+          },
+          {
+            "title": "Structure et Appel à l'action",
+            "description": "Choisissez une structure et un appel à l'action adaptés à votre contenu et à votre public. La structure organise votre contenu, tandis que l'appel à l'action encourage l'engagement des spectateurs."
+          }
+        ]
+      }
+    }
+  },
+  "scriptPage": {
+    "toast": {
+      "todoLoadingError": {
+        "title": "Erreur lors du chargement des tâches",
+        "description": "Une erreur s'est produite lors du chargement des tâches. Veuillez réessayer plus tard."
+      },
+      "scriptLoadingError": {
+        "title": "Erreur lors du chargement du script",
+        "description": "Une erreur s'est produite lors du chargement du script. Veuillez réessayer plus tard."
+      },
+      "scriptSavedSuccess": {
+        "title": "Script enregistré avec succès",
+        "description": "Le script a été enregistré avec succès"
+      },
+      "scriptSavedError": {
+        "title": "Erreur lors de l'enregistrement du script",
+        "description": "Une erreur s'est produite lors de l'enregistrement du script. Veuillez réessayer plus tard."
+      }
+    },
+    "errorMessage": "Une erreur s'est produite pendant l'opération, vous n'avez peut-être pas accès au script ou il n'existe peut-être pas.",
+    "errorMessage2": "Script ou idée non trouvés",
+    "viewProduction": "Voir la production",
+    "ctaYes": "CTA: Oui",
+    "ctaNo": "CTA: Non",
+    "addSection": "Ajouter une section",
+    "noTodosFound": "Aucune tâche trouvée",
+    "createTodos": "Créer des tâches",
+    "expandAll": "Tout déplier",
+    "collapseAll": "Tout replier",
+    "saveChanges": "Enregistrer les modifications",
+    "edit": "Modifier",
+    "scriptInfo": "Informations script"
+  },
+  "scriptChatPage": {
+    "info": {
+      "title": "Détails du script"
+    },
+    "toast": {
+      "scriptLoadingError": {
+        "title": "Erreur lors du chargement des données",
+        "description": "Une erreur s'est produite lors du chargement des données. Veuillez réessayer plus tard."
+      },
+      "deleteError": {
+        "title": "Erreur lors de la suppression du script",
+        "description": "Une erreur s'est produite lors de la suppression du script. Veuillez réessayer plus tard."
+      },
+      "noContentFound": {
+        "title": "Aucun contenu trouvé",
+        "description": "Aucun contenu n'a été trouvé pour ce script. Veuillez réessayer plus tard."
+      },
+      "saveError": {
+        "title": "Erreur lors de l'enregistrement du script",
+        "description": "Une erreur s'est produite lors de l'enregistrement du script. Veuillez réessayer plus tard."
+      },
+      "saveSuccess": {
+        "title": "Script enregistré avec succès",
+        "description": "Le script a été enregistré avec succès"
+      },
+      "errorSaving": "Erreur lors de l'enregistrement du script:",
+      "noIdProvided": "Aucun ID de script fourni"
+    },
+    "chat": {
+      "back": "Retour",
+      "details": "Détails du script",
+      "viewScript": "Voir le script"
+    }
+  },
+  "productionsPage": {
+    "title": "Productions",
+    "filterBy": "Filtrer par",
+    "resetFilter": "Réinitialiser",
+    "newest": "Plus récents",
+    "oldest": "Plus anciens",
+    "productionsTitle": "Contenus disponibles pour la production",
+    "createProduction": "Créer une production"
+  },
+  "productionPage": {
+
+  },
   "components": {
     "translatableSelect": {
       "noResults": "Aucun résultat trouvé."
+    },
+    "filterSheet": {
+      "sortBy": "Trier par",
+      "newest": "Plus récents",
+      "oldest": "Plus anciens",
+      "filterIdeas": "Filtrer les idées",
+      "filterScripts": "Filtrer les scripts",
+      "filterProductions": "Filtrer les productions",
+
+      "duration": "Durée",
+      "selectDuration": "Sélectionner la durée",
+      "allDurations": "Toutes les durées",
+      
+      "scriptType": "Type de script",
+      "selectScriptType": "Sélectionner le type de script",
+      "allTypes": "Tous les types",
+
+      "scriptVerbosity": "Verbosité",
+      "selectVerbosity": "Sélectionner la verbosité",
+      "allVerbosities": "Toutes les verbosités",
+      
+      "scriptPersona": "Personnage du script",
+      "selectPersona": "Sélectionner le personnage",
+      "allPersonas": "Tous les personnages",
+      
+      "scriptStructure": "Structure du script",
+      "selectStructure": "Sélectionner la structure",
+      "allStructures": "Toutes les structures",
+      
+      "scriptTone": "Ton du script",
+      "selectTone": "Sélectionner le ton",
+      "allTones": "Tous les tons",
+      
+      "targetAudience": "Public cible",
+      "selectTargetAudience": "Sélectionner le public cible",
+      "allTargetAudiences": "Tous les publics cibles",
+      
+      "videoType": "Type de vidéo",
+      "selectVideoType": "Sélectionner le type de vidéo",
+      "allVideoTypes": "Tous les types de vidéo",
+      
+      "contentStyle": "Style de contenu",
+      "selectContentStyle": "Sélectionner le style de contenu",
+      "allStyles": "Tous les styles",
+      
+      "videoLength": "Longueur de vidéo",
+      "selectVideoLength": "Sélectionner la longueur de vidéo",
+      "allVideoLengths": "Toutes les longueurs",
+      
+      "targetInterest": "Intérêt cible",
+      "selectTargetInterest": "Sélectionner l'intérêt cible",
+      "allTargetInterests": "Tous les intérêts cibles"
+    },
+    "filterBar": {
+      "filterBy": "Filtrer par",
+      "resetFilter": "Réinitialiser",
+      "newest": "Plus récents",
+      "oldest": "Plus anciens"
+    },
+    "ideaBox": {
+      "viewIdea": "Voir l'idée",
+      "toast": {
+        "deleteSuccess": [
+          "Idée supprimée avec succès",
+          "L'idée a été supprimée avec succès"
+        ],
+        "deleteError": [
+          "Erreur lors de la suppression de l'idée",
+          "Une erreur s'est produite lors de la suppression de l'idée. Veuillez réessayer plus tard."
+        ]
+      }
+    },
+    "scriptBox": {
+      "viewScript": "Voir le script",
+      "toast": {
+        "deleteSuccess": [
+          "Script supprimé avec succès",
+          "Le script a été supprimé avec succès"
+        ],
+        "deleteError": [
+          "Erreur lors de la suppression du script",
+          "Une erreur s'est produite lors de la suppression du script. Veuillez réessayer plus tard."
+        ]
+      }
+    },
+    "sortableScriptSection": {
+      "dragToReorder": "Faites glisser pour réorganiser",
+      "points": "points",
+      "point": "point",
+      "deleteSection": "Supprimer la section",
+      "placeholder": "Entrez votre point de script ici...",
+      "deletePoint": "Supprimer le point",
+      "addPoint": "Ajouter un point"
     }
+  },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backToHome": "Retour à l'accueil"
   }
 } 

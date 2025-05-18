@@ -29,6 +29,7 @@ import { updateIdeaTokens } from '@/lib/utils';
 import ErrorMessage from "@/components/blocks/(protected)/error-message";
 import { Textarea } from "@/components/ui/textarea";
 import { getEnumTranslation } from "@/utils/enum-translations";
+import TokensChat from "@/components/blocks/(protected)/tokens-chat";
 
 
 const IdeaChatPage = ({ params }: { params: { id: string } }) => {
@@ -128,7 +129,7 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 		}
 
 		loadData()
-	}, [id, toast])
+	}, [id, toast, dict.ideaChatPage.toast.fetchError])
 
 	useEffect(() => {
 		const lastMessage = messages[messages.length - 1]
@@ -308,14 +309,12 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 			
 			{tokensToSubtract > totalTokens && (
 				<div className="text-sm text-muted-foreground">
-					<p>You don&apos;t have enough tokens to continue.</p>
+					<p>{dict.ideaChatPage.chat.noTokens}</p>
 				</div>
 			)}
 
 			{tokensToSubtract <= totalTokens && (
-				<div className="text-sm text-muted-foreground">
-					<p>{dict.ideaChatPage.tokens.tokensLeft1} {totalTokens} {dict.ideaChatPage.tokens.tokensLeft2}</p>
-				</div>
+        <TokensChat slot1={dict.ideaChatPage.tokens.tokensLeft1} tokens={totalTokens} slot2={dict.ideaChatPage.tokens.tokensLeft2} />
 			)}
 
 			<form onSubmit={handleSubmit} className="fixed bottom-2 w-full max-w-2xl mx-auto rounded-3xl backdrop-blur">
@@ -365,7 +364,7 @@ const IdeaInfo = ({ idea, profile, dict }: { idea: IdeaData, profile: ProfileDat
 	const tags = parseTags(idea.tags || []);
 	
 	return (
-		<Card className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950">
+		<Card className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 w-full">
 			<CardHeader className="space-y-4">
 				<CardTitle>
 					<h3 className="text-xl font-semibold flex items-center gap-2">
@@ -411,6 +410,7 @@ const IdeaInfo = ({ idea, profile, dict }: { idea: IdeaData, profile: ProfileDat
 							icon={<Target size={16} />}
 							color="bg-yellow-500/10 text-yellow-500"
 						/>
+
 					</div>
 				</CardDescription>
 			</CardHeader>

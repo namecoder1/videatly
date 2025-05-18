@@ -245,7 +245,7 @@ const ScriptsPage = () => {
 				title={dict.components.filterSheet?.filterScripts || "Filter Scripts"}
 				showScriptFilters={true}
 				showIdeaFilters={false}
-				dict={{...dict, locale: dict.locale || 'it'}}
+				dict={{...dict, locale: dict.locale}}
 			/>
 
 			<FilterSheet 
@@ -256,7 +256,7 @@ const ScriptsPage = () => {
 				title={dict.components.filterSheet?.filterIdeas || "Filter Ideas"}
 				showScriptFilters={false}
 				showIdeaFilters={true}
-				dict={{...dict, locale: dict.locale || 'it'}}
+				dict={{...dict, locale: dict.locale}}
 			/>
 		</section>
 	)

@@ -6,7 +6,7 @@ import { headers } from 'next/headers'
 import { encodedRedirect } from '@/utils/supabase/utils'
 import { locales } from '@/middleware'
 
-export const signInWithGoogleAction = async (formData?: FormData) => {
+export const signInWithGoogleAction = async () => {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
   

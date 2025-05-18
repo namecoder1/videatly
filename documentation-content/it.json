@@ -1,6 +1,16 @@
 {
   "introduction": {
     "title": "Introduzione",
+    "breadcrumbs": [
+      {
+        "label": "Home",
+        "href": "/"
+      },
+      {
+        "label": "Documentazione",
+        "href": "/documentation"
+      }
+    ],
     "introduction": {
       "title": "Introduzione",
       "content": "Videatly è una piattaforma che ti permette di creare e gestire le tue idee, script e flussi di lavoro. L'idea è creare una piattaforma che ti permetta di migliorare il tuo flusso di lavoro di produzione video e la produttività complessiva utilizzando funzionalità AI e strumenti costruiti esattamente per questo scopo. Ogni funzionalità è costruita per migliorare una parte specifica del flusso di lavoro di produzione video. Nella sezione guide puoi trovare maggiori informazioni su ciascuna funzionalità e su come utilizzarle."

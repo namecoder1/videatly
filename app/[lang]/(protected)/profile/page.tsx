@@ -103,7 +103,7 @@ const ProfilePage = () => {
       }
     }
     fetchUserAndProfileData()
-  }, [supabase, toast])
+  }, [supabase, toast, dict.profilePage.toast.fetchError])
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

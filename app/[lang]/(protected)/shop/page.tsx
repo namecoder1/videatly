@@ -15,9 +15,6 @@ import { useDictionary } from '@/app/context/dictionary-context'
 const ShopPage = () => {
 	const [isLoading, setIsLoading] = useState(true)
 	const dict = useDictionary()
-	
-	// Console log to debug dictionary structure
-	console.log('Dictionary in shop page:', dict)
 
 	const ideaTokensPlans = [
 		{
@@ -119,18 +116,19 @@ const ShopPage = () => {
 
 				setIsSuccess(true)
 				toast({
-					title: "Purchase successful",
-					description: `${tokens} ${plan.tool} tokens have been added to your account.`,
+					title: dict?.shopPage?.toast?.purchaseSuccess?.title,
+					description: `${tokens} ${plan.tool} ${dict?.shopPage?.toast?.purchaseSuccess?.description}`,
+					variant: "success",
 				})
 				router.refresh()
 			} catch (error) {
 				setIsError(true)
+				console.log(error)
 				toast({
-					title: "Error",
-					description: "Failed to process your purchase. Please try again.",
+					title: dict?.shopPage?.toast?.purchaseError?.title,
+					description: dict?.shopPage?.toast?.purchaseError?.description,
 					variant: "destructive",
 				})
-				console.error('Purchase error:', error)
 			} finally {
 				setIsLoading(false)
 			}

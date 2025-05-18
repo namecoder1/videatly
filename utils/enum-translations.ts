@@ -914,8 +914,27 @@ export const ScriptStructureTranslations = {
  * Restituisce la traduzione per un valore di enum.
  * Se la traduzione non esiste, restituisce il valore originale.
  */
-export function getEnumTranslation(value: string, locale: string = 'en'): string {
-  if (locale === 'en') return value;
+export function getEnumTranslation(value: string | undefined, locale: string = 'en'): string {
+  if (!value) return '';
+  
+  // Normalizzazione della locale per gestire casi inaspettati
+  const normalizedLocale = locale?.toLowerCase() || 'en';
+  console.log(`[getEnumTranslation] Normalized locale: "${normalizedLocale}" (from "${locale}")`);
+  
+  // Per inglese, restituisci sempre il valore originale
+  if (normalizedLocale === 'en') {
+    console.log(`[getEnumTranslation] Using English, returning original value: "${value}"`);
+    return value;
+  }
+  
+  // Validare che la locale sia supportata
+  const supportedLocales = ['it', 'es', 'fr'];
+  if (!supportedLocales.includes(normalizedLocale)) {
+    console.log(`[getEnumTranslation] Unsupported locale: "${normalizedLocale}", falling back to original value: "${value}"`);
+    return value;
+  }
+  
+  console.log(`[getEnumTranslation] Translating value: "${value}" to locale: "${normalizedLocale}"`);
   
   // Cerca in tutte le tabelle di traduzione
   const allTranslations = [
@@ -934,11 +953,15 @@ export function getEnumTranslation(value: string, locale: string = 'en'): string
   ];
   
   for (const translations of allTranslations) {
-    if (translations[value as keyof typeof translations] && translations[value as keyof typeof translations][locale]) {
-      return translations[value as keyof typeof translations][locale];
+    if (translations[value as keyof typeof translations] && 
+        translations[value as keyof typeof translations][normalizedLocale]) {
+      const result = translations[value as keyof typeof translations][normalizedLocale];
+      console.log(`[getEnumTranslation] Found translation: "${result}"`);
+      return result;
     }
   }
   
+  console.log(`[getEnumTranslation] No translation found, returning original value: "${value}"`);
   return value;
 }
 

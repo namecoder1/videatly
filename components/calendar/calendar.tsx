@@ -19,6 +19,8 @@ export default function Calendar({
   ideas = [],
   daysWithTodos = [],
   dict,
+  dayClassNames,
+  getDayContent,
 }: CalendarProps) {
   return (
     <CalendarProvider
@@ -33,6 +35,8 @@ export default function Calendar({
       ideas={ideas}
       daysWithTodos={daysWithTodos}
       dict={dict}
+      dayClassNames={dayClassNames}
+      getDayContent={getDayContent}
     >
       <CalendarHeader>
         <CalendarHeaderDate />

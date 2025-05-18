@@ -3,7 +3,7 @@ import { Tool, Sponsorship } from "@/types/types"
 import { createClient } from "@/utils/supabase/client"
 
 
-const updateTools = async (tools: Tool[], setFormData: (prev: any) => void, id: string) => {
+const updateTools = async (tools: Tool[], setFormData: (prev: any) => void, id: string, dict: any) => {
   const supabase = createClient()
   try {
     const { error } = await supabase
@@ -14,29 +14,29 @@ const updateTools = async (tools: Tool[], setFormData: (prev: any) => void, id: 
     if (error) {
       console.error('Error updating tools:', error)
       toast({
-        title: 'Error updating tools',
-        description: error.message,
+        title: dict.ideaPage?.toast?.updateToolsError?.title,
+        description: dict.ideaPage?.toast?.updateToolsError?.description,
         variant: 'destructive',
       })
     } else {
       setFormData((prev: any) => ({ ...prev, tools_recommendations: tools }))
       toast({
-        title: 'Tools updated',
-        description: 'Your tools have been updated successfully',
+        title: dict.ideaPage?.toast?.updateToolsSuccess?.title,
+        description: dict.ideaPage?.toast?.updateToolsSuccess?.description,
         variant: 'success'
       })
     }
   } catch (err) {
     console.error('Error updating tools:', err)
     toast({
-      title: 'Error updating tools',
-      description: 'An unexpected error occurred',
+      title: dict.ideaPage?.toast?.updateToolsError?.title,
+      description: dict.ideaPage?.toast?.updateToolsError?.description,
       variant: 'destructive',
     })
   }
 }
 
-const updateSponsorships = async (sponsorships: Sponsorship[], setFormData: (prev: any) => void, id: string) => {
+const updateSponsorships = async (sponsorships: Sponsorship[], setFormData: (prev: any) => void, id: string, dict: any) => {
   const supabase = createClient()
   try {
     const { error } = await supabase
@@ -47,23 +47,23 @@ const updateSponsorships = async (sponsorships: Sponsorship[], setFormData: (pre
     if (error) {
       console.error('Error updating sponsorships:', error)
       toast({
-        title: 'Error updating sponsorships',
-        description: error.message,
+        title: dict.ideaPage?.toast?.updateSponsorshipsError?.title,
+        description: dict.ideaPage?.toast?.updateSponsorshipsError?.description,
         variant: 'destructive',
       })
     } else {
       setFormData((prev: any) => ({ ...prev, sponsorship_opportunities: sponsorships }))
       toast({
-        title: 'Sponsorships updated',
-        description: 'Your sponsorships have been updated successfully',
+        title: dict.ideaPage?.toast?.updateSponsorshipsSuccess?.title,
+        description: dict.ideaPage?.toast?.updateSponsorshipsSuccess?.description,
         variant: 'success'
       })
     }
   } catch (err) {
     console.error('Error updating sponsorships:', err)
     toast({
-      title: 'Error updating sponsorships',
-      description: 'An unexpected error occurred',
+      title: dict.ideaPage?.toast?.updateSponsorshipsError?.title,
+      description: dict.ideaPage?.toast?.updateSponsorshipsError?.description,
       variant: 'destructive',
     })
   }

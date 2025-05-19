@@ -13,6 +13,9 @@
     "logout": "Logout"
   },
   "navbar": {
+    "useCases": "Use Cases",
+    "features": "Features",
+    "howItWorks": "How it works",
     "documentation": "Documentation",
     "pricing": "Pricing",
     "login": "Login"
@@ -39,14 +42,19 @@
     "tobi2": "and I'm the creator of Videatly. You can find more about me on my website."
   },
   "home": {
-    "title": "Create, Analyze and Grow with the Power of AI",
-    "description": "Generate ideas, write optimized scripts and compare your performance with AI.",
+    "span1": "First 50 users get",
+    "tokens": "tokens free",
+    "span2": "seats remaining",
+    "title": "Your next viral video starts here",
+    "description": "Videatly guides you in creating more targeted, performant, and professional YouTube content. Create, optimize, and analyze in just a few clicks.",
     "uniqueVideoIdeas": "Unique video ideas instantly",
     "craftViralScripts": "Craft viral scripts in seconds",
     "analyzeOptimizeDominate": "Analyze, optimize, dominate",
     "startNow": "Start Now",
     "learnMore": "Learn More",
-    "creatorsJoined": "creators joined"
+    "creatorsJoined": "creators joined",
+    "input": "Enter your email",
+    "button": "Join the waitlist"
   },
   "features": {
     "title": "Why choose Videatly?",
@@ -876,5 +884,33 @@
     "title": "Page not found",
     "description": "The page you are looking for does not exist or has been moved.",
     "backToHome": "Back to Home"
+  },
+  "landing": {
+    "howItWorks": "How it works",
+    "howTitle": "All you need for your video production",
+    "howSteps": [
+      {
+        "title": "Automate your video workflow and save precious time",
+        "description": "Talk with our AI's and generate the best video ideas for all your needs. Each AI is specialized in a different field, so you can get the best results for your video production whenever you need it.",
+        "span": "ideation",
+        "fields": [
+          "Generate video ideas",
+          "Create detailed scripts",
+          "Easily manage your projects",
+          "Brainstorm like a pro"
+        ]
+      },
+      {
+        "title": "Write perfect scripts for your videos",
+        "description": "Write perfect scripts for your videos with our AI's, and let Videatly handle the rest.",
+        "span": "writing",
+        "fields": [
+          "Write perfect scripts for your videos",
+          "Easily manage your projects",
+          "Brainstorm like a pro",
+          "Generate scripts for your videos"
+        ]
+      }
+    ]
   }
-} 
+}

@@ -8,6 +8,10 @@ import typeIcon from '@/assets/icons/type-icon.png'
 import personaIcon from '@/assets/icons/persona-icon.png'
 import structureIcon from '@/assets/icons/structure-icon.png'
 import ctaIcon from '@/assets/icons/cta-icon.png'
+import redditIcon from '@/assets/icons/reddit.png'
+import instagramIcon from '@/assets/icons/instagram.png'
+import linkedinIcon from '@/assets/icons/linkedin.png'
+import githubIcon from '@/assets/icons/github.png'
 
 // Avatars
 import creator1 from '@/assets/avatars/creator-1.jpeg'
@@ -26,6 +30,10 @@ export {
   personaIcon,
   structureIcon,
   ctaIcon,
+  redditIcon,
+  instagramIcon,
+  linkedinIcon,
+  githubIcon,
   creator1,
   creator2,
   creator3,

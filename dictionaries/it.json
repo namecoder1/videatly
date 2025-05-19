@@ -13,7 +13,9 @@
     "logout": "Esci"
   },
   "navbar": {
-    "documentation": "Documentazione",
+    "useCases": "Casi d'uso",
+    "features": "Funzionalità",
+    "howItWorks": "Come funziona",
     "pricing": "Prezzi",
     "login": "Accedi"
   },
@@ -39,14 +41,19 @@
     "tobi2": "e sono il creatore di Videatly. Puoi trovare di più su di me sul mio sito web."
   },
   "home": {
-    "title": "Crea, Analizza e Cresci con il Potere dell'AI",
-    "description": "Genera idee per video coinvolgenti, creascript ottimizzati e confronta le tue prestazioni con l'AI.",
+    "span1": "I primi 50 utenti hanno",
+    "tokens": "token gratuiti",
+    "span2": "posti rimasti",
+    "title": "Il tuo prossimo video virale inizia qui",
+    "description": "Videatly ti guida nella creazione di contenuti YouTube più mirati, performanti e professionali. Crea, ottimizza e analizza in pochi clic.",
     "uniqueVideoIdeas": "Idee video uniche in un click",
     "craftViralScripts": "Script virali in pochi secondi",
     "analyzeOptimizeDominate": "Analizza, ottimizza, domina",
     "startNow": "Inizia Ora",
     "learnMore": "Scopri di più",
-    "creatorsJoined": "creator amano Videatly"
+    "creatorsJoined": "creator amano Videatly",
+    "input": "Inserisci la tua email",
+    "button": "Entra in lista d'attesa"
   },
   "features": {
     "title": "Perché scegliere Videatly?",
@@ -876,5 +883,37 @@
     "title": "Pagina non trovata",
     "description": "La pagina che stai cercando non esiste o è stata spostata.",
     "backToHome": "Torna alla Home"
+  },
+  "landing": {
+    "howItWorks": "Come funziona",
+    "howTitle": "Tutto ciò che ti serve per la tua produzione video",
+    "howSteps": [
+      {
+        "span": "Ideazione",
+        "title": "Automatizza il tuo carico di lavoro e risparmia tempo prezioso",
+        "description": "Parla con le nostre intelligenze artificiali e genera le migliori idee video per ogni tua esigenza. Ogni IA è specializzata in un campo diverso, così potrai ottenere i migliori risultati per la tua produzione video ogni volta che ne avrai bisogno.",
+        "fields": [
+          "Genera idee per i tuoi video",
+          "Gestisci facilmente i tuoi video",
+          "Crea script dettagliati per ogni video",
+          "Fai brainstorming come un esperto"
+        ]
+      },
+      {
+        "span": "Scrittura",
+        "title": "Scrivi script perfetti per i tuoi video",
+        "description": "Scrivi script perfetti per i tuoi video con le nostre AI, e lascia che Videatly si occupi di tutto il resto.",
+        "fields": [
+          "Genera script dettagliati per ogni video",
+          "Fai brainstorming come un esperto",
+          "Gestisci facilmente i tuoi video",
+          "Genera script per i tuoi video"
+        ]
+      }
+      
+    ],
+    "addons": {
+      
+    }
   }
 } 

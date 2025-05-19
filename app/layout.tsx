@@ -1,6 +1,19 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Nunito, Raleway } from "next/font/google";
+import { PostHogProvider } from "./providers";
 
+const raleway = Raleway({
+  subsets: ['latin'],
+  variable: '--font-raleway',
+  weight: ['100', '300', '400', '700', '900'],
+})
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-nunito',
+  weight: ['200', '300', '400', '500', '600', '700', '800', '900'],
+})
 
 export const metadata: Metadata = {
   title: "Videatly",
@@ -14,8 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
+      <body className={`${nunito.variable} ${raleway.variable} font-nunito`}>
+        <PostHogProvider>
+          {children}
+        </PostHogProvider>
       </body>
     </html>
   );

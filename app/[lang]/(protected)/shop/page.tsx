@@ -11,6 +11,8 @@ import { useRouter } from 'next/navigation'
 import { useTokens } from '@/hooks/use-tokens'
 import Loader from '@/components/blocks/loader'
 import { useDictionary } from '@/app/context/dictionary-context'
+import { constants } from '@/constants'
+import Link from 'next/link'
 
 const ShopPage = () => {
 	const [isLoading, setIsLoading] = useState(true)
@@ -23,7 +25,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.ideaTokens?.fields[0]?.description || 'For starters',
 			tokens: 2500,
 			tool: 'ideas',
-			isPopular: false
+			isPopular: false,
+			paymentLink: constants.paymentLinks.basicIdeaBucket,
+			priceId: 'price_1RQQAvJIJDFQQRJ0H3t5m7hp',
 		},
 		{
 			name: dict?.shopPage?.ideaTokens?.fields[1]?.title || 'Standard',
@@ -31,7 +35,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.ideaTokens?.fields[1]?.description || 'For regular creators',
 			tokens: 5000,
 			tool: 'ideas',
-			isPopular: true
+			isPopular: true,
+			paymentLink: constants.paymentLinks.standardIdeaBucket,
+			priceId: 'price_1RQQtuJIJDFQQRJ0Q2tbSn9h',
 		},
 		{
 			name: dict?.shopPage?.ideaTokens?.fields[2]?.title || 'Premium',
@@ -39,7 +45,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.ideaTokens?.fields[2]?.description || 'For power users',
 			tokens: 25000,
 			tool: 'ideas',
-			isPopular: false
+			isPopular: false,
+			paymentLink: constants.paymentLinks.premiumIdeaBucket,
+			priceId: 'price_1RQQuaJIJDFQQRJ0Hlbklrbk',
 		}
 	]
 
@@ -50,7 +58,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.scriptTokens?.fields[0]?.description || 'For beginners',
 			tokens: 5000,
 			tool: 'scripts',
-			isPopular: false
+			isPopular: false,
+			paymentLink: constants.paymentLinks.basicScriptBucket,
+			priceId: 'price_1RQQvXJIJDFQQRJ0ZEaQh3Lk',
 		},
 		{
 			name: dict?.shopPage?.scriptTokens?.fields[1]?.title || 'Standard',
@@ -58,7 +68,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.scriptTokens?.fields[1]?.description || 'For content creators',
 			tokens: 15000,
 			tool: 'scripts',
-			isPopular: true
+			isPopular: true,
+			paymentLink: constants.paymentLinks.standardScriptBucket,
+			priceId: 'price_1RQQwZJIJDFQQRJ04UF2Nej6',
 		},
 		{
 			name: dict?.shopPage?.scriptTokens?.fields[2]?.title || 'Premium',
@@ -66,7 +78,9 @@ const ShopPage = () => {
 			description: dict?.shopPage?.scriptTokens?.fields[2]?.description || 'For professional users',
 			tokens: 50000,
 			tool: 'scripts',
-			isPopular: false
+			isPopular: false,
+			paymentLink: constants.paymentLinks.premiumScriptBucket,
+			priceId: 'price_1RQQxEJIJDFQQRJ0fUVoU02O',
 		}
 	]
 
@@ -78,56 +92,31 @@ const ShopPage = () => {
 		const [isSuccess, setIsSuccess] = useState(false)
 		const [isError, setIsError] = useState(false)
 
-		const handleBuy = async (tokens: number) => {
+		const handleCheckout = async () => {
+			setIsLoading(true)
 			try {
-				setIsLoading(true)
-				setIsSuccess(false)
-				setIsError(false)
-
-				const supabase = createClient()
-				const { data: userData, error: userError } = await supabase.auth.getUser()
-				
-				if (userError) {
-					throw userError
-				}
-
-				const { error: tokensError } = await supabase.rpc('increment_paid_tokens', {
-					p_user_id: userData.user.id,
-					p_tool: plan.tool,
-					p_amount: tokens
+				const res = await fetch('/api/create-checkout-session', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						priceId: plan.priceId,
+						tokens: plan.tokens,
+						tool: plan.tool,
+					}),
 				})
-
-				if (tokensError) {
-					throw tokensError
+				const { url, error } = await res.json()
+				if (url) {
+					window.location.href = url
+				} else {
+					throw new Error(error || 'Errore nella creazione della sessione Stripe')
 				}
-
-				// Fetch updated tokens from database
-				const { data: updatedTokens, error: fetchError } = await supabase
-					.from('tokens')
-					.select('base_tokens, paid_tokens, tool')
-					.eq('user_id', userData.user.id)
-
-				if (fetchError) {
-					throw fetchError
-				}
-
-				// Update Zustand store with new token data
-				setTokens(updatedTokens)
-
-				setIsSuccess(true)
-				toast({
-					title: dict?.shopPage?.toast?.purchaseSuccess?.title,
-					description: `${tokens} ${plan.tool} ${dict?.shopPage?.toast?.purchaseSuccess?.description}`,
-					variant: "success",
-				})
-				router.refresh()
 			} catch (error) {
 				setIsError(true)
 				console.log(error)
 				toast({
 					title: dict?.shopPage?.toast?.purchaseError?.title,
 					description: dict?.shopPage?.toast?.purchaseError?.description,
-					variant: "destructive",
+					variant: 'destructive',
 				})
 			} finally {
 				setIsLoading(false)
@@ -164,11 +153,11 @@ const ShopPage = () => {
 				</p>
 
 				<Button 
-					onClick={() => handleBuy(plan.tokens)}
 					className="w-full py-5 text-base font-medium relative"
 					variant={plan.isPopular ? "default" : "outline"}
 					size="lg"
 					disabled={isLoading}
+					onClick={handleCheckout}
 				>
 					{isLoading ? (
 						isLoading && plan.isPopular ? (

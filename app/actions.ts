@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/client';
 import { IdeaData, ProfileData, ScriptData, Sponsorship, Tool } from '@/types/types';
 import { extractSponsorshipObjects, extractToolObjects, parseTags } from '@/lib/extraction';
+import stripe from '@/utils/stripe/stripe';
 
 const extractField = (message: string, fieldName: string): string => {
   // Create a regex that matches the emoji and captures everything until the next emoji field or end
@@ -324,7 +325,6 @@ export const fetchUserProfile = async (): Promise<{ data: ProfileData | null, er
   }
 }; 
 
-
 export const fetchScriptData = async (id: string): Promise<{ data: ScriptData | null, error?: string }> => {
   const supabase = createClient();
 
@@ -346,7 +346,6 @@ export const fetchScriptData = async (id: string): Promise<{ data: ScriptData | 
   }
 }
 
-
 export const deleteScript = async (id: number): Promise<{ success: boolean; error?: string }> => {
   const supabase = createClient();
 
@@ -365,4 +364,19 @@ export const deleteScript = async (id: number): Promise<{ success: boolean; erro
     console.error('Error deleting script:', error);
     return { success: false, error: error.message };
   }
+}
+
+export const subscribeAction = async () => {
+  const { url } = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price: process.env.STRIPE_PRICE_ID,
+        quantity: 1,
+      }
+    ],
+    mode: 'subscription',
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
+  })
 }

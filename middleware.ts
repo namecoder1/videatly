@@ -25,13 +25,13 @@ function createMiddlewareClient(request: NextRequest) {
 async function getLocale(request: NextRequest) {
   // Check if user is logged in and has a language preference
   const supabase = createMiddlewareClient(request)
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
   
-  if (session?.user?.id) {
+  if (user?.id) {
     const { data: userProfile } = await supabase
       .from('users')
       .select('spoken_language')
-      .eq('auth_user_id', session.user.id)
+      .eq('auth_user_id', user.id)
       .single()
 
     if (userProfile?.spoken_language && locales.includes(userProfile.spoken_language)) {
@@ -84,5 +84,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|favicon.ico).*)'],
+  // Exclude Stripe webhook from middleware to preserve raw body for signature verification
+  matcher: ['/((?!_next|api/stripe-webhook|api|favicon.ico).*)'],
 }

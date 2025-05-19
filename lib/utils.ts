@@ -3,7 +3,7 @@ import { Token } from "@/types/types"
 import { SupabaseClient } from "@supabase/supabase-js"
 import { clsx, type ClassValue } from "clsx"
 import { format, Locale } from "date-fns"
-import { enUS, es, fr, de, it, pt, ja, ko, zhCN } from 'date-fns/locale'
+import { enUS, es, fr, it } from 'date-fns/locale'
 import { encode } from "gpt-tokenizer/model/gpt-3.5-turbo-0125"
 import { twMerge } from "tailwind-merge"
 
@@ -19,12 +19,7 @@ const localeMap: Record<string, Locale> = {
   'en-US': enUS,
   'es': es,
   'fr': fr,
-  'de': de,
   'it': it,
-  'pt': pt,
-  'ja': ja,
-  'ko': ko,
-  'zh-CN': zhCN,
 }
 
 function capitalizeFirstLetter(str: string) {

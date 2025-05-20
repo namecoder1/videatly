@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '../ui/avatar'
-import { Settings, User, ChevronRight } from 'lucide-react'
+import { Settings, User, ChevronRight, Wallet } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -72,6 +72,15 @@ const UserInfo = ({ dict }: { dict: any }) => {
 						<div className="flex flex-col gap-1">
 							<span className="font-medium">{dict.userInfo.profile}</span>
 							<span className="text-xs text-muted-foreground">{dict.userInfo.profileDescription}</span>
+						</div>
+					</CustomLink>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
+					<CustomLink href="/billing" className="flex items-center gap-3 p-3 cursor-pointer">
+						<Wallet className="h-4 w-4" />
+						<div className="flex flex-col gap-1">
+							<span className="font-medium">Billing</span>
+							<span className="text-xs text-muted-foreground">Billing description</span>
 						</div>
 					</CustomLink>
 				</DropdownMenuItem>

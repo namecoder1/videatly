@@ -6,13 +6,11 @@ import { LightbulbIcon, ShoppingCartIcon, VideoIcon } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useTokens } from '@/hooks/use-tokens'
 import Loader from '@/components/blocks/loader'
 import { useDictionary } from '@/app/context/dictionary-context'
 import { constants } from '@/constants'
-import Link from 'next/link'
 
 const ShopPage = () => {
 	const [isLoading, setIsLoading] = useState(true)

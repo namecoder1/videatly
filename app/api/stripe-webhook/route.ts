@@ -44,8 +44,41 @@ export async function POST(req: NextRequest) {
     const tokens = Number(session.metadata?.tokens)
     const tool = session.metadata?.tool
     const stripe_id = session.id
-    const email = session.customer_email
+    console.log(`stripe Id ${stripe_id}`)
+    let email = session.customer_email
     const amount = session.amount_total // in centesimi
+
+    // Recupera email dal customer Stripe se non presente
+    if (!email && session.customer) {
+      try {
+        const customer = await stripe.customers.retrieve(session.customer as string)
+        if (typeof customer !== 'string') {
+          const typedCustomer = customer as Stripe.Customer;
+          email = typedCustomer.email ?? null;
+        }
+      } catch (err) {
+        console.error('Errore recupero customer Stripe:', err)
+      }
+    }
+
+    // Recupera email da Supabase se ancora non presente
+    if (!email && user_id) {
+      try {
+        const { data: user, error } = await supabase
+          .from('users')
+          .select('email')
+          .eq('auth_user_id', user_id)
+          .single()
+        if (user?.email) {
+          email = user.email
+        }
+        if (error) {
+          console.error('Errore recupero email da Supabase:', error)
+        }
+      } catch (err) {
+        console.error('Errore query Supabase per email:', err)
+      }
+    }
 
     // Controlla che i dati siano presenti
     if (!user_id || !tokens || !tool) {
@@ -54,18 +87,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Dati mancanti nei metadata' }, { status: 400 })
     }
 
-    // 1. Inserisci il pagamento
-    const { error: insertError } = await supabase.from('stripe_payments').insert([{
+    // 1. Inserisci il pagamento nella tabella invoices
+    const { error: insertError } = await supabase.from('invoices').insert([{
       auth_user_id: user_id,
       email,
-      amount: amount ? (amount / 100).toString() : null,
+      amount: amount ?? null,
+      currency: session.currency ?? null,
       product: tool,
+      stripe_id: session.id,
+      stripe_customer_id: session.customer ?? null,
+      stripe_payment_intent_id: session.payment_intent ?? null,
+      stripe_subscription_id: null,
+      stripe_invoice_id: null,
+      status: session.payment_status ?? 'succeeded',
       timestamp: new Date().toISOString(),
-      stripe_id,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      metadata: { tokens, tool },
     }])
     if (insertError) {
-      console.error('Errore insert stripe_payments:', insertError)
+      console.error('Errore insert invoices:', insertError)
       return NextResponse.json({ error: insertError.message }, { status: 400 })
     }
 

@@ -161,3 +161,14 @@ export interface TodoFormProps extends React.ComponentProps<"form"> {
   onEndTimeChange: (time: string) => void;
   className?: string;
 }
+
+export interface Payment {
+  id: string;
+  created_at: string;
+  auth_user_id: string;
+  email: string;
+  amount: string;
+  product: string;
+  timestamp: string;
+  stripe_id: string;
+}

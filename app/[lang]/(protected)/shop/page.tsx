@@ -6,8 +6,6 @@ import { LightbulbIcon, ShoppingCartIcon, VideoIcon } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
-import { useRouter } from 'next/navigation'
-import { useTokens } from '@/hooks/use-tokens'
 import Loader from '@/components/blocks/loader'
 import { useDictionary } from '@/app/context/dictionary-context'
 import { constants } from '@/constants'
@@ -24,8 +22,8 @@ const ShopPage = () => {
 			tokens: 2500,
 			tool: 'ideas',
 			isPopular: false,
-			paymentLink: constants.paymentLinks.basicIdeaBucket,
-			priceId: 'price_1RQQAvJIJDFQQRJ0H3t5m7hp',
+			paymentLink: constants.paymentLinks.basicIdeaBucket.linkToPay,
+			priceId: constants.paymentLinks.basicIdeaBucket.priceId,
 		},
 		{
 			name: dict?.shopPage?.ideaTokens?.fields[1]?.title || 'Standard',
@@ -34,8 +32,8 @@ const ShopPage = () => {
 			tokens: 5000,
 			tool: 'ideas',
 			isPopular: true,
-			paymentLink: constants.paymentLinks.standardIdeaBucket,
-			priceId: 'price_1RQQtuJIJDFQQRJ0Q2tbSn9h',
+			paymentLink: constants.paymentLinks.standardIdeaBucket.linkToPay,
+			priceId: constants.paymentLinks.standardIdeaBucket.priceId,
 		},
 		{
 			name: dict?.shopPage?.ideaTokens?.fields[2]?.title || 'Premium',
@@ -44,8 +42,8 @@ const ShopPage = () => {
 			tokens: 25000,
 			tool: 'ideas',
 			isPopular: false,
-			paymentLink: constants.paymentLinks.premiumIdeaBucket,
-			priceId: 'price_1RQQuaJIJDFQQRJ0Hlbklrbk',
+			paymentLink: constants.paymentLinks.premiumIdeaBucket.linkToPay,
+			priceId: constants.paymentLinks.premiumIdeaBucket.priceId,
 		}
 	]
 
@@ -57,8 +55,8 @@ const ShopPage = () => {
 			tokens: 5000,
 			tool: 'scripts',
 			isPopular: false,
-			paymentLink: constants.paymentLinks.basicScriptBucket,
-			priceId: 'price_1RQQvXJIJDFQQRJ0ZEaQh3Lk',
+			paymentLink: constants.paymentLinks.basicScriptBucket.linkToPay,
+			priceId: constants.paymentLinks.basicScriptBucket.priceId,
 		},
 		{
 			name: dict?.shopPage?.scriptTokens?.fields[1]?.title || 'Standard',
@@ -67,8 +65,8 @@ const ShopPage = () => {
 			tokens: 15000,
 			tool: 'scripts',
 			isPopular: true,
-			paymentLink: constants.paymentLinks.standardScriptBucket,
-			priceId: 'price_1RQQwZJIJDFQQRJ04UF2Nej6',
+			paymentLink: constants.paymentLinks.standardScriptBucket.linkToPay,
+			priceId: constants.paymentLinks.standardScriptBucket.priceId,
 		},
 		{
 			name: dict?.shopPage?.scriptTokens?.fields[2]?.title || 'Premium',
@@ -77,17 +75,14 @@ const ShopPage = () => {
 			tokens: 50000,
 			tool: 'scripts',
 			isPopular: false,
-			paymentLink: constants.paymentLinks.premiumScriptBucket,
-			priceId: 'price_1RQQxEJIJDFQQRJ0fUVoU02O',
+			paymentLink: constants.paymentLinks.premiumScriptBucket.linkToPay,
+			priceId: constants.paymentLinks.premiumScriptBucket.priceId,
 		}
 	]
 
 	const PlanCard = ({ plan }: { plan: typeof ideaTokensPlans[0] }) => {
 		const { toast } = useToast()
-		const router = useRouter()
-		const { setTokens } = useTokens()
 		const [isLoading, setIsLoading] = useState(false)
-		const [isSuccess, setIsSuccess] = useState(false)
 		const [isError, setIsError] = useState(false)
 
 		const handleCheckout = async () => {
@@ -110,10 +105,10 @@ const ShopPage = () => {
 				}
 			} catch (error) {
 				setIsError(true)
-				console.log(error)
+				console.error('Checkout error:', error)
 				toast({
-					title: dict?.shopPage?.toast?.purchaseError?.title,
-					description: dict?.shopPage?.toast?.purchaseError?.description,
+					title: dict?.shopPage?.toast?.purchaseError?.title || 'Error',
+					description: dict?.shopPage?.toast?.purchaseError?.description || 'There was an error processing your payment. Please try again.',
 					variant: 'destructive',
 				})
 			} finally {
@@ -121,9 +116,6 @@ const ShopPage = () => {
 			}
 		}
 
-		if (isLoading) {
-			return <Loader position='center' />
-		}
 		
 		return (
 			<div className={`rounded-2xl border bg-white p-6 flex flex-col h-fit ${plan.isPopular ? 'relative shadow-xl ring-2 ring-gray-700/70' : 'shadow-lg hover:shadow-xl transition-shadow'}`}>

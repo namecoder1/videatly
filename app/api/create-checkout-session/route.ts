@@ -3,16 +3,39 @@ import { createClient } from '@/utils/supabase/server'
 import stripe from '@/utils/stripe/stripe'
 
 export async function POST(req: NextRequest) {
-  const { priceId, tokens, tool } = await req.json()
+  const { priceId, tokens, tool, userId, plan } = await req.json()
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user = null
 
-  // Log per debug
-  console.log('Ricevuto:', { priceId, tokens, tool, user: user?.id })
+  // Recupera user da Supabase se non passato direttamente
+  if (userId) {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('auth_user_id', userId)
+      .single()
+    if (error || !data) {
+      return NextResponse.json({ error: 'User not found' }, { status: 400 })
+    }
+    user = { ...data, id: userId, email: data.email }
+  } else {
+    const { data: { user: supaUser }, error: userError } = await supabase.auth.getUser()
+    if (userError || !supaUser) {
+      return NextResponse.json({ error: 'User not found' }, { status: 400 })
+    }
+    user = supaUser
+  }
 
-  if (!user || !priceId || !tokens || !tool) {
+  // Distingui tra acquisto token e subscription
+  const isSubscription = !tokens && !tool && !!plan
+
+  if (!user || !priceId) {
     return NextResponse.json({ error: 'Dati mancanti per la creazione della sessione Stripe' }, { status: 400 })
+  }
+
+  if (!isSubscription && (!tokens || !tool)) {
+    return NextResponse.json({ error: 'Dati mancanti per la creazione della sessione Stripe (token)' }, { status: 400 })
   }
 
   try {
@@ -34,27 +57,56 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    console.group('Customers: ', customers)
-    console.log('Customer: ', customer)
-    console.groupEnd()
+    // Per acquisti di token, verifica se esiste già una sessione attiva
+    if (!isSubscription) {
+      const activeSessions = await stripe.checkout.sessions.list({
+        customer: customer.id,
+        status: 'open',
+        limit: 1
+      });
+
+      if (activeSessions.data.length > 0) {
+        // Se esiste una sessione attiva, restituisci quella invece di crearne una nuova
+        return NextResponse.json({ url: activeSessions.data[0].url });
+      }
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment',
-      customer: customer.id, // Associate with the customer
+      mode: isSubscription ? 'subscription' : 'payment',
+      customer: customer.id,
       line_items: [
         {
           price: priceId,
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/shop?success=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/shop?canceled=1`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing?success=1`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing?canceled=1`,
       metadata: {
         user_id: user.id,
-        tokens: tokens.toString(),
-        tool,
+        ...(isSubscription ? { plan } : { 
+          tokens: tokens?.toString(), 
+          tool,
+          price_id: priceId 
+        }),
       },
+      // Aggiungi idempotency key per pagamenti token
+      ...(isSubscription ? {} : {
+        payment_intent_data: {
+          metadata: {
+            idempotency_key: `${user.id}_${tool}_${tokens}_${Date.now()}`
+          }
+        }
+      })
+    })
+
+    console.log('Created checkout session:', {
+      session_id: session.id,
+      mode: session.mode,
+      metadata: session.metadata,
+      customer: session.customer,
+      payment_intent: session.payment_intent
     })
 
     return NextResponse.json({ url: session.url })

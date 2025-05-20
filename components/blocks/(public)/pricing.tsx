@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import React from 'react'
@@ -88,16 +90,15 @@ const Pricing = ({ dict }: { dict: any }) => {
 							</ul>
 
 							<form className='p-1 space-y-2'>
-								{plan.name === 'Free' ? (
+								{plan.price === '0' ? (
 									<Button
-										type='submit' 
 										formAction={signInWithGoogleAction}
 										className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
 										variant={plan.variant as any}
 										size="lg"
 								>
 									<div className='flex items-center gap-2'>
-										{plan.action}
+										{plan.action} 
 									</div>
 								</Button>
 								) : (

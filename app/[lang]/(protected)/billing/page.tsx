@@ -11,8 +11,15 @@ import Loader from '@/components/blocks/loader'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useDictionary } from '@/app/context/dictionary-context'
-import Pricing from '@/components/blocks/(public)/pricing'
-import { signInWithGoogleAction } from '@/app/(authentication)/actions'
+import { constants } from '@/constants'
+import { createStripeCheckoutSession } from '@/utils/stripe/createCheckoutSession'
+import { useRouter } from 'next/navigation'
+import { Progress } from '@/components/ui/progress'
+
+const SUBSCRIPTION_PRICE_IDS = {
+  pro: constants.paymentLinks.proPlan,
+  ultra: constants.paymentLinks.ultraPlan,
+}
 
 const BillingPage = () => {
   const dict = useDictionary()
@@ -21,6 +28,13 @@ const BillingPage = () => {
   const [userData, setUserData] = useState<ProfileData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
+  const [portalLoading, setPortalLoading] = useState(false)
+  const [testLoading, setTestLoading] = useState(false)
+  const router = useRouter()
+
+  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,6 +67,22 @@ const BillingPage = () => {
 
         setUserData(userData)
 
+        // Recupera le notifiche di pagamento fallito
+        const { data: notifications, error: notificationsError } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('type', 'payment_failed')
+          .eq('read', false)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (notificationsError) {
+          console.error('Error fetching notifications:', notificationsError)
+        } else if (notifications && notifications.length > 0) {
+          setCheckoutError('Your last payment failed. Please update your payment method to continue using the service.')
+        }
+
         const { data: payments, error: paymentsError } = await supabase
           .from('invoices')
           .select('*')
@@ -76,12 +106,206 @@ const BillingPage = () => {
     fetchUser()
   }, [])
 
-  
+  const handlePlanChange = async (targetPlan: 'free' | 'pro' | 'ultra') => {
+    if (!userData?.auth_user_id) {
+      setCheckoutError('User ID non disponibile. Riprova dopo il login.');
+      return;
+    }
+
+    setCheckoutLoading(true)
+    setCheckoutError(null)
+
+    try {
+      const supabase = createClient()
+      
+      // Upgrade immediato da pro a ultra
+      if (userData.subscription === 'pro' && targetPlan === 'ultra') {
+        // Checkout Stripe per upgrade immediato con prorating
+        const url = await createStripeCheckoutSession({
+          userId: userData.auth_user_id,
+          priceId: SUBSCRIPTION_PRICE_IDS['ultra'],
+          plan: 'ultra',
+        })
+        window.location.href = url
+        return
+      }
+
+      // Downgrade o altri cambi piano
+      if (
+        (userData.subscription === 'ultra' && ['pro', 'free'].includes(targetPlan)) ||
+        (userData.subscription === 'pro' && targetPlan === 'free')
+      ) {
+        // Usa il portal per il downgrade
+        const response = await fetch('/api/create-portal-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: userData.auth_user_id }),
+        });
+        const data = await response.json();
+        window.location.href = data.url;
+        return;
+      }
+
+      // Upgrade da free a pro/ultra
+      if (userData.subscription === 'free' && ['pro', 'ultra'].includes(targetPlan)) {
+        const url = await createStripeCheckoutSession({
+          userId: userData.auth_user_id,
+          priceId: SUBSCRIPTION_PRICE_IDS[targetPlan as 'pro' | 'ultra'],
+          plan: targetPlan,
+        })
+        window.location.href = url
+        return
+      }
+    } catch (err: any) {
+      console.error('Plan change error:', err)
+      setCheckoutError(err.message || 'An error occurred while changing your plan')
+    } finally {
+      setCheckoutLoading(false)
+    }
+  }
+
+  const handleManageSubscription = async () => {
+    if (!userData?.auth_user_id) {
+      setCheckoutError('User ID non disponibile. Riprova dopo il login.');
+      return;
+    }
+    setPortalLoading(true)
+    setCheckoutError(null)
+    try {
+      const response = await fetch('/api/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userData.auth_user_id,
+        }),
+      })
+      const data = await response.json()
+      if (data.error) {
+        throw new Error(data.error)
+      }
+      window.location.href = data.url
+    } catch (err: any) {
+      console.error('Portal session error:', err)
+      setCheckoutError(err.message || 'An error occurred while accessing the customer portal')
+    } finally {
+      setPortalLoading(false)
+    }
+  }
+
+  const handleTestExpiration = async () => {
+    if (!userData?.auth_user_id) return
+    
+    setTestLoading(true)
+    try {
+      const response = await fetch('/api/test/subscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET}`
+        },
+        body: JSON.stringify({
+          userId: userData.auth_user_id
+        })
+      })
+      
+      const result = await response.json()
+      if (result.error) {
+        throw new Error(result.error)
+      }
+      
+      // Ricarica i dati dell'utente
+      router.refresh()
+    } catch (err: any) {
+      console.error('Test error:', err)
+    } finally {
+      setTestLoading(false)
+    }
+  }
+
+  // Funzione per downgrade a free (cancella rinnovo automatico)
+  const handleFreeDowngrade = async () => {
+    setCheckoutLoading(true)
+    setCheckoutError(null)
+    try {
+      const response = await fetch('/api/cancel-renewal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: userData?.auth_user_id }),
+      });
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      router.refresh();
+    } catch (err: any) {
+      setCheckoutError(err.message || 'Errore durante il downgrade');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  }
+
+  const calculateSubscriptionProgress = () => {
+    if (!userData?.subscription_end) {
+      console.log('No subscription end date found');
+      return 0;
+    }
+    
+    const endDate = new Date(userData.subscription_end);
+    const now = new Date();
+    
+    // Per test: aggiungiamo un giorno alla data corrente
+    const date = new Date(now);
+    
+    console.log('Subscription end date:', endDate);
+    console.log('Current date:', now);
+    console.log('Test date (tomorrow):', date);
+    
+    // Se la data di fine è nel passato, mostra 100%
+    if (endDate < now) {
+      console.log('End date is in the past');
+      return 100;
+    }
+
+    // Usa la data di inizio effettiva dell'abbonamento
+    const startDateStr = userData.subscription_start || userData.created_at;
+    if (!startDateStr) {
+      console.log('No start date found');
+      return 0;
+    }
+    
+    const startDate = new Date(startDateStr);
+    console.log('Actual start date:', startDate);
+    
+    // Se la data di inizio è nel futuro, mostra 0%
+    if (startDate > now) {
+      console.log('Start date is in the future');
+      return 0;
+    }
+    
+    const totalDays = Math.floor((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    // Usa testDate invece di now per simulare il giorno successivo
+    const daysPassed = Math.floor((date.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    console.log('Days passed:', daysPassed);
+    console.log('Total days:', totalDays);
+    
+    const progress = Math.min(Math.round((daysPassed / totalDays) * 100), 100);
+    console.log('Calculated progress:', progress);
+    
+    return progress;
+  };
+
   if (loading) {
     return <Loader position='full' />
   }
 
-  console.log(payments)
+  // Mostra messaggio di downgrade programmato
+  const getPlanLabel = (plan: string) => {
+    if (plan === 'pro') return 'Pro';
+    if (plan === 'ultra') return 'Ultra';
+    if (plan === 'free') return 'Free';
+    return plan;
+  }
 
   return (
     <section>
@@ -93,18 +317,70 @@ const BillingPage = () => {
         <Separator className='my-4' />
       </div>
 
+      {userData?.subscription_status === 'payment_failed' && (
+        <div className="mb-6 p-4 border border-red-200 bg-red-50 rounded-lg">
+          <h3 className="text-sm font-bold text-red-800 mb-2">Payment Failed</h3>
+          <p className="text-sm text-red-700 mb-2">
+            Your last payment attempt failed. Please update your payment method to continue using the service.
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={handleManageSubscription}
+            disabled={portalLoading}
+            className="text-red-800 border-red-300 hover:bg-red-100"
+          >
+            {portalLoading ? 'Loading...' : 'Update Payment Method'}
+          </Button>
+        </div>
+      )}
+
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 h-fit w-full'>  
         <div className='h-fit w-full col-span-1 lg:col-span-2 gap-6 flex flex-col'>
           {userData?.subscription !== 'free' ? (
             <Card className='col-span-1 lg:col-span-2 h-fit'>
-              <CardHeader className='flex flex-row items-center gap-4 py-4 px-6'>
+              <CardHeader className='flex flex-row items-center gap-5 py-4 px-6'>
                 <CardTitle className='flex flex-row items-center gap-2'>
-                  <Clock size={32} />
+                  <Clock size={40} />
                 </CardTitle>
                 <CardDescription className='flex flex-col gap-1 w-full pb-2'>
-                  <h3 className='text-sm font-bold text-black'>You subscription ends in 10 days</h3>
-                  <p className='text-sm text-muted-foreground'>The plan will be automatically renewed on <span className='font-bold'>10/06/2025</span></p>
-                  <div className='bg-red-300 w-full h-2 rounded-md mt-2' />
+                  {userData?.subscription_renewal === false ? (
+                    <>
+                      <h3 className='text-sm font-bold text-black'>
+                        Your subscription will end on {userData?.subscription_end ? new Date(userData.subscription_end).toLocaleDateString() : 'N/A'}
+                      </h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {userData?.pending_subscription && userData?.pending_subscription !== userData?.subscription
+                          ? <>
+                              You will be <b>downgraded to the {getPlanLabel(userData.pending_subscription)} plan</b> at the end of the current period.
+                            </>
+                          : 'Your subscription will not be renewed at the end of the current period.'}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className='text-sm font-bold text-black'>
+                        Your subscription ends in {userData?.subscription_end ?
+                          Math.ceil((new Date(userData.subscription_end).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                          : 'N/A'} days
+                      </h3>
+                      <p className='text-sm text-muted-foreground'>
+                        {userData?.pending_subscription && userData?.pending_subscription !== userData?.subscription
+                          ? <>
+                              The plan will be automatically renewed on <span className='font-bold'>
+                                {userData?.subscription_end ? new Date(userData.subscription_end).toLocaleDateString() : 'N/A'}
+                              </span>.<br />
+                              <span className='text-yellow-800 font-bold'>You will be downgraded to the {getPlanLabel(userData.pending_subscription)} plan at the end of the current period.</span>
+                            </>
+                          : <>
+                              The plan will be automatically renewed on <span className='font-bold'>
+                                {userData?.subscription_end ? new Date(userData.subscription_end).toLocaleDateString() : 'N/A'}
+                              </span>.
+                            </>
+                        }
+                      </p>
+                    </>
+                  )}
+                  <Progress value={calculateSubscriptionProgress()} className='mt-2' />
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -129,7 +405,7 @@ const BillingPage = () => {
               {payments.length > 0 ? (
                 <div className="overflow-x-auto rounded-2xl border border-muted-foreground/10">
                   <table className="min-w-full text-sm">
-                    <thead className="bg-muted sticky top-0 z-10">
+                    <thead className="bg-gray-200 sticky top-0 z-10">
                       <tr>
                         <th className="px-3 py-2 text-left font-semibold">Amount</th>
                         <th className="px-3 py-2 text-left font-semibold">Currency</th>
@@ -137,23 +413,23 @@ const BillingPage = () => {
                         <th className="px-3 py-2 text-left font-semibold">Product</th>
                         <th className="px-3 py-2 text-left font-semibold">Status</th>
                         <th className="px-3 py-2 text-left font-semibold">Date</th>
-                        <th className="px-3 py-2 text-left font-semibold">Tokens</th>
+                        <th className="px-3 py-2 text-left font-semibold">Type</th>
                       </tr>
                     </thead>
                     <tbody>
                       {payments.map((payment, idx) => (
                         <tr key={payment.id} className={
-                          `border-b last:border-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-muted/50'} hover:bg-primary/5 transition-colors`
+                          `border-b last:border-0 ${idx % 2 === 0 ? 'bg-white' : 'bg-muted/100'} hover:bg-primary/5 transition-colors`
                         }>
                           <td className="px-3 py-2 font-mono">€{(payment.amount / 100).toFixed(2)}</td>
                           <td className="px-3 py-2 uppercase">{payment.currency}</td>
                           <td className="px-3 py-2 truncate max-w-[160px]" title={payment.email}>{payment.email}</td>
-                          <td className="px-3 py-2 capitalize">{payment.product}</td>
+                          <td className="px-3 py-2 capitalize">{payment.product === 'ideas' ? 'Idea Tokens' : payment.product === 'scripts' ? 'Script Tokens' : `${payment.product} Plan`}</td>
                           <td className="px-3 py-2">
                             <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${payment.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{payment.status}</span>
                           </td>
                           <td className="px-3 py-2">{new Date(payment.created_at).toLocaleDateString()}</td>
-                          <td className="px-3 py-2">{payment.metadata?.tokens}</td>
+                          <td className="px-3 py-2">{payment.metadata?.type === 'subscription' ? 'Subscription' : 'Tokens'}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -172,37 +448,124 @@ const BillingPage = () => {
               <ShoppingBag size={48} className='text-primary' />
               <div className='flex flex-col flex-1'>
                 <p className='text-lg font-bold capitalize text-black'>{userData?.subscription} Plan</p>
-                <Link href='/billing/upgrade' className='text-sm flex flex-row items-center gap-1 text-primary/70 hover:underline underline-offset-2'>
-                  View plan details   <ExternalLink size={14} />
-                </Link>
+                <p className='text-sm flex flex-row items-center gap-1 text-primary/70'>
+                  {userData?.subscription === 'free' ? 'For starters' : userData?.subscription === 'pro' ? 'For Youtubers' : 'For Professionals'}
+                </p>
               </div>
               <p className='ml-auto text-lg font-bold text-black'>{dict.currency}{userData?.subscription === 'free' ? '0' : userData?.subscription === 'pro' ? '14.99' : '29.99'}</p>
             </CardDescription>
           </CardHeader>
           <CardContent className='mt-2'>
-            <p>You can change your plan at any time. To change your plan, click the button below.</p>
-            <Button className='mt-4'>
-              <Link href='/billing/upgrade'>
-                Upgrade plan
-              </Link>
+            <p>You can manage your subscription and payment methods through the Stripe Customer Portal.</p>
+            <Button 
+              className='mt-4'
+              onClick={handleManageSubscription}
+              disabled={portalLoading || userData?.subscription === 'free'}
+            >
+              {portalLoading ? 'Loading...' : 'Manage Subscription'}
             </Button>
           </CardContent>
         </Card>
       </div>
       <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10'>
-        <Plan name='Free' price={0} description='For Starters' features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} action={userData?.subscription === 'free' ? 'Manage' : userData?.subscription === 'pro' ? 'Downgrade' : 'Upgrade'} period='month' />
-        <Plan name='Pro' price={14.99} description='For Youtubers' features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} action={userData?.subscription === 'pro' ? 'Manage' : userData?.subscription === 'free' ? 'Upgrade' : 'Downgrade'} period='month' />
-        <Plan name='Ultra' price={29.99} description='For Professionals' features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} action={userData?.subscription === 'ultra' ? 'Manage' : userData?.subscription === 'free' ? 'Upgrade' : 'Downgrade'} period='month' />
+        <Plan 
+          name='Free' 
+          price={0} 
+          description='For Starters' 
+          features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} 
+          action={userData?.subscription === 'free' ? 'Current Plan' : (userData?.subscription === 'pro' || userData?.subscription === 'ultra' ? 'Downgrade' : 'Downgrade')} 
+          period='month' 
+          onCheckout={() => handlePlanChange('free')} 
+          loading={checkoutLoading} 
+          userData={userData}
+          handleManageSubscription={handleManageSubscription}
+          handleFreeDowngrade={handleFreeDowngrade}
+        />
+        <Plan 
+          name='Pro' 
+          price={14.99} 
+          description='For Youtubers' 
+          features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} 
+          action={userData?.subscription === 'pro' ? 'Current Plan' : userData?.subscription === 'free' ? 'Upgrade' : 'Downgrade'} 
+          period='month' 
+          onCheckout={() => handlePlanChange('pro')} 
+          loading={checkoutLoading} 
+          userData={userData}
+          handleManageSubscription={handleManageSubscription}
+          handleFreeDowngrade={handleFreeDowngrade}
+        />
+        <Plan 
+          name='Ultra' 
+          price={29.99} 
+          description='For Professionals' 
+          features={['2500 idea tokens', '5000 script tokens', 'Analisi di Base']} 
+          action={userData?.subscription === 'ultra' ? 'Current Plan' : 'Upgrade'} 
+          period='month' 
+          onCheckout={() => handlePlanChange('ultra')} 
+          loading={checkoutLoading} 
+          userData={userData}
+          handleManageSubscription={handleManageSubscription}
+          handleFreeDowngrade={handleFreeDowngrade}
+        />
       </div>
+      {process.env.NODE_ENV === 'development' && userData?.subscription !== 'free' && (
+        <div className="mt-4 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+          <h3 className="text-sm font-bold text-yellow-800 mb-2">Test Subscription Expiration</h3>
+          <p className="text-sm text-yellow-700 mb-2">
+            This button will simulate subscription expiration by setting the end date to 1 minute ago.
+            Only visible in development environment.
+          </p>
+          <Button 
+            variant="outline" 
+            onClick={handleTestExpiration}
+            disabled={testLoading}
+            className="text-yellow-800 border-yellow-300 hover:bg-yellow-100"
+          >
+            {testLoading ? 'Testing...' : 'Test Expiration'}
+          </Button>
+        </div>
+      )}
+      {checkoutError && <div className='text-red-500 mt-2'>{checkoutError}</div>}
     </section>
   )
 }
 
-const Plan = ({ name, price, description, features, action, period }: { name: string, price: number, description: string, features: string[], action: string, period: string }) => {
+const Plan = ({ name, price, description, features, action, period, onCheckout, loading, userData, handleManageSubscription, handleFreeDowngrade }: { name: string, price: number, description: string, features: string[], action: string, period: string, onCheckout?: () => void, loading?: boolean, userData: ProfileData | null, handleManageSubscription: () => void, handleFreeDowngrade: () => void }) => {
+  const getButtonText = () => {
+    if (action === 'Current Plan') {
+      return 'Current Plan'
+    }
+    if (name.toLowerCase() === 'free' && userData && (userData.subscription === 'pro' || userData.subscription === 'ultra')) {
+      return 'Downgrade'
+    }
+    return action
+  }
+
+  const handleClick = () => {
+    if (name.toLowerCase() === 'free' && (userData?.subscription === 'pro' || userData?.subscription === 'ultra')) {
+      handleFreeDowngrade();
+      return;
+    }
+    if (userData && userData.subscription === 'pro' && name.toLowerCase() === 'ultra') {
+      handleManageSubscription();
+      return;
+    }
+    if (onCheckout) {
+      onCheckout();
+    }
+  }
+
   return (
-    <Card className='w-full p-6'>
+    <Card className='w-full p-6 flex flex-col justify-between'>
       <div className="mb-6 sm:mb-8">
-        <h3 className="text-xl sm:text-2xl font-bold">{name} Plan</h3>
+        <div className='flex flex-row items-center gap-2 justify-between'>
+          <h3 className="text-xl sm:text-2xl font-bold">{name} Plan</h3>
+          {userData?.pending_subscription && userData?.pending_subscription !== userData?.subscription && name.toLowerCase() === userData.pending_subscription && (
+            <span className='text-sm text-muted-foreground max-w-[90px] text-right'>
+              Next plan after renewal
+            </span>
+          )}
+        </div>
         <div className="mt-3 sm:mt-4 flex items-baseline">
           <span className="text-4xl sm:text-5xl font-bold tracking-tight">{price}</span>
           <span className="ml-2 text-zinc-500">/{period}</span>
@@ -220,27 +583,16 @@ const Plan = ({ name, price, description, features, action, period }: { name: st
       </ul>
 
       <form className='p-1 space-y-2'>
-        {name === 'Free' ? (
-          <Button
-            type='submit' 
-            formAction={signInWithGoogleAction}
-            className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
-            size="lg"
+        <Button
+          type='button'
+          variant={action === 'Current Plan' ? 'outline' : 'default'}
+          className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
+          size="lg"
+          onClick={handleClick}
+          disabled={loading || action === 'Current Plan'}
         >
-          <div className='flex items-center gap-2'>
-            {action}
-          </div>
+          {loading ? 'Loading...' : getButtonText()}
         </Button>
-        ) : (
-          <Button
-            type='submit' 
-            className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
-
-            size="lg"
-          >
-            {action}
-          </Button>
-        )}
       </form>
     </Card>
   )

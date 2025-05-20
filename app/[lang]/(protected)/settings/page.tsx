@@ -17,6 +17,7 @@ import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
 import { useDictionary } from '@/app/context/dictionary-context'
 import { useRouter, usePathname } from 'next/navigation'
+import CustomLink from '@/components/blocks/custom-link'
 
 const SettingsPage = () => {
 	const supabase = createClient()
@@ -242,7 +243,11 @@ const SettingsPage = () => {
 									{dict.settingsPage.fields.userPlan.description1} <Link className='text-blue-500' target='_blank' href='https://stripe.com'>Stripe</Link>.
 									{dict.settingsPage.fields.userPlan.description2}
 								</p>
-								<Button variant='black' className='ml-auto' size='sm'>{dict.settingsPage.fields.userPlan.button}</Button>
+								<Button variant='black' className='ml-auto' size='sm'>
+									<CustomLink href='/billing'>
+										{dict.settingsPage.fields.userPlan.button}
+									</CustomLink>
+								</Button>
 							</div>
 						</CardContent>
 					</Card>

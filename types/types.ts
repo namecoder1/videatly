@@ -20,10 +20,17 @@ export interface SearchableSelectProps {
 
 // Define ProfileData interface since the import doesn't exist
 export interface ProfileData {
+  id: string;
   auth_user_id: string;
+  email: string;
+  subscription: 'free' | 'pro' | 'ultra';
+  subscription_status?: 'active' | 'canceled' | 'past_due' | 'unpaid' | 'payment_failed';
+  subscription_start?: string | null;
+  subscription_end?: string | null;
+  subscription_renewal?: boolean | null;
+  created_at?: string;
+  updated_at?: string;
   name?: string;
-  email?: string;
-  subscription?: string;
   experience_level?: string;
   youtube_username?: string;
   content_style?: string;
@@ -33,6 +40,7 @@ export interface ProfileData {
   video_type?: string;
   tokens_available?: number;
   spoken_language?: string;
+  pending_subscription?: 'free' | 'pro' | 'ultra' | null;
 }
 
 // Update IdeaData interface to match the database schema

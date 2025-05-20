@@ -366,17 +366,3 @@ export const deleteScript = async (id: number): Promise<{ success: boolean; erro
   }
 }
 
-export const subscribeAction = async () => {
-  const { url } = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    line_items: [
-      {
-        price: process.env.STRIPE_PRICE_ID,
-        quantity: 1,
-      }
-    ],
-    mode: 'subscription',
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/success`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/cancel`,
-  })
-}

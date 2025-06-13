@@ -79,11 +79,38 @@ export async function middleware(request: NextRequest) {
     )
   }
 
-  // 🔐 Supabase session
-  return await updateSession(request)
+  // �� Supabase session
+  const response = await updateSession(request)
+  
+  // Check if user is authenticated and has yt_username set
+  const supabase = createMiddlewareClient(request)
+  const { data: { user } } = await supabase.auth.getUser()
+  
+  if (user?.id) {
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('yt_username')
+      .eq('auth_user_id', user.id)
+      .single()
+
+    // Get the current locale from the pathname
+    const currentLocale = locales.find(locale => pathname.startsWith(`/${locale}/`)) || 'en'
+    
+    // Check if the current path is not one of the allowed paths and yt_username is not set
+    const isAllowedPath = pathname.includes('/profile') || 
+                         pathname.includes('/billing') || 
+                         pathname.includes('/documentation') || 
+                         pathname.includes('/settings')
+    
+    if (!isAllowedPath && !userProfile?.yt_username) {
+      return NextResponse.redirect(new URL(`/${currentLocale}/profile`, request.url))
+    }
+  }
+
+  return response
 }
 
 export const config = {
   // Exclude Stripe webhook from middleware to preserve raw body for signature verification
-  matcher: ['/((?!_next|api/stripe-webhook|api|favicon.ico).*)'],
+  matcher: ['/((?!_next|api/stripe/webhook|api|favicon.ico).*)'],
 }

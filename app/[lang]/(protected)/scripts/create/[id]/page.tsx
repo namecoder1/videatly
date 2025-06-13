@@ -47,7 +47,7 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
 			.from('scripts')
 			.select('*')
 			.eq('idea_id', id)
-			.single()
+			.maybeSingle()
 
 			if (scriptError) {
 				console.log(scriptError)

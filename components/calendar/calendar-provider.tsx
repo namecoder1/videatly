@@ -19,6 +19,7 @@ export default function CalendarProvider({
   dict,
   dayClassNames,
   getDayContent,
+  context = 'calendar'
 }: {
   events: TodoProps[]
   setEvents: (events: TodoProps[]) => void
@@ -34,23 +35,39 @@ export default function CalendarProvider({
   dict: any
   dayClassNames?: (date: Date) => string
   getDayContent?: (date: Date) => string | null
+  context?: 'calendar' | 'production'
 }) {
   const [newEventDialogOpen, setNewEventDialogOpen] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState<TodoProps | null>(null)
   const [manageEventDialogOpen, setManageEventDialogOpen] = useState(false)
 
   // Get the first idea and script for default values
-  const defaultIdeaId = ideas && ideas.length > 0 ? ideas[0].id : 0
+  const defaultIdeaId = ideas && ideas.length > 0 ? ideas[0].id : ''
   const defaultScriptId = ideas && ideas.length > 0 && ideas[0].scripts && ideas[0].scripts.length > 0 
-    ? ideas[0].scripts[0].id : 0
+    ? ideas[0].scripts[0].id : ''
   const userId = ideas && ideas.length > 0 ? ideas[0].user_id : ''
 
   // Handle closing todo creator when done
   const handleTodoUpdate = async () => {
-    setNewEventDialogOpen(false)
-    setManageEventDialogOpen(false)
-    if (onTodoUpdate) {
-      await onTodoUpdate()
+    console.log('CalendarProvider - handleTodoUpdate called')
+    try {
+      // First update the state
+      if (onTodoUpdate) {
+        console.log('CalendarProvider - calling onTodoUpdate')
+        await onTodoUpdate()
+        console.log('CalendarProvider - onTodoUpdate completed')
+      }
+      // Then close the dialogs
+      console.log('CalendarProvider - closing dialogs')
+      setNewEventDialogOpen(false)
+      setManageEventDialogOpen(false)
+      setSelectedEvent(null)
+      console.log('CalendarProvider - dialogs closed')
+    } catch (error) {
+      console.error('CalendarProvider - Error updating todo:', error)
+      // Keep dialogs open if there's an error
+      setNewEventDialogOpen(true)
+      setManageEventDialogOpen(true)
     }
   }
 
@@ -85,7 +102,7 @@ export default function CalendarProvider({
         scriptId={defaultScriptId}
         userId={userId}
         mode="create"
-        context="calendar"
+        context={context}
         onUpdate={handleTodoUpdate}
         ideas={ideas}
         dict={dict}
@@ -97,11 +114,11 @@ export default function CalendarProvider({
       {selectedEvent && (
         <TodoCreator
           defaultValue={new Date(selectedEvent.start_date)}
-          ideaId={Number(selectedEvent.idea_id)}
-          scriptId={Number(selectedEvent.script_id)}
+          ideaId={selectedEvent.idea_id}
+          scriptId={selectedEvent.script_id || ''}
           userId={selectedEvent.user_id}
           mode="update"
-          context="calendar"
+          context={context}
           todo={selectedEvent}
           onUpdate={handleTodoUpdate}
           ideas={ideas}

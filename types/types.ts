@@ -45,7 +45,7 @@ export interface ProfileData {
 
 // Update IdeaData interface to match the database schema
 export interface IdeaData {
-  id: number;
+  id: string;
   created_at: string;
   user_id: string;
   pub_date?: string;
@@ -65,7 +65,7 @@ export interface IdeaData {
 }
 
 export interface ScriptData {
-  id: number;
+  id: string;
   created_at: string;
   user_id: string;
   idea_id: string;
@@ -93,7 +93,7 @@ export interface Sponsorship {
 }
 
 export type ScriptBoxProps = {
-	id: number;
+	id: string;
 	idea_id: string;
 	content: string;
 	tone: string;
@@ -150,16 +150,16 @@ export interface IdeaWithScripts extends IdeaData {
   scripts: ScriptData[];
 }
 
-export type TodoMode = 'create' | 'update'
+
 
 export interface TodoFormProps extends React.ComponentProps<"form"> {
   onSubmit: (formData: any) => void;
-  mode: TodoMode;
+  mode: 'create' | 'update';
   todo?: TodoProps;
   handleDelete: () => void;
   ideas?: IdeaWithScripts[];
   onIdeaSelect?: (idea: IdeaWithScripts) => void;
-  ideaId: number;
+  ideaId: string;
   dict: any;
   startDate: Date;
   endDate: Date;
@@ -168,15 +168,40 @@ export interface TodoFormProps extends React.ComponentProps<"form"> {
   onStartTimeChange: (time: string) => void;
   onEndTimeChange: (time: string) => void;
   className?: string;
+  context?: 'calendar' | 'production';
 }
 
-export interface Payment {
+interface PaymentMetadata {
+  type: 'subscription' | 'tokens';
+  price_id: string;
+  invoice_pdf: string;
+  invoice_number: string;
+  hosted_invoice_url?: string;
+}
+
+export interface PaymentWithMetadata {
   id: string;
-  created_at: string;
   auth_user_id: string;
   email: string;
-  amount: string;
+  amount: number;
+  currency: string;
+  status: 'paid' | 'pending' | 'failed';
   product: string;
-  timestamp: string;
   stripe_id: string;
+  stripe_customer_id: string;
+  stripe_subscription_id: string;
+  stripe_invoice_id: string;
+  stripe_payment_intent_id: string;
+  created_at: string;
+  metadata: PaymentMetadata;
+}
+
+export interface ProductionData {
+  id: string;
+  created_at: string;
+  idea_id: string;
+  script_id: string;
+  user_id: string;
+  status: string;
+  video_url: string;
 }

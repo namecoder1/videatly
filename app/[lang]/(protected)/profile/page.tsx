@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { User, Save, Youtube, HelpCircle, Languages, Video, TargetIcon } from 'lucide-react'
+import { User, Save, Youtube, HelpCircle, Languages, Video, TargetIcon, Blocks, MessageSquareWarning } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { createClient } from "@/utils/supabase/client"
 import { useRouter } from 'next/navigation'
@@ -83,12 +83,12 @@ const ProfilePage = () => {
           // Fetch additional profile data
           const { data: userData } = await supabase
             .from('users')
-            .select('spoken_language')
+            .select('*')
             .eq('auth_user_id', user.id)
             .single()
           
           // Only show card if userData is null or spoken_language is null/empty string
-          setProfileData(userData || { spoken_language: null })
+          setProfileData(userData)
         }
       } catch (error) {
         console.error('Error fetching user data:', error)
@@ -154,6 +154,13 @@ const ProfilePage = () => {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <div>
+          {!profileData?.yt_username && (
+            <Card className="bg-red-50/50 border-red-200 mb-6">
+              <CardHeader>
+                <CardTitle className="text-red-500 text-sm flex items-center gap-3"><MessageSquareWarning size={24} />The site is blocked until you set your YouTube username</CardTitle>
+              </CardHeader>
+            </Card>
+          )}
           <Card className="shadow-sm h-fit">
             <CardHeader className="pb-3 sm:pb-4">
               <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">

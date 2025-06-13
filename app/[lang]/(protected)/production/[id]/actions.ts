@@ -1,6 +1,5 @@
 import { createClient } from "@/utils/supabase/client"
 
-
 const fetchTodos = async (date: string) => {
   const supabase = createClient()
 

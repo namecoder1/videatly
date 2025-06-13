@@ -44,24 +44,51 @@ function calculateEventLayout(
 ): EventPosition {
   const { effectiveStartDate: currentStart, effectiveEndDate: currentEnd } = currentEvent;
 
+  console.log(`LAYOUT DEBUG - Event ${currentEvent.id} (${currentEvent.title})`);
+  console.log(`LAYOUT DEBUG - effectiveStartDate: ${currentStart?.toISOString()}`);
+  console.log(`LAYOUT DEBUG - effectiveEndDate: ${currentEnd?.toISOString()}`);
+  console.log(`LAYOUT DEBUG - isFirstDay: ${currentEvent.isFirstDay}, isLastDay: ${currentEvent.isLastDay}`);
+
   if (!currentStart || !currentEnd) {
     return { top: '0px', height: '32px', left: '0%', width: '100%', zIndex: 1 };
   }
 
-  // 1. Calculate vertical position and height (same as before)
-  const startHour = getHours(currentStart);
-  const startMinutes = getMinutes(currentStart);
-  const endHour = getHours(currentEnd);
-  const endMinutes = getMinutes(currentEnd);
-
-  const topPosition = startHour * 128 + (startMinutes / 60) * 128; // Assuming 128px per hour
+  // 1. Calculate vertical position and height
+  // Convert UTC to local timezone properly
+  const startOffset = currentStart.getTimezoneOffset() * 60000; // offset in milliseconds
+  const endOffset = currentEnd.getTimezoneOffset() * 60000;
   
-  let durationInMinutes = differenceInMinutes(currentEnd, currentStart);
-  if (durationInMinutes <= 0) durationInMinutes = 30; // Minimum duration for display, e.g., 30 mins
+  const localStart = new Date(currentStart.getTime() - startOffset);
+  const localEnd = new Date(currentEnd.getTime() - endOffset);
+  
+  const startHour = localStart.getUTCHours(); // Use getUTCHours because we've adjusted for timezone
+  const startMinutes = localStart.getUTCMinutes();
+  const endHour = localEnd.getUTCHours();
+  const endMinutes = localEnd.getUTCMinutes();
+
+  console.log(`LAYOUT DEBUG - UTC Start: ${currentStart.toISOString()}`);
+  console.log(`LAYOUT DEBUG - UTC End: ${currentEnd.toISOString()}`);
+  console.log(`LAYOUT DEBUG - Local start: ${localStart.toISOString()}`);
+  console.log(`LAYOUT DEBUG - Local end: ${localEnd.toISOString()}`);
+  console.log(`LAYOUT DEBUG - Start time: ${startHour}:${startMinutes.toString().padStart(2, '0')}`);
+  console.log(`LAYOUT DEBUG - End time: ${endHour}:${endMinutes.toString().padStart(2, '0')}`);
+
+  const topPosition = startHour * 128 + (startMinutes / 60) * 128; // 128px per hour
+  
+  let durationInMinutes = differenceInMinutes(localEnd, localStart);
+  
+  console.log(`LAYOUT DEBUG - Duration in minutes: ${durationInMinutes}`);
+  console.log(`LAYOUT DEBUG - Top position: ${topPosition}px`);
+  
+  // Ensure minimum duration for display (30 minutes)
+  if (durationInMinutes <= 0) durationInMinutes = 30;
 
   const minHeightInPx = (30 / 60) * 128; // Min height for 30 min
   const calculatedHeight = (durationInMinutes / 60) * 128;
   const height = Math.max(calculatedHeight, minHeightInPx);
+
+  console.log(`LAYOUT DEBUG - Calculated height: ${height}px`);
+  console.log('LAYOUT DEBUG ---');
 
   // 2. Determine horizontal position (left, width) based on overlaps
   const overlappingSegments: ProcessedEvent[] = [];
@@ -115,8 +142,6 @@ function calculateEventLayout(
   const columnWidth = 100 / numColumns;
   const eventWidth = columnWidth; // Each event in a column takes the full width of that column for now
   const eventLeft = columnIndex * columnWidth;
-  // A more sophisticated approach might adjust width based on how many columns the event *spans* if it's very long
-  // and other shorter events could fit beside it. For now, this is a common column-based layout.
 
   return {
     left: `${eventLeft}%`,
@@ -167,13 +192,27 @@ interface CalendarEventProps {
   month?: boolean;
   className?: string;
   dailyProcessedEvents?: ProcessedEvent[]; // All events processed for the current day
+  isEndMarker?: boolean; // New prop to indicate if this is an end marker
 }
 
-export default function CalendarEvent({ event, month = false, className, dailyProcessedEvents = [] }: CalendarEventProps) {
+export default function CalendarEvent({ event, month = false, className, dailyProcessedEvents = [], isEndMarker = false }: CalendarEventProps) {
   const { setSelectedEvent, setManageEventDialogOpen, date } = useCalendarContext();
+  
+  console.log(`RENDER DEBUG - CalendarEvent for ${event.id} (${event.title})`);
+  console.log(`RENDER DEBUG - Month view: ${month}`);
+  console.log(`RENDER DEBUG - Is end marker: ${isEndMarker}`);
+  console.log(`RENDER DEBUG - Event data:`, {
+    effectiveStartDate: event.effectiveStartDate?.toISOString(),
+    effectiveEndDate: event.effectiveEndDate?.toISOString(),
+    isFirstDay: event.isFirstDay,
+    isLastDay: event.isLastDay,
+    totalDays: event.totalDays
+  });
   
   const style = month ? {} : calculateEventLayout(event, dailyProcessedEvents);
   const priorityClasses = getPriorityClasses(event.priority || 'medium');
+
+  console.log(`RENDER DEBUG - Calculated style:`, style);
 
   // Determina la larghezza numerica per aggiustamenti di layout dinamici
   const eventWidthPercent = month ? 100 : parseFloat((style as any).width?.replace('%', '') || '100');
@@ -183,11 +222,32 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
   const animationKey = `${event.id}-${isEventInCurrentMonth ? 'current' : 'adjacent'}`;
 
   const getFormattedTime = () => {
+    if (isEndMarker) {
+      // For end markers, always show the original end time
+      const originalEndDate = new Date(event.end_date!);
+      return `Ends: ${format(originalEndDate, 'p')}`;
+    }
+
     const displayStartDate = event.effectiveStartDate ? new Date(event.effectiveStartDate) : (event.start_date ? new Date(event.start_date) : null);
     const displayEndDate = event.effectiveEndDate ? new Date(event.effectiveEndDate) : (event.end_date ? new Date(event.end_date) : null);
 
     if (!displayStartDate) return '';
+    
     try {
+      // For multi-day events, show different information based on the day
+      if (event.totalDays && event.totalDays > 1) {
+        if (event.isFirstDay) {
+          return `Start: ${format(displayStartDate, 'p')}`;
+        } else if (event.isLastDay && event.end_date) {
+          // For the last day, always show the original end time, not the effective end time
+          const originalEndDate = new Date(event.end_date);
+          return `End: ${format(originalEndDate, 'p')}`;
+        } else {
+          return `Day ${event.currentDayIndex + 1} of ${event.totalDays}`;
+        }
+      }
+      
+      // Single day event
       const formattedStart = format(displayStartDate, 'p');
       if (!displayEndDate || (isSameDay(displayStartDate, displayEndDate) && displayStartDate.getTime() === displayEndDate.getTime())) {
         return formattedStart;
@@ -200,12 +260,52 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
     }
   };
 
+  const getEventTitle = () => {
+    if (isEndMarker) {
+      return `${event.title} ●`; // Add a bullet point to indicate end
+    }
+    
+    if (event.totalDays && event.totalDays > 1) {
+      if (event.isFirstDay) {
+        return event.title;
+      } else if (event.isLastDay) {
+        return `${event.title} (End)`;
+      } else {
+        return `${event.title} (Day ${event.currentDayIndex + 1})`;
+      }
+    }
+    return event.title || "Event Title";
+  };
+
+  // Apply different styling for end markers
+  const getEventClasses = () => {
+    if (isEndMarker) {
+      return {
+        ...priorityClasses,
+        bg: `${priorityClasses.bg} opacity-80`,
+        border: `${priorityClasses.border} border-2 border-dashed`,
+      };
+    }
+    
+    // For continuation events (last day but not first day), make them slightly transparent
+    if (event.isLastDay && !event.isFirstDay && !isEndMarker) {
+      return {
+        ...priorityClasses,
+        bg: `${priorityClasses.bg} opacity-60`,
+      };
+    }
+    
+    return priorityClasses;
+  };
+
+  const eventClasses = getEventClasses();
+
   return (
     <MotionConfig reducedMotion="user">
       <AnimatePresence mode="wait">
         <motion.div
           className={cn(
-            `px-2 py-1 rounded-2xl cursor-pointer transition-all duration-300 ${priorityClasses.bg} ${priorityClasses.hoverBg} border ${priorityClasses.border}`,
+            `px-2 py-1 cursor-pointer transition-all duration-300 flex items-start gap-x-2`,
             !month && 'absolute',
             month && 'overflow-hidden text-xs my-0.5',
             className
@@ -230,7 +330,8 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
           }}
           layoutId={`event-${animationKey}-${month ? 'month' : 'day'}`}
         >
-          <div className={cn(`w-full h-fit flex flex-col ${priorityClasses.text}`,
+          <div className={`${eventClasses.bg} ${eventClasses.hoverBg} p-1 border mt-1 ${eventClasses.border} w-fit rounded-3xl`} />
+          <div className={cn(`w-full h-fit flex flex-col ${eventClasses.text}`,
              // Layout verticale se l'evento è molto stretto, per cercare di far stare il testo
              eventWidthPercent < 30 && !month ? 'justify-around' : 'justify-center' 
             )}
@@ -241,7 +342,7 @@ export default function CalendarEvent({ event, month = false, className, dailyPr
               // Riduci la dimensione del testo se l'evento è molto stretto
               !month && eventWidthPercent < 40 ? 'text-xs' : (!month ? 'text-sm' : '')
             )}>
-              {event.title || "Event Title"} 
+              {getEventTitle()} 
             </p>
             {/* Non mostrare orario/categoria se l'evento è estremamente stretto e non è la vista mensile */}
             {(!month && eventWidthPercent < 25) ? null : (

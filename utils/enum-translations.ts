@@ -919,22 +919,18 @@ export function getEnumTranslation(value: string | undefined, locale: string = '
   
   // Normalizzazione della locale per gestire casi inaspettati
   const normalizedLocale = locale?.toLowerCase() || 'en';
-  console.log(`[getEnumTranslation] Normalized locale: "${normalizedLocale}" (from "${locale}")`);
   
   // Per inglese, restituisci sempre il valore originale
   if (normalizedLocale === 'en') {
-    console.log(`[getEnumTranslation] Using English, returning original value: "${value}"`);
     return value;
   }
   
   // Validare che la locale sia supportata
   const supportedLocales = ['it', 'es', 'fr'];
   if (!supportedLocales.includes(normalizedLocale)) {
-    console.log(`[getEnumTranslation] Unsupported locale: "${normalizedLocale}", falling back to original value: "${value}"`);
     return value;
   }
   
-  console.log(`[getEnumTranslation] Translating value: "${value}" to locale: "${normalizedLocale}"`);
   
   // Cerca in tutte le tabelle di traduzione
   const allTranslations = [
@@ -956,12 +952,10 @@ export function getEnumTranslation(value: string | undefined, locale: string = '
     if (translations[value as keyof typeof translations] && 
         translations[value as keyof typeof translations][normalizedLocale]) {
       const result = translations[value as keyof typeof translations][normalizedLocale];
-      console.log(`[getEnumTranslation] Found translation: "${result}"`);
       return result;
     }
   }
   
-  console.log(`[getEnumTranslation] No translation found, returning original value: "${value}"`);
   return value;
 }
 

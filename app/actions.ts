@@ -52,7 +52,6 @@ const extractField = (message: string, fieldName: string): string => {
 };
 
 const extractListField = (message: string, fieldName: string): string[] => {
-
   // Create a regex that matches the emoji and captures everything until the next emoji field
   const emojiMap: { [key: string]: string } = {
     '📚 Topics': '📚',
@@ -70,17 +69,36 @@ const extractListField = (message: string, fieldName: string): string[] => {
   const sectionRegex = new RegExp(`\\*\\*${emoji}[^*]*\\*\\*[\\s\\S]*?(?=\\n\\s*\\*\\*[📝📋🔍🖼️✂️🎵🤝🛠️📚]|$)`, 'g');
   const section = message.match(sectionRegex);
 
-
   if (!section) return [];
 
   // Then extract the content
   const contentRegex = new RegExp(`\\*\\*${emoji}[^*]*\\*\\*\\s*\\n([^]*?)(?=\\n\\s*\\*\\*|$)`, 's');
   const match = section[0].match(contentRegex);
 
-
   if (!match) return [];
 
   const content = match[1].trim();
+  // Topics: accetta anche righe non vuote che non sono header
+  if (fieldName === '📚 Topics') {
+    const items = content
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line =>
+        (line.startsWith('•') || line.startsWith('-') || line.startsWith('*')) ||
+        (line.length > 0 && !line.startsWith('**'))
+      )
+      .map(line =>
+        line
+          .replace(/^[•\-*]\s*/, '')  // Remove bullet points
+          .replace(/\*\*/g, '')       // Remove bold
+          .replace(/\*([^*]+)\*/g, '$1') // Remove italic
+          .replace(/`([^`]+)`/g, '$1')   // Remove code
+          .trim()
+      )
+      .filter(line => line.length > 0);
+    return items;
+  }
+  // Sponsorships e tools: solo bullet
   const items = content
     .split('\n')
     .map(line => line.trim())
@@ -94,8 +112,6 @@ const extractListField = (message: string, fieldName: string): string[] => {
         .trim()
     )
     .filter(line => line.length > 0);
-
-
   return items;
 };
 
@@ -159,6 +175,11 @@ export const saveIdea = async (
     const sponsorshipPattern = /\*\*🤝[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
     const toolsPattern = /\*\*🛠️[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
 
+    // Debug: Check if topics and sponsorship sections exist in the message
+    console.log('=== DEBUG: CHECKING SECTIONS ===');
+    console.log('Topics section exists:', lastValidMessage.content.includes('**📚 Topics**'));
+    console.log('Sponsorship section exists:', lastValidMessage.content.includes('**🤝 Sponsorship**'));
+
     // Extract all fields from AI message
     const extractedData: {
       title: string;
@@ -194,6 +215,11 @@ export const saveIdea = async (
       creating_status: 'created' as const,
       pub_date: null
     };
+
+    // Debug: Log the extracted topics and sponsorship opportunities
+    console.log('=== DEBUG: EXTRACTED DATA ===');
+    console.log('Topics:', extractedData.topics);
+    console.log('Sponsorship Opportunities:', extractedData.sponsorship_opportunities);
 
     // Keep the original tags from the user, don't modify them
     const tagsArray = parseTags(ideaData.tags || '');
@@ -346,7 +372,7 @@ export const fetchScriptData = async (id: string): Promise<{ data: ScriptData | 
   }
 }
 
-export const deleteScript = async (id: number): Promise<{ success: boolean; error?: string }> => {
+export const deleteScript = async (id: string): Promise<{ success: boolean; error?: string }> => {
   const supabase = createClient();
 
   try {

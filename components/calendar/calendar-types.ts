@@ -14,6 +14,7 @@ export type CalendarProps = {
   dict: any
   dayClassNames?: (date: Date) => string
   getDayContent?: (date: Date) => string | null
+  context?: 'calendar' | 'production'
 }
 
 export type CalendarContextType = CalendarProps & {

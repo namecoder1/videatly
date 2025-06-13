@@ -136,7 +136,7 @@ const CalendarPage = () => {
       if (idea.pub_date) {
         const pubDate = new Date(idea.pub_date)
         if (pubDate.toLocaleDateString() === date.toLocaleDateString()) {
-          return 'bg-red-100 dark:bg-red-900/20 border border-red-500'
+          return 'bg-red-50'
         }
       }
     }
@@ -186,6 +186,7 @@ const CalendarPage = () => {
           dict={dict}
           dayClassNames={dayClassNames}
           getDayContent={getDayContent}
+          context='calendar'
         />
     </section>
 	)

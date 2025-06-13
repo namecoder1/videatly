@@ -183,8 +183,8 @@ export default function CalendarBodyMonth() {
                 </div>
                 
                 {dayContent && (
-                  <div className="mt-1 text-xs line-clamp-2 font-medium text-red-700 dark:text-red-400">
-                    {dayContent}
+                  <div className="mt-1 text-xs line-clamp-2 font-medium py-2 px-3 border border-red-200 rounded-2xl text-red-700 dark:text-red-400 flex items-start">
+                    {dayContent} 
                   </div>
                 )}
                 

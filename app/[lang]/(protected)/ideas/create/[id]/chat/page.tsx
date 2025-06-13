@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useDictionary } from "@/app/context/dictionary-context";
 import { useChat } from 'ai/react';
-import { Brain, CirclePause, User, Save, Loader2, ArrowRight, ArrowLeft, LetterText, Paintbrush, Film, Clock4, Target, Tag } from 'lucide-react';
+import { Brain, CirclePause, User as UserIcon, Save, Loader2, ArrowRight, ArrowLeft, LetterText, Paintbrush, Film, Clock4, Target, Tag } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -30,6 +30,8 @@ import ErrorMessage from "@/components/blocks/(protected)/error-message";
 import { Textarea } from "@/components/ui/textarea";
 import { getEnumTranslation } from "@/utils/enum-translations";
 import TokensChat from "@/components/blocks/(protected)/tokens-chat";
+import Image from "next/image";
+import { User } from "@supabase/supabase-js";
 
 
 const IdeaChatPage = ({ params }: { params: { id: string } }) => {
@@ -40,6 +42,7 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 	const supabase = createClient()
 	const { tokens, updateTokens: updateGlobalTokens } = useTokens()
 
+	const [user, setUser] = useState<User | null>(null);
 	const [profile, setProfile] = useState<ProfileData | null>(null);
 	const [ideaData, setIdeaData] = useState<IdeaData | null>(null);
 	const [canSave, setCanSave] = useState(false);
@@ -67,7 +70,7 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 	}, [tokens])
 
 	const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit, isLoading, stop } = useChat({
-		api: '/api/idea-chat',
+		api: '/api/openai/idea-chat',
 		body: {
 			profile,
 			ideaData,
@@ -130,6 +133,18 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 
 		loadData()
 	}, [id, toast, dict.ideaChatPage.toast.fetchError])
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const { data: userData, error: userError } = await supabase.auth.getUser();
+			if (userError) {
+				console.error('Error fetching user:', userError);
+				return;
+			}
+			setUser(userData.user);
+		}
+		fetchUser();
+	}, [supabase]);
 
 	useEffect(() => {
 		const lastMessage = messages[messages.length - 1]
@@ -215,6 +230,16 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 
 	const idea = ideaData as IdeaData;
 
+	// Trova tutti i messaggi assistant validi
+	const assistantIdeaMessages = messages
+		.filter(m => m.role === 'assistant' && (
+			(m.content.includes('**📝 Title**') && m.content.includes('**📋 Description**')) || // English
+			(m.content.includes('**📝 Titolo**') && m.content.includes('**📋 Descrizione**')) || // Italian
+			(m.content.includes('**📝 Título**') && m.content.includes('**📋 Descripción**')) || // Spanish
+			(m.content.includes('**📝 Titre**') && m.content.includes('**📋 Description**')) // French
+		))
+		.map(m => m.content);
+	const combinedIdeaContent = assistantIdeaMessages.join('\n\n');
 
 	return (
 		<section className="flex flex-col w-full max-w-4xl items-center mx-auto py-24">
@@ -229,8 +254,14 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 				</Button>
 
 				<IdeaInfo idea={idea} profile={profile} dict={dict} />
+				
 				{messages.map(m => {
-					const isIdeaComplete = m.role === 'assistant' && m.content.includes('**📝 Title**') && m.content.includes('**📋 Description**');
+					const isIdeaComplete = m.role === 'assistant' && (
+						(m.content.includes('**📝 Title**') && m.content.includes('**📋 Description**')) || // English
+						(m.content.includes('**📝 Titolo**') && m.content.includes('**📋 Descrizione**')) || // Italian
+						(m.content.includes('**📝 Título**') && m.content.includes('**📋 Descripción**')) || // Spanish
+						(m.content.includes('**📝 Titre**') && m.content.includes('**📋 Description**')) // French
+					);
 					if (isIdeaComplete) {
 						return <IdeaSectionsCard key={m.id} content={m.content} />;
 					}
@@ -239,20 +270,23 @@ const IdeaChatPage = ({ params }: { params: { id: string } }) => {
 						<div key={m.id} className={`flex items-start gap-x-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
 							<div className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-300 dark:border-zinc-600">
 								{m.role === 'user' ? (
-									<User className='w-4 h-4 text-zinc-500' />
+									<Image src={user?.user_metadata.avatar_url} alt="User" className="rounded-full" width={32} height={32} />
 								) : (
 									<Brain className='w-4 h-4 text-indigo-500' />
 								)}
 							</div>
-							<div className={`flex-1 space-y-2 overflow-hidden ${m.role === 'user' ? 'text-right' : ''}`}>
-								<ReactMarkdown 
-									components={{
-										p: ({ children }) => <p className={`mb-2 bg-card w-fit py-2 px-4 rounded-3xl border border-zinc-200 ${m.role === 'user' ? 'ml-auto text-right' : 'mr-auto text-left'}`}>{children}</p>
-									}}
-									rehypePlugins={[rehypeRaw]}
-								>
-									{m.content}
-								</ReactMarkdown>
+							<div>
+								<div className={`flex-1 space-y-2 bg-white rounded-3xl w-fit overflow-hidden ${m.role === 'user' ? 'text-right' : ''}`}>
+									<ReactMarkdown 
+										components={{
+											strong: ({node, ...props}) => <strong className="font-bold mb-2 text-lg text-primary mt-4" {...props} />, 
+											p: ({node, ...props}) => <p className="border-2 boder-boder rounded-3xl px-4 py-2 text-gray-700 space-y-2 dark:text-gray-200 whitespace-pre-line" {...props} />
+										}}
+										rehypePlugins={[rehypeRaw]}
+									>
+										{m.content}
+									</ReactMarkdown>
+								</div>
 								{m.role === 'assistant' && messages.length > 0 && (
 									<div className="text-xs text-muted-foreground mt-1">
 										{messages.findIndex(msg => msg.id === m.id) > 0 && `${dict.ideaChatPage.tokens.tokenOutput}: ${tokenCount}`}
@@ -364,7 +398,7 @@ const IdeaInfo = ({ idea, profile, dict }: { idea: IdeaData, profile: ProfileDat
 	const tags = parseTags(idea.tags || []);
 	
 	return (
-		<Card className="bg-gradient-to-br from-zinc-50 to-zinc-100 dark:from-zinc-900 dark:to-zinc-950 w-full">
+		<Card className="bg-gradient-to-br from-zinc-50 to-zinc-100 w-full">
 			<CardHeader className="space-y-4">
 				<CardTitle>
 					<h3 className="text-xl font-semibold flex items-center gap-2">
@@ -436,23 +470,22 @@ const IdeaInfoItem = ({ label, value, icon, color }: { label: string, value: str
 
 // Nuovo componente per mostrare l'idea completa
 const IdeaSectionsCard = ({ content }: { content: string }) => {
-	// Regex per trovare tutte le sezioni principali
-	const sectionRegex = /\*\*(.*?)\*\*\s*\n([\s\S]*?)(?=(\*\*|$))/g;
-	const sections: { title: string; value: string }[] = [];
-	let match;
-	while ((match = sectionRegex.exec(content)) !== null) {
-		sections.push({ title: match[1].trim(), value: match[2].trim() });
-	}
-	return (
-		<div className="rounded-xl border p-6 bg-white dark:bg-zinc-900 shadow space-y-4">
-			{sections.map(({ title, value }) => (
-				<div key={title}>
-					<h4 className="font-bold mb-1 text-primary">{title}</h4>
-					<p className="text-gray-700 dark:text-gray-200 whitespace-pre-line">{value}</p>
-				</div>
-			))}
-		</div>
-	);
+  return (
+    <div className="rounded-3xl border bg-gradient-to-tr from-zinc-50 to-zinc-100 px-6 py-4 dark:bg-zinc-900 shadow">
+      <ReactMarkdown
+        rehypePlugins={[rehypeRaw]}
+        components={{
+					strong: ({node, ...props}) => <strong className="font-bold text-primary space-x-2" {...props} />,
+          h4: ({node, ...props}) => <h4 className="font-bold text-primary mb-1 mt-1" {...props} />,
+          p: ({node, ...props}) => <p className="last:mb-0 [&:not(:has(+ol))]:mb-6 mt-1  text-gray-700 dark:text-gray-200" {...props} />,
+					ol: ({node, ...props}) => <ol className="space-y-1.5 list-decimal list-inside pb-6" {...props} />, // togli bullet e padding
+          li: ({node, ...props}) => <li className="mb-0.5 mt-0.5 text-gray-700 dark:text-gray-200" {...props} />,
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
 };
 
 export default IdeaChatPage;

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'No active subscription found' }, { status: 404 });
   }
   const subscription = subscriptions.data[0];
-  // Se la subscription ha una schedule, aggiorna la schedule
+  // Se la subscription ha una schedule (renewal programmata), aggiorna la schedule
   if (subscription.schedule) {
     const schedule = await stripe.subscriptionSchedules.retrieve(subscription.schedule as string);
     await stripe.subscriptionSchedules.update(schedule.id, {
@@ -48,16 +48,21 @@ export async function POST(req: NextRequest) {
       cancel_at_period_end: true
     });
   }
+  console.log('pre update')
   // Aggiorna pending_subscription e subscription_renewal su Supabase
-  const { error: updateError } = await supabase
+  const { data: updatedUser, error: updateError } = await supabase
     .from('users')
     .update({
       pending_subscription: 'free',
       subscription_renewal: false
     })
-    .eq('auth_user_id', userId);
+    .eq('auth_user_id', userId)
+    .select()
+    .single();
+  console.log('post update - updated user:', updatedUser)
+  console.log('post update - error:', updateError)
   if (updateError) {
     return NextResponse.json({ error: updateError.message }, { status: 500 });
   }
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, updatedUser });
 } 

@@ -29,7 +29,7 @@ import { createTodo, deleteTodo, updateTodo } from "@/app/[lang]/(protected)/pro
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
-import { TodoProps, IdeaWithScripts, TodoMode, TodoFormProps } from "@/types/types"
+import { TodoProps, IdeaWithScripts, TodoFormProps } from "@/types/types"
 import { Checkbox } from "./checkbox"
 import TodoLittle from "../blocks/(protected)/todo-little"
 import { Card } from "./card"
@@ -98,10 +98,10 @@ export function TodoCreator({
 }: { 
   className?: string
   defaultValue: Date
-  ideaId: number
-  scriptId: number
+  ideaId: string
+  scriptId: string
   userId: string
-  mode?: TodoMode
+  mode?: 'create' | 'update'
   context?: 'production' | 'calendar'
   todo?: TodoProps
   onUpdate?: () => void
@@ -130,19 +130,33 @@ export function TodoCreator({
 
   // Set open state when initialOpen changes - this ensures the component respects external state
   useEffect(() => {
+    console.log('TodoCreator - initialOpen changed:', initialOpen)
     setOpen(initialOpen)
   }, [initialOpen])
   
   // Make sure we call onUpdate when the dialog is closed externally
-  const handleOpenChange = (newOpenState: boolean) => {
-    setOpen(newOpenState)
-    if (!newOpenState && initialOpen && onUpdate) {
-      onUpdate()
+  const handleOpenChange = async (newOpenState: boolean) => {
+    console.log('TodoCreator - handleOpenChange called:', { newOpenState, currentOpen: open })
+    if (!newOpenState) {
+      // If we're closing, update state first
+      if (onUpdate) {
+        console.log('TodoCreator - calling onUpdate before closing')
+        try {
+          await onUpdate()
+          console.log('TodoCreator - onUpdate completed successfully')
+        } catch (error) {
+          console.error('TodoCreator - onUpdate failed:', error)
+        }
+      }
     }
+    // Then update the open state
+    console.log('TodoCreator - setting open state to:', newOpenState)
+    setOpen(newOpenState)
   }
 
   // Handle date changes
   const handleStartDateChange = (date: Date | undefined) => {
+    console.log('TodoCreator - handleStartDateChange:', date)
     if (date) {
       const newDate = new Date(date);
       // Preserve the time from the current startDate
@@ -222,6 +236,11 @@ export function TodoCreator({
   }
 
   const handleSubmit = async (formData: any) => {
+    console.log('TodoCreator - handleSubmit called:', { mode, formData })
+    console.log('TodoCreator - ideaId:', ideaId)
+    console.log('TodoCreator - ideas:', ideas)
+    console.log('TodoCreator - selected idea_id:', formData.idea_id)
+    
     const formDataToSubmit = new FormData()
     formDataToSubmit.append('title', formData.title)
     formDataToSubmit.append('description', formData.description)
@@ -269,55 +288,44 @@ export function TodoCreator({
     try {
       let result
       if (mode === 'update' && todo) {
+        console.log('TodoCreator - updating existing todo:', todo.id)
         formDataToSubmit.append('id', todo.id.toString())
         result = await updateTodo(formDataToSubmit)
       } else {
+        console.log('TodoCreator - creating new todo')
         result = await createTodo(formDataToSubmit)
       }
       
       if (result.error) {
+        console.error('TodoCreator - operation failed:', result.error)
         if (mode === 'update') {
           toast({
             title: dict?.calendarPage?.toast?.updateError?.[0],
             description: dict?.calendarPage?.toast?.updateError?.[1],
             variant: 'destructive',
           })
-          return
         } else {
           toast({
             title: dict?.calendarPage?.toast?.creationError?.[0],
             description: dict?.calendarPage?.toast?.creationError?.[1],
             variant: 'destructive',
           })
-          return
         }
+        return
       }
 
-      if (mode === 'update') {
-        toast({
-          title: dict?.calendarPage?.toast?.updateSuccess?.[0],
-          description: dict?.calendarPage?.toast?.updateSuccess?.[1],
-          variant: 'success',
-        })
-      } else {
-        toast({
-          title: dict?.calendarPage?.toast?.creationSuccess?.[0],
-          description: dict?.calendarPage?.toast?.creationSuccess?.[1],
-          variant: 'success',
-        })
-      }
-      
-      // Close the dialog/drawer
-      handleOpenChange(false)
-      
-      // Call onUpdate callback if provided
+      console.log('TodoCreator - operation successful, closing dialog')
+      // Close the dialog/drawer and update state
       if (onUpdate) {
-        onUpdate()
+        console.log('TodoCreator - calling onUpdate after successful operation')
+        await onUpdate()
       }
+      setOpen(false)
       
       // Revalidate the router to update all server components
       router.refresh()
     } catch (error) {
+      console.error('TodoCreator - unexpected error:', error)
       if (mode === 'update') {
         toast({
           title: dict?.calendarPage?.toast?.updateError?.[0],
@@ -331,15 +339,16 @@ export function TodoCreator({
           variant: 'destructive',
         })
       }
-      console.error(error)
     }
   }
 
   const handleDelete = async () => {
+    console.log('TodoCreator - handleDelete called for todo:', todo?.id)
     try {
       const result = await deleteTodo(todo?.id.toString() || '')
       
       if (result.error) {
+        console.error('TodoCreator - delete failed:', result.error)
         toast({
           title: dict?.calendarPage?.toast?.deleteError?.[0],
           description: dict?.calendarPage?.toast?.deleteError?.[1],
@@ -348,30 +357,23 @@ export function TodoCreator({
         return
       }
 
-      toast({
-        title: dict?.calendarPage?.toast?.deleteSuccess?.[0],
-        description: dict?.calendarPage?.toast?.deleteSuccess?.[1],
-        variant: 'success',
-      })
-      router.refresh()
-
-      // Close the dialog/drawer
-      handleOpenChange(false)
-      
-      // Call onUpdate callback if provided
+      console.log('TodoCreator - delete successful, closing dialog')
+      // Close the dialog/drawer and update state
       if (onUpdate) {
-        onUpdate()
+        console.log('TodoCreator - calling onUpdate after successful delete')
+        await onUpdate()
       }
+      setOpen(false)
       
       // Revalidate the router to update all server components
       router.refresh()
     } catch (error) {
+      console.error('TodoCreator - unexpected error during delete:', error)
       toast({
         title: dict?.calendarPage?.toast?.randomError?.[0],
         description: dict?.calendarPage?.toast?.randomError?.[1],
         variant: 'destructive',
       })
-      console.error(error)
     }
   }
 
@@ -390,21 +392,59 @@ export function TodoCreator({
     )
   }
 
-  if (isDesktop) {
-    return mode === 'update' ? (
-      <Dialog open={open} onOpenChange={(newOpen) => {
-        handleOpenChange(newOpen);
-      }}>
-        <DialogTrigger asChild className="hidden">
-          {getTriggerButton()}
-        </DialogTrigger>
-        <DialogContent className='max-w-md'>
-          <DialogHeader>
-            <DialogTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DialogTitle>
-          </DialogHeader>
-          <DialogDescription asChild>
-            <div className="flex flex-col gap-4">
-              {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} dict={dict} />}
+  if (context === 'calendar') {
+    if (isDesktop) {
+      if (mode === 'update') {
+          return (
+            <Dialog open={open} onOpenChange={(newOpen) => {
+              handleOpenChange(newOpen);
+            }}>
+              <DialogTrigger asChild className="hidden">
+                {getTriggerButton()}
+              </DialogTrigger>
+              <DialogContent className='max-w-md'>
+                <DialogHeader>
+                  <DialogTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DialogTitle>
+                </DialogHeader>
+                <DialogDescription asChild>
+                  <div className="flex flex-col gap-4">
+                    {ideas && context === 'calendar' && <IdeaDatas ideas={ideas} ideaId={ideaId} dict={dict} />}
+                    <TodoForm 
+                      onSubmit={handleSubmit}
+                      mode={mode}
+                      todo={todo}
+                      handleDelete={handleDelete}
+                      ideas={ideas}
+                      onIdeaSelect={onIdeaSelect}
+                      ideaId={ideaId}
+                      dict={dict}
+                      context={context}
+                      startDate={startDate}
+                      endDate={endDate}
+                      onStartDateChange={handleStartDateChange}
+                      onEndDateChange={handleEndDateChange}
+                      onStartTimeChange={handleStartTimeChange}
+                      onEndTimeChange={handleEndTimeChange}
+                    />
+                  </div>
+                </DialogDescription>
+              </DialogContent>
+            </Dialog>
+          )
+        
+      }
+  
+      if (mode === 'create') {
+        return (
+          <Dialog open={open} onOpenChange={handleOpenChange}>
+          <DialogTrigger asChild className="hidden">
+            {getTriggerButton()}
+          </DialogTrigger>
+          <DialogContent className='max-w-md'>
+            <DialogHeader>
+              <DialogTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DialogTitle>
+            </DialogHeader>
+            <DialogDescription asChild>
               <TodoForm 
                 onSubmit={handleSubmit}
                 mode={mode}
@@ -414,6 +454,78 @@ export function TodoCreator({
                 onIdeaSelect={onIdeaSelect}
                 ideaId={ideaId}
                 dict={dict}
+                context={context}
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={handleStartDateChange}
+                onEndDateChange={handleEndDateChange}
+                onStartTimeChange={handleStartTimeChange}
+                onEndTimeChange={handleEndTimeChange}
+              />
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        )
+      }
+  
+      return (
+        <Dialog open={open} onOpenChange={handleOpenChange}>
+          <DialogTrigger asChild className="hidden">
+            {getTriggerButton()}
+          </DialogTrigger>
+          <DialogContent className='max-w-md'>
+            <DialogHeader>
+              <DialogTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DialogTitle>
+            </DialogHeader>
+            <DialogDescription asChild>
+              <TodoForm 
+                onSubmit={handleSubmit}
+                mode={mode}
+                todo={todo}
+                handleDelete={handleDelete}
+                ideas={ideas}
+                onIdeaSelect={onIdeaSelect}
+                ideaId={ideaId}
+                dict={dict}
+                context={context}
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={handleStartDateChange}
+                onEndDateChange={handleEndDateChange}
+                onStartTimeChange={handleStartTimeChange}
+                onEndTimeChange={handleEndTimeChange}
+              />
+            </DialogDescription>
+          </DialogContent>
+        </Dialog>
+      );
+    }
+  
+    return mode === 'update' ? (
+      <Drawer open={open} onOpenChange={(newOpen) => {
+        handleOpenChange(newOpen);
+      }}>
+        <DrawerTrigger asChild className="hidden">
+          {getTriggerButton()}
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="pt-2">
+            <DrawerTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DrawerTitle>
+          </DrawerHeader>
+          <DrawerDescription asChild>
+            <div className="flex flex-col gap-4">
+              {ideas && context === 'calendar' && <IdeaDatas ideas={ideas} ideaId={ideaId} mobile={true} dict={dict} />}
+              <TodoForm 
+                onSubmit={handleSubmit}
+                mode={mode}
+                todo={todo}
+                handleDelete={handleDelete}
+                ideas={ideas}
+                onIdeaSelect={onIdeaSelect}
+                ideaId={ideaId}
+                className="p-4"
+                dict={dict}
+                context={context}
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={handleStartDateChange}
@@ -422,55 +534,19 @@ export function TodoCreator({
                 onEndTimeChange={handleEndTimeChange}
               />
             </div>
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
+          </DrawerDescription>
+        </DrawerContent>
+      </Drawer>
     ) : (
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogTrigger asChild className="hidden">
+      <Drawer open={open} onOpenChange={handleOpenChange}>
+        <DrawerTrigger asChild className="hidden">
           {getTriggerButton()}
-        </DialogTrigger>
-        <DialogContent className='max-w-md'>
-          <DialogHeader>
-            <DialogTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DialogTitle>
-          </DialogHeader>
-          <DialogDescription asChild>
-            <TodoForm 
-              onSubmit={handleSubmit}
-              mode={mode}
-              todo={todo}
-              handleDelete={handleDelete}
-              ideas={ideas}
-              onIdeaSelect={onIdeaSelect}
-              ideaId={ideaId}
-              dict={dict}
-              startDate={startDate}
-              endDate={endDate}
-              onStartDateChange={handleStartDateChange}
-              onEndDateChange={handleEndDateChange}
-              onStartTimeChange={handleStartTimeChange}
-              onEndTimeChange={handleEndTimeChange}
-            />
-          </DialogDescription>
-        </DialogContent>
-      </Dialog>
-    )
-  }
-
-  return mode === 'update' ? (
-    <Drawer open={open} onOpenChange={(newOpen) => {
-      handleOpenChange(newOpen);
-    }}>
-      <DrawerTrigger asChild className="hidden">
-        {getTriggerButton()}
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="pt-2">
-          <DrawerTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DrawerTitle>
-        </DrawerHeader>
-        <DrawerDescription asChild>
-          <div className="flex flex-col gap-4">
-            {ideas && <IdeaDatas ideas={ideas} ideaId={ideaId} mobile={true} dict={dict} />}
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="pt-2">
+            <DrawerTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DrawerTitle>
+          </DrawerHeader>
+          <DrawerDescription asChild>
             <TodoForm 
               onSubmit={handleSubmit}
               mode={mode}
@@ -481,6 +557,7 @@ export function TodoCreator({
               ideaId={ideaId}
               className="p-4"
               dict={dict}
+              context={context}
               startDate={startDate}
               endDate={endDate}
               onStartDateChange={handleStartDateChange}
@@ -488,46 +565,156 @@ export function TodoCreator({
               onStartTimeChange={handleStartTimeChange}
               onEndTimeChange={handleEndTimeChange}
             />
-          </div>
-        </DrawerDescription>
-      </DrawerContent>
-    </Drawer>
-  ) : (
-    <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerTrigger asChild className="hidden">
-        {getTriggerButton()}
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="pt-2">
-          <DrawerTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DrawerTitle>
-        </DrawerHeader>
-        <DrawerDescription asChild>
-          <TodoForm 
-            onSubmit={handleSubmit}
-            mode={mode}
-            todo={todo}
-            handleDelete={handleDelete}
-            ideas={ideas}
-            onIdeaSelect={onIdeaSelect}
-            ideaId={ideaId}
-            className="p-4"
-            dict={dict}
-            startDate={startDate}
-            endDate={endDate}
-            onStartDateChange={handleStartDateChange}
-            onEndDateChange={handleEndDateChange}
-            onStartTimeChange={handleStartTimeChange}
-            onEndTimeChange={handleEndTimeChange}
-          />
-        </DrawerDescription>
-      </DrawerContent>
-    </Drawer>
-  )
+          </DrawerDescription>
+        </DrawerContent>
+      </Drawer>
+    )
+  } else {
+    if (isDesktop) {
+      if (mode === 'update') {
+        return (
+          <Dialog open={open} onOpenChange={(newOpen) => {
+            handleOpenChange(newOpen);
+          }}>
+            <DialogTrigger asChild className="hidden">
+              {getTriggerButton()}
+            </DialogTrigger>
+            <DialogContent className='max-w-md'>
+              <DialogHeader>
+                <DialogTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DialogTitle>
+              </DialogHeader>
+              <DialogDescription asChild>
+                <div className="flex flex-col gap-4">
+                  <TodoForm 
+                    onSubmit={handleSubmit}
+                    mode={mode}
+                    todo={todo}
+                    handleDelete={handleDelete}
+                    ideas={ideas}
+                    onIdeaSelect={onIdeaSelect}
+                    ideaId={ideaId}
+                    dict={dict}
+                    context={context}
+                    startDate={startDate}
+                    endDate={endDate}
+                    onStartDateChange={handleStartDateChange}
+                    onEndDateChange={handleEndDateChange}
+                    onStartTimeChange={handleStartTimeChange}
+                    onEndTimeChange={handleEndTimeChange}
+                  />
+                </div>
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        )
+      } else {
+        return (
+          <Dialog open={open} onOpenChange={handleOpenChange}>
+          <DialogTrigger asChild className="hidden">
+            {getTriggerButton()}
+          </DialogTrigger>
+          <DialogContent className='max-w-md'>
+            <DialogHeader>
+              <DialogTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DialogTitle>
+            </DialogHeader>
+            <DialogDescription asChild>
+              <TodoForm 
+                onSubmit={handleSubmit}
+                mode={mode}
+                todo={todo}
+                ideas={ideas}
+                handleDelete={handleDelete}
+                onIdeaSelect={onIdeaSelect}
+                ideaId={ideaId}
+                dict={dict}
+                context={context}
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={handleStartDateChange}
+                onEndDateChange={handleEndDateChange}
+                onStartTimeChange={handleStartTimeChange}
+                onEndTimeChange={handleEndTimeChange}
+              />
+              </DialogDescription>
+            </DialogContent>
+          </Dialog>
+        )
+      }
+    } else {
+      return mode === 'update' ? (
+        <Drawer open={open} onOpenChange={(newOpen) => {
+          handleOpenChange(newOpen);
+        }}>
+          <DrawerTrigger asChild className="hidden">
+            {getTriggerButton()}
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader className="pt-2">
+              <DrawerTitle>{dict?.calendarPage?.editEvent || "Edit Event"}</DrawerTitle>
+            </DrawerHeader>
+            <DrawerDescription asChild>
+              <div className="flex flex-col gap-4">
+                <TodoForm 
+                  onSubmit={handleSubmit}
+                  mode={mode}
+                  todo={todo}
+                  handleDelete={handleDelete}
+                  ideas={ideas}
+                  onIdeaSelect={onIdeaSelect}
+                  ideaId={ideaId}
+                  className="p-4"
+                  dict={dict}
+                  context={context}
+                  startDate={startDate}
+                  endDate={endDate}
+                  onStartDateChange={handleStartDateChange}
+                  onEndDateChange={handleEndDateChange}
+                  onStartTimeChange={handleStartTimeChange}
+                  onEndTimeChange={handleEndTimeChange}
+                />
+              </div>
+            </DrawerDescription>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+      <Drawer open={open} onOpenChange={handleOpenChange}>
+        <DrawerTrigger asChild className="hidden">
+          {getTriggerButton()}
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="pt-2">
+            <DrawerTitle>{dict?.calendarPage?.addEvent || "Add Event"}</DrawerTitle>
+          </DrawerHeader>
+          <DrawerDescription asChild>
+            <TodoForm 
+              onSubmit={handleSubmit}
+              mode={mode}
+              todo={todo}
+              handleDelete={handleDelete}
+              ideas={ideas}
+              onIdeaSelect={onIdeaSelect}
+              ideaId={ideaId}
+              className="p-4"
+              dict={dict}
+              context={context}
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={handleStartDateChange}
+              onEndDateChange={handleEndDateChange}
+              onStartTimeChange={handleStartTimeChange}
+              onEndTimeChange={handleEndTimeChange}
+            />
+          </DrawerDescription>
+        </DrawerContent>
+      </Drawer>
+      )
+    }
+  }
 }
 
 
 
-const IdeaDatas = ({ ideas, ideaId, mobile=false, dict }: { ideas: IdeaWithScripts[] | undefined, ideaId: number, mobile?: boolean, dict: any }) => {
+const IdeaDatas = ({ ideas, ideaId, mobile=false, dict }: { ideas: IdeaWithScripts[] | undefined, ideaId: string, mobile?: boolean, dict: any }) => {
   return (
     <Card className={`p-4 ${mobile ? 'mx-4' : ''}`}>
       <h3 className="text-md font-semibold">{ideas?.find(idea => idea.id.toString() === ideaId.toString())?.title || 'Not found'}</h3>
@@ -555,6 +742,7 @@ function TodoForm({
   onIdeaSelect,
   ideaId,
   dict,
+  context = 'calendar',
   startDate,
   endDate,
   onStartDateChange,
@@ -593,6 +781,16 @@ function TodoForm({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    
+    // Validate that the idea_id exists in the ideas array when ideas are available
+    if (ideas && ideas.length > 0) {
+      const ideaExists = ideas.find(idea => idea.id.toString() === formData.idea_id)
+      if (!ideaExists) {
+        console.error('Selected idea does not exist in available ideas:', formData.idea_id)
+        return
+      }
+    }
+    
     onSubmit(formData)
   }
 
@@ -609,7 +807,7 @@ function TodoForm({
 
   return (
     <form onSubmit={handleSubmit} className={cn('flex flex-col gap-4', className)}>
-      {ideas && (
+      {ideas !== undefined && context === 'calendar' && (
         <div className='flex flex-col gap-2'>
           <Label>{dict.calendarPage.production}</Label>
           <Select 
@@ -819,7 +1017,7 @@ function TodoForm({
       </div>
       <div className="flex items-center ml-auto gap-2">
         {mode === 'update' && (
-          <Button variant='destructive' className='w-fit ml-auto' onClick={handleDelete}>
+          <Button variant='destructive' className='w-fit ml-auto' onClick={handleDelete} type="button">
             <Trash2 className='h-4 w-4' />
           </Button>
         )}

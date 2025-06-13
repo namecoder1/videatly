@@ -119,3 +119,27 @@ export const signInWithCustomRedirect = async (redirectPath: string) => {
   return redirect(finalRedirectPath);
 };
 
+export const signInWithGoogleActionRedirect = async () => {
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+  
+  // Get language from current URL
+  const headersList = (await headers());
+  const referer = headersList.get("referer") || "";
+  const refererUrl = new URL(referer);
+  const pathParts = refererUrl.pathname.split('/');
+  const lang = pathParts.length > 1 && locales.includes(pathParts[1]) ? pathParts[1] : 'en';
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${origin}/auth/callback?lang=${lang}&redirect_to=/${lang}/billing`
+    }
+  });
+
+  if (error) {
+    return encodedRedirect("error", "/", error.message);
+  }
+
+  return redirect(data.url);
+};

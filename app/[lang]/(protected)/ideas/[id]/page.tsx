@@ -302,7 +302,7 @@ const IdeaPage = ({ params }: { params: { id: string } }) => {
 									/>
 								) : (
 									<div className='flex flex-col gap-3'>
-										<Label className='text-md font-medium'>{dict.ideaPage.general.topics}</Label>
+										<Label className='text-md font-medium'>{dict.ideaPage.general.fields.topics}</Label>
 										<Blocked text='Upgrade to Pro or Ultra to add topics' />
 									</div>
 								)}
@@ -324,14 +324,24 @@ const IdeaPage = ({ params }: { params: { id: string } }) => {
 										/>
 									</div>
 									<div className='flex flex-col gap-3'>
-										<CustomField 
-											label={dict.ideaPage.details.fields.musicSuggestions}
-											name="music_suggestions"
-											value={formData.music_suggestions} 
-											onChange={handleInputChange}
-											onKeyDown={handleKeyDown}
-											height='150px'
-										/>
+										{
+											isPro || isUltra ? (
+												<CustomField 
+													label={dict.ideaPage.details.fields.musicSuggestions}
+													name="music_suggestions"
+													value={formData.music_suggestions} 
+													onChange={handleInputChange}
+													onKeyDown={handleKeyDown}
+													height='150px'
+												/>
+											) : (
+												<div className='flex flex-col gap-3'>
+													<Label className='text-md font-medium'>{dict.ideaPage.details.fields.musicSuggestions}</Label>
+													<Blocked text={dict.ideaPage.details.fields.musicSuggestionsBlocked} />
+												</div>
+											)
+										}
+										
 									</div>
 								</div>
 								{isPro || isUltra ? (
@@ -364,10 +374,9 @@ const IdeaPage = ({ params }: { params: { id: string } }) => {
 
 						<TabsContent value="content">
 							<h2 className='text-lg font-bold text-left'>{dict.ideaPage.content.title}</h2>
-							<div className='flex flex-col gap-6 mt-6'>
-								<Label className='text-md font-medium'>{dict.ideaPage.content.fields.script}</Label>
+							<div className='flex flex-col gap-6'>
 								{script ? (
-									<div className='relative'>
+									<div className='relative mt-6'>
 										<div className='blur-sm'>
 											{script.content.slice(0, 8).map((section: any) => (
 												<div key={section.id} className='flex flex-col gap-2 border border-zinc-300 mb-2 p-4 rounded-3xl bg-card'>

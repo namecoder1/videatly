@@ -56,7 +56,7 @@ export default function CalendarBodyDayEvents() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className={`size-3 rounded-full ${getPriorityClass(todo.priority)}`} />
-                <div className="text-sm truncate">{todo.title}</div>
+                <div className="text-sm truncate">{todo.title.length > 20 ? todo.title.slice(0, 20) + '...' : todo.title}</div>
               </div>
               {todo.status === 'completed' && (
                 <span className="px-2 py-0.5 bg-green-100 text-green-800 text-xs rounded-full">

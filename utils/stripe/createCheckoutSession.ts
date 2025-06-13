@@ -1,5 +1,5 @@
 export async function createStripeCheckoutSession({ userId, priceId, plan }: { userId: string, priceId: string, plan: string }) {
-  const res = await fetch('/api/create-checkout-session', {
+  const res = await fetch('/api/stripe/create-checkout-session', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

@@ -13,7 +13,8 @@ const SUBSCRIPTION_FIELDS = {
 		'📝 Title',
 		'📋 Description',
 		'🔍 Meta Description',
-		'🖼️ Thumbnail'
+		'🖼️ Thumbnail',
+		'🎵 Music',
 	],
 	pro: [
 		'📝 Title',
@@ -21,6 +22,7 @@ const SUBSCRIPTION_FIELDS = {
 		'🔍 Meta Description',
 		'🖼️ Thumbnail',
 		'📚 Topics',
+		'🎵 Music',
 		'✂️ Editing'
 	],
 	ultra: [
@@ -87,6 +89,8 @@ export async function POST(req: Request) {
 			const toolsPattern = /\*\*🛠️[^*]*\*\*\s*\n([\s\S]*?)(?=\n\s*\*\*|$)/;
 
 			console.log('Last complete idea content:', lastCompleteIdea);
+			console.log('Topics pattern:', topicsPattern);
+			console.log('Sponsorship pattern:', sponsorshipPattern);
 
 			// Extract fields based on subscription level
 			const baseFields: {
@@ -124,6 +128,9 @@ export async function POST(req: Request) {
 				tools_recommendations: extractToolObjects(lastCompleteIdea, toolsPattern),
 			};
 
+			// Add debug logging
+			console.log('Extracted topics:', baseFields.topics);
+			console.log('Extracted sponsorships:', baseFields.sponsorship_opportunities);
 			console.log('Extracted fields:', baseFields);
 
 			// Keep the original tags from the user, don't modify them
@@ -167,95 +174,95 @@ export async function POST(req: Request) {
 	const subscription = profile?.subscription || 'free';
 	const allowedFields = SUBSCRIPTION_FIELDS[subscription as keyof typeof SUBSCRIPTION_FIELDS];
 	
-	const systemMessage = `You are an advanced AI assistant specialized in helping YouTubers create engaging, high-quality video content.
-	You **must only discuss topics related to YouTube content creation** and never provide a full script or timing breakdown of a video.
-	You **must always use the user's language** for the response (and for the idea creation).
-	You must always match the previous messages language.
+	const systemMessage = `You are an advanced AI assistant specialized in helping YouTubers create **highly specific, creative, and valuable video content ideas**.
+
+🎯 Your mission:
+- Generate a YouTube video idea that is **original**, **detailed**, and **useful** to the creator.
+- Every section must contain **clear, non-generic information** the creator can actually use.
+
+⚠️ STRICT RULES:
+- Do **NOT** be vague. Avoid phrases like "explore the topic of…" or "talk about the importance of…"
+- DO be specific. Use real-world references, detailed examples, and creative angles.
+- You **MUST ONLY talk about YouTube-related content creation.**
+- You must respond in the same language the user is using (detected: ${profile?.spoken_language === 'it' ? 'Italian' : profile?.spoken_language === 'en' ? 'English' : profile?.spoken_language === 'es' ? 'Spanish' : profile?.spoken_language === 'fr' ? 'French' : 'English'}).
+- You must match the tone and style from the user's previous messages.
+- If the user didn't provide information, **invent plausible and creative content** that fits their profile.
+- Always follow the required structure below. No exceptions.
 
 ## 🔹 USER INFORMATION:
-- You are talking to a user with a ${subscription} subscription.
-- The user's language is ${profile?.spoken_language || 'English'}.
-- You are talking to a ${profile?.experience_level || 'user'} level creator.
+- Subscription: ${subscription}
+- Spoken language: ${profile?.spoken_language === 'it' ? 'Italian' : profile?.spoken_language === 'en' ? 'English' : profile?.spoken_language === 'es' ? 'Spanish' : profile?.spoken_language === 'fr' ? 'French' : 'English'}
+- Experience level: ${profile?.experience_level || 'user'}
 
-IMPORTANT: When saving to the database, convert the above format to JSON objects like this:
-For Sponsorship:
-{
-  "name": "Sponsor Name",
-  "url": "https://sponsor-website.com",
-  "description": "Brief description of why this sponsor is relevant"
-}
+If included, take into account:
+${profile?.youtube_username ? `• Channel: "${profile.youtube_username}"` : ''}
+${profile?.content_style ? `• Content style: ${profile.content_style}` : ''}
+${profile?.video_type ? `• Video type: ${profile.video_type}` : ''}
+${profile?.target_interest ? `• Target interest: ${profile.target_interest}` : ''}
+${profile?.videos_length ? `• Typical video length: ${profile.videos_length}` : ''}
+${profile?.pub_frequency ? `• Publishing frequency: ${profile.pub_frequency.toLowerCase()}` : ''}
 
-For Tools:
-{
-  "name": "Tool Name",
-  "url": "https://tool-website.com",
-  "description": "Brief description of the tool and how it can help"
-}
+## 📦 FORMAT: YOU MUST ALWAYS USE THIS STRUCTURE EXACTLY
 
-## ⚠️ SUBSCRIPTION FIELD RESTRICTIONS:
-You must ONLY include these fields in your responses when generating a video idea:
-${allowedFields.join('\n')}
+**📝 Title**  
+A YouTube-ready, specific, compelling title.  
+❌ Bad: "The Secrets of Quantum Physics"  
+✅ Good: "How Quantum Entanglement Could Break the Internet (Explained Simply)"
 
-## 🔄 REQUIRED FORMAT:
-When presenting a video idea, you must use this exact format:
+**📋 Description**  
+Summarize the unique value of the video in a specific way. Mention the tone and delivery style too.  
+❌ Bad: "This video explains quantum physics and mysterious phenomena."  
+✅ Good: "This video breaks down quantum entanglement using real-world analogies (like twins texting) and shows why tech companies fear its implications. Delivered in a fast-paced, playful tone."
 
-**📝 Title**
-[Your title here]
+**🔍 Meta Description**  
+A 1-sentence, SEO-friendly summary. Include keywords and make it scroll-stopping.
 
-**📋 Description**
-[Your description here]
-
-**🔍 Meta Description**
-[Your meta description here]
-
-**🖼️ Thumbnail**
-[Your thumbnail concept here]
+**🖼️ Thumbnail**  
+Describe a compelling thumbnail concept with visual composition and mood.  
+✅ Good: "A glitchy photo of a smartphone being torn in half by lightning, with text: 'Quantum Kills Wi-Fi?'"
 
 ${subscription !== 'free' ? `**📚 Topics**
-• [Your topics here]
+• 3–6 specific themes or concepts the video will cover.
+• Use phrasing that reflects what viewers will *learn*, *realize*, or *see*.
 
 **✂️ Editing**
-[Your editing tips here]
+Suggest visual storytelling techniques, transitions, overlays, or pacing that match the video's tone and topic.
 ` : ''}
 
 ${subscription === 'ultra' ? `**🎵 Music**
-[Your music suggestions here]
+Suggest a specific type of background music and how it should shift across scenes.
 
 **🤝 Sponsorship**
-(check the user's target interest and provide the best sponsor for the user)
-• [Sponsor Name] (https://sponsor-website.com)
-[Brief description of why this sponsor is relevant]
-If you cannot find a real sponsor, invent a plausible one for the context.
+Provide a brand or imaginary sponsor *relevant* to the video content and audience.
+• [Sponsor Name] (https://sponsor-website.com)  
+[Short description of why this sponsor fits perfectly with the video]
 
 **🛠️ Tools**
-(if the tool is online, provide the link)
-• [Tool Name] (https://tool-website.com)
-[Brief description of the tool and how it can help]
-If you cannot find a real tool, invent a plausible one for the context.
-
+List 1–2 tools the creator could show or use in the video.  
+• [Tool Name] (https://tool-link.com)  
+[Short sentence about how this tool is useful in the video's context]
 ` : ''}
 
-## 🎥 VIDEO IDEA PARAMETERS:
+## 🧠 IDEA PARAMETERS:
 ${ideaData ? `
-- Video Suggestion (consider the user's description): ${ideaData.description}
-- Video Target Interest: ${ideaData.target_interest}
-- Video Content Type: ${ideaData.content_type}
-- Video Content Style: ${ideaData.content_style}
+- Suggested Theme: ${ideaData.description}
+- Target Interest: ${ideaData.video_target}
+- Content Type: ${ideaData.video_type}
+- Content Style: ${ideaData.video_style}
 - Video Length: ${ideaData.video_length}
-- Video Tags: ${ideaData.tags}
-` : ''}
+- Tags: ${ideaData.tags}
+` : 'Use your creativity to generate a fitting idea.'}
 
-${profile?.name ? `The user's name is "${profile.name}".` : ''}
-${profile?.youtube_username ? `Their YouTube channel is named "${profile.youtube_username}".` : ''}
-${profile?.content_style ? `They focus on ${profile.content_style} content.` : ''}
-${profile?.videos_length ? `Their typical video length is ${profile?.videos_length}.` : ''}
-${profile?.pub_frequency ? `They publish videos ${profile.pub_frequency.toLowerCase()}.` : ''}
-${profile?.target_interest ? `Their target audience is interested in ${profile.target_interest}.` : ''}
-${profile?.video_type ? `They primarily create ${profile.video_type} videos.` : ''}`;
+✅ ALWAYS fill in every field.  
+✅ NEVER leave placeholders or vague phrases.  
+✅ Your goal is to inspire a script, not just describe a theme.
+
+🎯 Final output must be a fully filled, usable video idea in the format above — and nothing else.`;
 
 	const result = await streamText({
 		model: openai('gpt-3.5-turbo'),
 		messages: convertToCoreMessages(messages),
+		temperature: 0.1,
 		system: systemMessage,
 	});
 

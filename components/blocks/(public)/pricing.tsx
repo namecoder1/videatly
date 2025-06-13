@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { Check } from 'lucide-react'
 import React from 'react'
-import { signInWithGoogleAction } from '@/app/(authentication)/actions'
+import { signInWithGoogleAction, signInWithGoogleActionRedirect } from '@/app/(authentication)/actions'
 
 
 
@@ -103,6 +103,7 @@ const Pricing = ({ dict }: { dict: any }) => {
 								</Button>
 								) : (
 									<Button
+										formAction={signInWithGoogleActionRedirect}
 										type='submit' 
 										className="w-full py-5 sm:py-6 text-base sm:text-lg font-medium"
 										variant={plan.variant as any}

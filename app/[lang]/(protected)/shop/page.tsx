@@ -88,7 +88,7 @@ const ShopPage = () => {
 		const handleCheckout = async () => {
 			setIsLoading(true)
 			try {
-				const res = await fetch('/api/create-checkout-session', {
+				const res = await fetch('/api/stripe/create-checkout-session', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
@@ -118,7 +118,7 @@ const ShopPage = () => {
 
 		
 		return (
-			<div className={`rounded-2xl border bg-white p-6 flex flex-col h-fit ${plan.isPopular ? 'relative shadow-xl ring-2 ring-gray-700/70' : 'shadow-lg hover:shadow-xl transition-shadow'}`}>
+			<div className={`rounded-3xl border bg-white p-6 flex flex-col h-fit ${plan.isPopular ? 'relative shadow-xl ring-2 ring-gray-700/70' : 'shadow-lg hover:shadow-xl transition-shadow'}`}>
 				{plan.isPopular && (
 					<div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
 						<span className="bg-gray-800 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-sm whitespace-nowrap">
@@ -128,7 +128,7 @@ const ShopPage = () => {
 				)}
 				
 				<div className="mb-6">
-					<h3 className="text-xl font-bold">{plan.name}</h3>
+					<h3 className="text-2xl font-bold">{plan.name}</h3>
 					<div className="mt-4 flex items-baseline">
 						<span className="text-4xl font-bold tracking-tight">{dict?.currency}{plan.price}</span>
 					</div>

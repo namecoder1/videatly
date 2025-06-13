@@ -519,7 +519,8 @@
         "sponsorshipUrlPlaceholder": "Enter a sponsorship URL",
         "noSponsorships": "No sponsorships found. Add a new one.",
         "toolRecommendationBlocked": "To view tool recommendations, you need to have a Pro or Ultra account",
-        "sponsorshipRecommendationBlocked": "To view sponsorship recommendations, you need to have a Pro or Ultra account"
+        "sponsorshipRecommendationBlocked": "To view sponsorship recommendations, you need to have a Pro or Ultra account",
+        "musicSuggestionsBlocked": "To view music suggestions, you need to have a Pro or Ultra account"
       }
     },
     "content": {

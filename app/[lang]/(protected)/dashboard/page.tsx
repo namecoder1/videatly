@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { createClient } from '@/utils/supabase/client'
 import { redirect, usePathname } from 'next/navigation'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { BarChartLegend } from '@/components/charts/bar-chart-legend'
 
 const DashboardPage = () => {
 	const supabase = createClient()
@@ -70,6 +71,8 @@ const DashboardPage = () => {
 
 	if (loading) return <Loader position='full' />
 
+	console.log(ideasCount, scriptsCount)
+
 	return (
 		<section>
 			<div className='flex flex-col'>
@@ -106,6 +109,14 @@ const DashboardPage = () => {
 					</p>
 				</InfoCard>
 			</div>
+
+			<BarChartLegend
+				title='Scripts'
+				dates='January - June 2024'
+				trending='Trending up by 5.2% this month'
+				trendingDescription='This month you created 10 scripts'
+				chartData={[]}
+			/>
 
 			
 

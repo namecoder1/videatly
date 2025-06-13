@@ -9,7 +9,6 @@ export default function CalendarBodyDayCalendar() {
       onSelect={(date: Date | undefined) => date && setDate(date)}
       mode="single"
       className='bg-card rounded-3xl'
-    
     />
   )
 }

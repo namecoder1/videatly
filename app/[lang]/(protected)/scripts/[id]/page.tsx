@@ -359,23 +359,23 @@ const ScriptPage = ({ params }: { params: { id: string } }) => {
               </CardDescription>
             </CardHeader>
             <CardContent className='w-full'>
-              <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:flex 2xl:flex-col gap-2'>
-                {todos.length > 0 ? (
-                  todos.map((todo) => (
+              {todos.length > 0 ? (
+                <div className='grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:flex 2xl:flex-col gap-2'>
+                  {todos.map((todo) => (
                     <TodoLittle key={todo.id} todo={todo} />
-                  ))
-                ) : (
-                  <div className='text-sm text-muted-foreground flex flex-col items-center gap-1'>
-                    <CircleHelp size={24} />
+                  ))}
+                </div>
+              ) : (
+                <div className='text-sm text-muted-foreground flex flex-col items-center gap-1 2xl:mt-4'>
+                  <CircleHelp size={24} />
                     <p>{dict.scriptPage.noTodosFound}</p>
                     <Button variant='black' size='sm' className='mt-2' asChild>
-                      <Link href={`/production/${id}`}>
+                      <CustomLink href={`/production/${id}`}>
                         {dict.scriptPage.createTodos}
-                      </Link>
+                      </CustomLink>
                     </Button>
                   </div>
                 )}
-              </div>
             </CardContent>
           </Card>
         </div>

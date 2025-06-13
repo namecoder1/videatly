@@ -1,7 +1,7 @@
 'use client'
 
 
-import { User, CirclePause, ArrowLeft, Loader2, Save, ArrowRight, Brain, LetterText, Target, Clock4, Paintbrush, Film } from 'lucide-react'
+import { CirclePause, User as UserIcon, ArrowLeft, Loader2, Save, ArrowRight, Brain, LetterText, Target, Clock4, Paintbrush, Film, FileText } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
@@ -10,11 +10,12 @@ import { useTokens, initializeTokenListener } from '@/hooks/use-tokens'
 import { useChat } from '@ai-sdk/react'
 import { ScriptData } from '@/types/types'
 import { ProfileData } from '@/types/types'
+import { IdeaData } from '@/types/types'
 import { encode } from 'gpt-tokenizer/model/gpt-3.5-turbo-0125'
 import rehypeRaw from 'rehype-raw'
 import ReactMarkdown from 'react-markdown'
 import { Button } from '@/components/ui/button'
-import { deleteScript, fetchScriptData, fetchUserProfile } from '@/app/actions'
+import { deleteScript, fetchIdeaData, fetchScriptData, fetchUserProfile } from '@/app/actions'
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { updateScriptTokens } from '@/lib/utils'
 import { handleKeyDown, handleInputWithResize } from '@/lib/utils'
@@ -25,6 +26,9 @@ import { useDictionary } from '@/app/context/dictionary-context'
 import { getEnumTranslation } from '@/utils/enum-translations'
 import CustomLink from '@/components/blocks/custom-link'
 import TokensChat from '@/components/blocks/(protected)/tokens-chat'
+import Image from 'next/image'
+import { User } from '@supabase/supabase-js'
+
 
 const ScriptsPage = ({ params }: { params: { id: string } }) => {
 	const dict = useDictionary()
@@ -33,8 +37,10 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
 	const { toast } = useToast();
 	const { tokens, updateTokens: updateGlobalTokens } = useTokens()
+  const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [scriptData, setScriptData] = useState<ScriptData | null>(null);
+  const [ideaData, setIdeaData] = useState<IdeaData | null>(null);
   const [baseTokens, setBaseTokens] = useState(0)
   const [totalTokens, setTotalTokens] = useState(0)
   const [tokensToSubtract, setTokensToSubtract] = useState(0)
@@ -59,11 +65,24 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 		};
 	}, [tokens])
 
+  useEffect(() => {
+    const loadIdeaData = async () => {
+      const ideaResult = await fetchIdeaData(id)
+      if (ideaResult.error) {
+        setError(ideaResult.error)
+        return
+      }
+      setIdeaData(ideaResult.data)
+    }
+    loadIdeaData()
+  }, [id, toast])
+
   const { messages, input, handleInputChange, handleSubmit: originalHandleSubmit, isLoading, stop } = useChat({
-    api: '/api/script-chat',
+    api: '/api/openai/script-chat',
     body: {
       profile,
       scriptData,
+      ideaData
     },
     onFinish: async (message) => {
       if (message.role === 'assistant') {
@@ -78,14 +97,47 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
         id: 'init',
         role: 'assistant',
         content: scriptData && profile?.spoken_language === 'it' ? 
-          `Ciao, ${profile?.name}. Creiamo lo script per questo video. In base alle informazioni che hai fornito hai gia in mente una scaletta?` : profile?.spoken_language === 'en' ?
-          `Hello, ${profile?.name}. Let's create the script for this video. Based on the information you provided, do you already have a script in mind?` : profile?.spoken_language === 'es' ?
-          `Hola, ${profile?.name}. Creemos el script para este video. ¿Ya tienes una escala en mente?` : profile?.spoken_language === 'fr' ?
-          `Bonjour, ${profile?.name}. Créons le script pour cette vidéo. En fonction des informations que vous avez fournies, as-tu déjà un script en tête?` :
-          'Caricamento...'
+          `Ciao, ${profile?.name}. Ho visto che vuoi creare uno script per questo video.
+          Hai già in mente una scaletta o vuoi che ti aiuti a svilupparla?` : profile?.spoken_language === 'en' ?
+          `Hello, ${profile?.name}. I've seen that you want to create a script for this video.
+          Do you already have an outline in mind or would you like me to help you develop one?` : profile?.spoken_language === 'es' ?
+          `Hola, ${profile?.name}. He visto que quieres crear un guión para este video.
+          ¿Ya tienes un esquema en mente o quieres que te ayude a desarrollarlo?` : profile?.spoken_language === 'fr' ?
+          `Bonjour, ${profile?.name}. Je vois que vous voulez créer un script pour cette vidéo.
+          Avez-vous déjà un plan en tête ou souhaitez-vous que je vous aide à le développer?` :
+          'Loading...'
       }
     ],
   });
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      if (userError) {
+        setError(userError.message)
+        return
+      }
+      setUser(user)
+    }
+    fetchUser()
+  }, [supabase])
+
+  // --- PATCH: Raggruppa messaggi assistant completi ---
+  // Trova tutti i messaggi assistant validi (completi)
+const assistantScriptMessages = messages
+  .filter(m => m.role === 'assistant' && /\[\d{2}:\d{2}\]–\[\d{2}:\d{2}\]/.test(m.content))
+  .map(m => m.content);
+
+const combinedScriptContent = assistantScriptMessages.join('\n\n');
+
+// Trova l'indice del primo messaggio assistant con timestamp
+const firstScriptIndex = messages.findIndex(
+  m => m.role === 'assistant' && /\[\d{2}:\d{2}\]–\[\d{2}:\d{2}\]/.test(m.content)
+);
+
+// Messaggi da mostrare prima della card riassuntiva
+const messagesBeforeScript = firstScriptIndex > 0 ? messages.slice(0, firstScriptIndex) : [];
+  // --- FINE PATCH ---
 
 	useEffect(() => {
 		if (profile && typeof profile.tokens_available === 'number') {
@@ -251,41 +303,79 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 					{dict.scriptChatPage.chat.back}
 				</Button>
 
-        <ScriptInfo scriptData={scriptData} dict={dict} profile={profile} />
+        {ideaData && <ScriptInfo scriptData={scriptData} dict={dict} profile={profile} ideaData={ideaData} />}
         
-        {messages.map(m => {
-          const isScriptMessage = m.role === 'assistant' && m.content.includes('[00:00]');
-          if (isScriptMessage) {
-            return <ScriptSectionsCard key={m.id} content={m.content} />;
-          }
-          const tokenCount = encode(m.content).length;
-          return (
-            <div key={m.id} className={`flex items-start gap-x-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
-							<div className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-300 dark:border-zinc-600">
-								{m.role === 'user' ? (
-									<User className='w-4 h-4 text-zinc-500' />
-								) : (
-									<Brain className='w-4 h-4 text-indigo-500' />
-								)}
-							</div>
-							<div className={`flex-1 space-y-2 overflow-hidden ${m.role === 'user' ? 'text-right' : ''}`}>
-								<ReactMarkdown 
-									components={{
-										p: ({ children }) => <p className={`mb-2 bg-card w-fit py-2 px-4 rounded-3xl border border-zinc-200 ${m.role === 'user' ? 'ml-auto text-right' : 'mr-auto text-left'}`}>{children}</p>
-									}}
-									rehypePlugins={[rehypeRaw]}
-								>
-									{m.content}
-								</ReactMarkdown>
-								{m.role === 'assistant' && messages.length > 0 && (
-									<div className="text-xs text-muted-foreground mt-1">
-										{messages.findIndex(msg => msg.id === m.id) > 0 && `${dict.ideaChatPage.tokens.tokenOutput}: ${tokenCount}`}
-									</div>
-								)}
-							</div>
-						</div>
-          )
-        })}
+        {/* PATCH: Mostra i messaggi precedenti e poi la card riassuntiva se presente */}
+        {combinedScriptContent ? (
+          <>
+            {messagesBeforeScript.map(m => {
+              const tokenCount = encode(m.content).length;
+              return (
+                <div key={m.id} className={`flex items-start gap-x-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-300 dark:border-zinc-600">
+                    {m.role === 'user' ? (
+                      <Image src={user?.user_metadata.avatar_url} alt="User" className="rounded-full" width={32} height={32} />
+                    ) : (
+                      <Brain className='w-4 h-4 text-indigo-500' />
+                    )}
+                  </div>
+                  <div>
+                    <div className={`flex-1 space-y-2 bg-white rounded-3xl w-fit overflow-hidden ${m.role === 'user' ? 'text-right' : ''}`}>
+                      <ReactMarkdown 
+                        components={{
+                          strong: ({node, ...props}) => <strong className="font-bold mb-2 text-lg text-primary mt-4" {...props} />, 
+                          p: ({node, ...props}) => <p className="border-2 boder-boder rounded-3xl px-4 py-2 text-gray-700 space-y-2 dark:text-gray-200 whitespace-pre-line" {...props} />
+                        }}
+                        rehypePlugins={[rehypeRaw]}
+                      >
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
+                    {m.role === 'assistant' && messages.length > 0 && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {messages.findIndex(msg => msg.id === m.id) > 0 && `${dict.ideaChatPage.tokens.tokenOutput}: ${tokenCount}`}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            <ScriptSectionsCard content={combinedScriptContent} />
+          </>
+        ) : (
+          messages.map(m => {
+            const tokenCount = encode(m.content).length;
+            return (
+              <div key={m.id} className={`flex items-start gap-x-3 ${m.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800 shrink-0 border border-zinc-300 dark:border-zinc-600">
+                  {m.role === 'user' ? (
+                    <Image src={user?.user_metadata.avatar_url} alt="User" className="rounded-full" width={32} height={32} />
+                  ) : (
+                    <Brain className='w-4 h-4 text-indigo-500' />
+                  )}
+                </div>
+                <div>
+                  <div className={`flex-1 space-y-2 bg-white rounded-3xl w-fit overflow-hidden ${m.role === 'user' ? 'text-right' : ''}`}>
+                    <ReactMarkdown 
+                      components={{
+                        strong: ({node, ...props}) => <strong className="font-bold mb-2 text-lg text-primary mt-4" {...props} />, 
+                        p: ({node, ...props}) => <p className="border-2 boder-boder rounded-3xl px-4 py-2 text-gray-700 space-y-2 dark:text-gray-200 whitespace-pre-line" {...props} />
+                      }}
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {m.content}
+                    </ReactMarkdown>
+                  </div>
+                  {m.role === 'assistant' && messages.length > 0 && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {messages.findIndex(msg => msg.id === m.id) > 0 && `${dict.ideaChatPage.tokens.tokenOutput}: ${tokenCount}`}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })
+        )}
 
         {canSave && !savedScriptId && (
           <div className="w-full space-y-2">
@@ -377,7 +467,7 @@ const ScriptsPage = ({ params }: { params: { id: string } }) => {
 	)
 }
 
-const ScriptInfo = ({ scriptData, dict, profile }: { scriptData: ScriptData, dict: any, profile: ProfileData }) => {
+const ScriptInfo = ({ scriptData, dict, profile, ideaData }: { scriptData: ScriptData, dict: any, profile: ProfileData, ideaData: IdeaData }) => {
   const { tone, verbosity, target_audience, script_type, duration, persona, structure } = scriptData;
   const locale = profile.spoken_language || 'en';
 
@@ -425,7 +515,7 @@ const ScriptInfo = ({ scriptData, dict, profile }: { scriptData: ScriptData, dic
             <ScriptInfoItem 
               label={dict.scriptCreatePage.form.persona} 
               value={getEnumTranslation(persona, locale)} 
-              icon={<User size={16} />}
+              icon={<UserIcon size={16} />}
               color="bg-yellow-500/10 text-yellow-500"
             />
             <ScriptInfoItem 
@@ -433,6 +523,12 @@ const ScriptInfo = ({ scriptData, dict, profile }: { scriptData: ScriptData, dic
               value={getEnumTranslation(structure, locale)} 
               icon={<Paintbrush size={16} />}
               color="bg-indigo-500/10 text-indigo-500"
+            />
+            <ScriptInfoItem
+              label='Description'
+              value={ideaData?.description.slice(0, 100) + '..'}
+              icon={<FileText size={16} />}
+              color="bg-green-500/10 text-green-500"
             />
           </div>
         </CardDescription>
@@ -459,19 +555,19 @@ const ScriptInfoItem = ({ label, value, icon, color }: { label: string, value: s
 
 const ScriptSectionsCard = ({ content }: { content: string }) => {
   // Remove the script-complete marker
-  const cleanContent = content.replace(/<data value="script-complete" hidden><\/data>/g, '').trim();
-  
+  const cleanContent = content.replace(/<data value="script-complete" hidden\s*\/?>|<\/data\s*>/g, '').trim();
+
   // Split content into sections based on timestamps
   const sections = cleanContent.split(/\n\n(?=\[\d{2}:\d{2}\]–\[\d{2}:\d{2}\])/);
-  
+
   return (
-    <div className="rounded-xl border p-6 bg-white dark:bg-zinc-900 shadow space-y-4">
+    <div className="rounded-3xl border bg-gradient-to-tr from-zinc-50 to-zinc-100 px-6 py-4 dark:bg-zinc-900 shadow">
       {sections.map((section, index) => {
         const [timestamp, ...points] = section.split('\n');
         const [startTime, endTime] = timestamp.match(/\[(\d{2}:\d{2})\]–\[(\d{2}:\d{2})\]/)?.slice(1) || ['00:00', '00:00'];
         
         return (
-          <div key={index} className="space-y-2">
+          <div key={index} className="space-y-2 mb-6 last:mb-0">
             <h4 className="font-bold text-primary flex items-center gap-2">
               <Clock4 className="w-4 h-4" />
               {startTime} - {endTime}
@@ -479,7 +575,7 @@ const ScriptSectionsCard = ({ content }: { content: string }) => {
             <div className="space-y-1">
               {points.map((point, pointIndex) => (
                 <p key={pointIndex} className="text-gray-700 dark:text-gray-200">
-                  {point.replace(/^-\s*/, '')}
+                  {point.replace(/^-\s*/, '')} 
                 </p>
               ))}
             </div>

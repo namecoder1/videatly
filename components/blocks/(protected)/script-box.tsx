@@ -14,7 +14,7 @@ import Image from "next/image";
 import { getEnumTranslation } from "@/utils/enum-translations";
 import { useDictionary } from "@/app/context/dictionary-context";
 
-const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id: number) => void }) => {
+const ScriptBox = ({ props, onDelete } : { props: ScriptBoxProps, onDelete?: (id: string) => void }) => {
 	const { toast } = useToast();
 	const [idea, setIdea] = useState<IdeaData | null>(null);
 	const { id, idea_id, tone, target_audience, script_type, duration, persona, structure } = props;

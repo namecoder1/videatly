@@ -520,7 +520,8 @@
         "sponsorshipUrlPlaceholder": "Entrez l'URL du sponsor",
         "noSponsorships": "Aucun sponsor ajouté",
         "toolRecommendationBlocked": "Pour voir les recommandations d'outils, vous devez avoir un compte Pro ou Ultra",
-        "sponsorshipRecommendationBlocked": "Pour voir les recommandations de sponsors, vous devez avoir un compte Pro ou Ultra"
+        "sponsorshipRecommendationBlocked": "Pour voir les recommandations de sponsors, vous devez avoir un compte Pro ou Ultra",
+        "musicSuggestionsBlocked": "Pour voir les suggestions de musique, vous devez avoir un compte Pro ou Ultra"
       }
     },
     "content": {

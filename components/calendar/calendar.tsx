@@ -21,6 +21,7 @@ export default function Calendar({
   dict,
   dayClassNames,
   getDayContent,
+  context = 'calendar'
 }: CalendarProps) {
   return (
     <CalendarProvider
@@ -37,6 +38,7 @@ export default function Calendar({
       dict={dict}
       dayClassNames={dayClassNames}
       getDayContent={getDayContent}
+      context={context}
     >
       <CalendarHeader>
         <CalendarHeaderDate />

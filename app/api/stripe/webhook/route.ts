@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (event.type.startsWith('customer.subscription.') || 
       (event.type === 'invoice.paid' && typeof (event.data.object as any).subscription === 'string')) {
     console.log('Routing to subscription handler')
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe-webhook/subscription`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/webhook/subscription`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
       event.type === 'charge.succeeded' ||
       (event.type === 'invoice.paid' && typeof (event.data.object as any).subscription !== 'string')) {
     console.log('Routing to one-off handler')
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe-webhook/one-off`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/stripe/webhook/one-off`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

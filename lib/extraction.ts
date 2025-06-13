@@ -31,42 +31,57 @@ export const extractField = (content: string, pattern: RegExp): string => {
 };
 
 export const extractListField = (content: string, pattern: RegExp, expectedType: 'object' | 'string_array'): string[] | Tool[] | Sponsorship[] => {
+	console.log('=== DEBUG: extractListField ===');
+	console.log('Content:', content);
+	console.log('Pattern:', pattern);
+	console.log('Expected type:', expectedType);
+	
 	const match = content.match(pattern);
-	console.log('Extracting list field with pattern:', pattern, 'expectedType:', expectedType);
 	console.log('Match result:', match);
 
 	// Fallback method if regex fails (primarily for object types)
 	if (!match) {
 		console.log('Trying fallback method for list');
 		const lines = content.split('\n');
+		console.log('Split lines:', lines);
 		const fallbackItems: any[] = [];
 		let isInSection = false;
 		let currentFallbackItem: any = {};
 
 		for (const line of lines) {
-			if (pattern.source.includes(line.match(/\*\*([^*]+)\*\*/)?.[1] || '')) {
+			console.log('Processing line:', line);
+			// Check for section header
+			const headerMatch = line.match(/\*\*([^*]+)\*\*/);
+			console.log('Header match:', headerMatch);
+			if (pattern.source.includes(headerMatch?.[1] || '')) {
+				console.log('Found section header:', headerMatch?.[1]);
 				isInSection = true;
 				continue;
 			}
 
-			if (isInSection && line.trim().startsWith('•')) {
+			// If we're in the section and find a bullet point
+			if (isInSection && (line.trim().startsWith('•') || line.trim().startsWith('-') || line.trim().startsWith('*'))) {
+				console.log('Found bullet point:', line);
 				if (currentFallbackItem.name) {
 					fallbackItems.push(currentFallbackItem);
 				}
-				const itemContent = line.replace(/^•\s*/, '').trim();
+				const itemContent = line.replace(/^[•\-*]\s*/, '').trim();
 				const urlMatch = itemContent.match(/\((https?:\/\/[^)]+)\)/);
 				currentFallbackItem = {
 					name: itemContent.split('(')[0].trim(),
 					url: urlMatch ? urlMatch[1] : '',
 					description: ''
 				};
+				console.log('Created fallback item:', currentFallbackItem);
 			} else if (isInSection && currentFallbackItem.name && line.trim()) {
 				if (currentFallbackItem.description) {
 					currentFallbackItem.description += '\n' + line.trim();
 				} else {
 					currentFallbackItem.description = line.trim();
 				}
+				console.log('Updated fallback item description:', currentFallbackItem);
 			} else if (isInSection && line.match(/\*\*([^*]+)\*\*/)) {
+				console.log('Found next section, breaking');
 				break;
 			}
 		}
@@ -74,9 +89,10 @@ export const extractListField = (content: string, pattern: RegExp, expectedType:
 			fallbackItems.push(currentFallbackItem);
 		}
 		if (fallbackItems.length > 0) {
-			console.log('Fallback list items:', fallbackItems);
+			console.log('Final fallback items:', fallbackItems);
 			return fallbackItems;
 		}
+		console.log('No fallback items found');
 		return []; // Fallback failed to find items
 	}
 
@@ -87,18 +103,22 @@ export const extractListField = (content: string, pattern: RegExp, expectedType:
 		// Robust object parsing for tools and sponsorships
 		const objectItems: any[] = [];
 		const lines = match[1].split('\n');
+		console.log('Processing object lines:', lines);
 		let currentItem: any = {};
 
 		for (const line of lines) {
 			const trimmedLine = line.trim();
-			if (trimmedLine.startsWith('•')) {
+			console.log('Processing object line:', trimmedLine);
+			if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-') || trimmedLine.startsWith('*')) {
 				if (currentItem.name) { // Save previous item
 					objectItems.push(currentItem);
 				}
 				const itemContent = trimmedLine.substring(1).trim();
+				console.log('Item content:', itemContent);
 				
 				const oneLineRegex = /^(.*?)\s*\((https?:\/\/[^)]+)\)\s*(.*)$/;
 				const oneLineMatch = itemContent.match(oneLineRegex);
+				console.log('One line match:', oneLineMatch);
 
 				if (oneLineMatch) {
 					currentItem = {
@@ -122,24 +142,32 @@ export const extractListField = (content: string, pattern: RegExp, expectedType:
 						};
 					}
 				}
+				console.log('Created object item:', currentItem);
 			} else if (currentItem.name && trimmedLine) { // Description on a new line
 				if (currentItem.description) {
 					currentItem.description += '\n' + trimmedLine;
 				} else {
 					currentItem.description = trimmedLine;
 				}
+				console.log('Updated object item description:', currentItem);
 			}
 		}
 		if (currentItem.name) { // Add the last item
 			objectItems.push(currentItem);
 		}
+		console.log('Final object items:', objectItems);
 		return objectItems;
 
 	} else { // expectedType === 'string_array'
 		const stringItems = match[1].split('\n')
-			.map(item => item.trim())
-			.filter(item => item.startsWith('•'))
-			.map(item => item.substring(1).trim());
+			.map(item => {
+				console.log('Topic line:', JSON.stringify(item));
+				return item.trim();
+			})
+			.filter(item => /^[-•*]/.test(item))
+			.map(item => item.replace(/^[-•*]\s*/, '').trim())
+			.filter(item => item.length > 0);
+		console.log('Final string items:', stringItems);
 		return stringItems;
 	}
 };
@@ -225,19 +253,24 @@ export const extractSponsorshipObjects = (content: string, pattern: RegExp): Spo
 
 	const sponsorships: Sponsorship[] = [];
 	const lines = sectionMatch[1].split('\n');
+	console.log('[extractSponsorshipObjects] Processing lines:', lines);
 	let currentSponsorshipData: Partial<Sponsorship> = {};
 
 	for (const line of lines) {
 		const trimmedLine = line.trim();
-		if (trimmedLine.startsWith('•')) {
+		// Accetta sia bullet che righe che iniziano con [Nome] (url)
+		if (trimmedLine.startsWith('•') || /^\[.*\]\s*\(https?:\/\/.*\)/.test(trimmedLine)) {
 			if (currentSponsorshipData.name) {
+				console.log('[extractSponsorshipObjects] Adding sponsorship:', currentSponsorshipData);
 				sponsorships.push({ ...currentSponsorshipData } as Sponsorship);
 				currentSponsorshipData = {};
 			}
-			const itemContent = trimmedLine.substring(1).trim();
+			// Rimuovi bullet se presente
+			const itemContent = trimmedLine.replace(/^•\s*/, '').trim();
 			const parsedObject = parseListItemObject(itemContent);
 			if (parsedObject) {
 				currentSponsorshipData = parsedObject;
+				console.log('[extractSponsorshipObjects] Created sponsorship:', currentSponsorshipData);
 			}
 		} else if (currentSponsorshipData.name && trimmedLine) {
 			if (currentSponsorshipData.description) {
@@ -245,13 +278,15 @@ export const extractSponsorshipObjects = (content: string, pattern: RegExp): Spo
 			} else {
 				currentSponsorshipData.description = trimmedLine;
 			}
+			console.log('[extractSponsorshipObjects] Updated sponsorship description:', currentSponsorshipData);
 		}
 	}
 
 	if (currentSponsorshipData.name) {
+		console.log('[extractSponsorshipObjects] Adding final sponsorship:', currentSponsorshipData);
 		sponsorships.push({ ...currentSponsorshipData } as Sponsorship);
 	}
-	console.log('[extractSponsorshipObjects] Extracted sponsorships:', sponsorships);
+	console.log('[extractSponsorshipObjects] Final sponsorships:', sponsorships);
 	return sponsorships;
 };
 

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import stripe from '@/utils/stripe/stripe'
 import { Stripe } from 'stripe'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
+import resend from '@/utils/resend/resend'
+import PlanEmail from '@/emails/PlanEmail'
+import { formatDate } from '@/lib/utils'
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -215,6 +218,7 @@ export async function POST(req: NextRequest) {
     if (updateError) {
       console.error('Errore update user subscription:', updateError)
     }
+
     return NextResponse.json({ received: true })
   }
 
@@ -309,6 +313,32 @@ export async function POST(req: NextRequest) {
       console.error('Errore insert subscription invoice:', insertError)
     }
 
+
+    // Invia email con il link alla fattura
+    // if (email && invoice.hosted_invoice_url) {
+    //   try {
+    //     const endDate = new Date(invoice.lines.data[0].period.end * 1000).toISOString()
+
+    //     const { data, error } = await resend.emails.send({
+    //       from: 'Videatly <info@videatly.ai>',
+    //       to: [email],
+    //       subject: `Your ${plan} plan invoice is ready!`,
+    //       react: PlanEmail({
+    //         plan,
+    //         invoiceUrl: invoice.hosted_invoice_url,
+    //         price: invoice.amount_paid,
+    //         endDate: formatDate(endDate, 'full'),
+    //       }) as React.ReactElement,
+    //     });
+
+    //     if (error) {
+    //       console.error("Resend error:", error);
+    //     }
+    //   } catch (emailError) {
+    //     console.error("Error sending invoice email:", emailError);
+    //   }
+    // }
+
     return NextResponse.json({ received: true })
   }
 
@@ -357,7 +387,7 @@ export async function POST(req: NextRequest) {
 
     // Crea una notifica per l'utente
     const { error: notificationError } = await supabase.from('notifications').insert([{
-      user_id: user_id,
+      auth_user_id: user_id,
       type: 'payment_failed',
       title: 'Payment Failed',
       message: 'Your subscription payment has failed. Please update your payment method to continue using the service.',

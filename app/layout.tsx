@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Nunito, Raleway } from "next/font/google";
-import { PostHogProvider } from "./providers";
 
 const raleway = Raleway({
   subsets: ['latin'],
@@ -28,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunito.variable} ${raleway.variable} font-nunito`}>
-        <PostHogProvider>
           {children}
-        </PostHogProvider>
       </body>
     </html>
   );

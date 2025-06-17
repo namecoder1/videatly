@@ -3,10 +3,10 @@ import React from 'react'
 
 const Features = ({ dict }: { dict: any }) => {
   return (
-    <section className="w-full px-4 py-32 space-y-20 bg-gradient-to-b from-black to-gray-900" id="features">
+    <section className="w-full px-4 py-32 space-y-20 bg-gradient-to-b from-black to-gray-900" id="use-cases">
       <div className="max-w-3xl mx-auto text-center space-y-6">
         <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-primary font-medium tracking-wide text-sm">
-          {dict.features.title}
+          {dict.features.title} 
         </span>
         <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl text-white font-raleway leading-tight">
           {dict.features.subtitle}

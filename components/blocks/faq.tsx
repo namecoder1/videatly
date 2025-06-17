@@ -47,7 +47,7 @@ const Faq = ({ dict }: { dict: any }) => {
 							{dict?.faq?.title}
 						</h3>
 						<p className='text-lg text-gray-600 leading-relaxed'>
-							Have questions? We're here to help. Check out our frequently asked questions below.
+							{dict.faq.description}
 						</p>
 					</div>
 					<Card className='w-full md:w-2/3 p-6 rounded-3xl shadow-lg border border-gray-100 bg-white/50 backdrop-blur-sm'>

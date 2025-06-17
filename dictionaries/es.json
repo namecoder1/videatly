@@ -106,6 +106,7 @@
   },
   "faq": {
     "title": "Preguntas frecuentes",
+    "description": "¿Tienes preguntas? Tenemos respuestas. Revisa nuestras preguntas frecuentes a continuación.",
     "q1": "¿Cómo puedo personalizar mi perfil?",
     "a1": "Puedes personalizar tu perfil agregando una foto, modificando tus información personal y estableciendo tus preferencias de notificaciones. Todas estas opciones están disponibles a través del menú 'Configuración del perfil'.",
     "q2": "¿Cuáles son los requisitos de sistema?",
@@ -890,27 +891,106 @@
     "howTitle": "Todo lo que necesitas para tu producción de video",
     "howSteps": [
       {
-        "title": "Automate your video workflow and save precious time",
-        "description": "Talk with our AI's and generate the best video ideas for all your needs. Each AI is specialized in a different field, so you can get the best results for your video production whenever you need it.",
-        "span": "ideation",
+        "title": "Automatiza tu flujo de trabajo de video y ahorra tiempo precioso",
+        "description": "Habla con nuestros asistentes de IA y genera las mejores ideas de video para todas tus necesidades. Cada IA está especializada en un campo diferente, por lo que puedes obtener los mejores resultados para tu producción de video siempre que lo necesites.",
+        "span": "ideación",
         "fields": [
-          "Generate video ideas",
-          "Create detailed scripts",
-          "Easily manage your projects",
-          "Brainstorm like a pro"
+          "Generar ideas de video",
+          "Crear scripts detallados",
+          "Gestionar fácilmente tus proyectos",
+          "Brainstorm como un profesional"
         ]
       },
       {
-        "title": "Write perfect scripts for your videos",
-        "description": "Write perfect scripts for your videos with our AI's, and let Videatly handle the rest.",
-        "span": "writing",
+        "title": "Escribe scripts perfectos para tus videos",
+        "description": "Escribe scripts perfectos para tus videos con nuestras IA's, y deja que Videatly se encargue del resto.",
+        "span": "escritura",
         "fields": [
-          "Write perfect scripts for your videos",
-          "Easily manage your projects",
-          "Brainstorm like a pro",
-          "Generate video ideas"
+          "Escribe scripts perfectos para tus videos",
+          "Gestiona fácilmente tus proyectos",
+          "Brainstorm como un profesional",
+          "Generar ideas de video"
         ]
       }
-    ]
+    ],
+    "addons": {
+      "subtitle": "Características Premium",
+      "title": "Haz tu rutina diaria más divertida",
+      "description": "Todo lo que necesitas para crear, optimizar y crecer tu canal de YouTube con herramientas de IA",
+      "button": "Aprender más",
+      "features": [
+        {
+          "title": "Análisis de IA",
+          "description": "Obtén insights y recomendaciones en tiempo real para optimizar tu estrategia de contenido"
+        },
+        {
+          "title": "Plantillas de IA",
+          "description": "Plantillas y flujos de trabajo pre-construidos para agilizar tu producción de video"
+        },
+        {
+          "title": "Seguimiento de rendimiento",
+          "description": "Monitorea el crecimiento de tu canal con análisis y reportes detallados"
+        }
+      ] 
+    }
+  },
+  "cta": {
+    "errors": {
+      "error": "Ha ocurrido un error",
+      "email": {
+        "required": "El email es obligatorio",
+        "invalid": "El email no es válido",
+        "exists": "El email ya existe"
+      }
+    },
+    "title": "Únete a la lista de espera",
+    "description": "Ingresa tu email para unirte a la lista de espera y ser el primero en saber cuando lanzamos.",
+    "button": "Únete ahora!",
+    "placeholder": "Ingresa tu email",
+    "autoComplete": "email",
+    "emailAddress": "Email",
+    "noSpam": "No spam",
+    "noSpamDescription": "No te enviaremos spam. Solo te enviaremos actualizaciones sobre el producto.",
+    "free": "Gratis para siempre",
+    "freeDescription": "No te enviaremos spam. Solo te enviaremos actualizaciones sobre el producto."
+  },
+  "thankYou": {
+    "errors": {
+      "error": "Ha ocurrido un error",
+      "email": {
+        "required": "El email es obligatorio",
+        "invalid": "El email no es válido",
+        "exists": "El email ya existe"
+      },
+      "fetchError": "Error al cargar el usuario",
+      "userNotFound": "Usuario no encontrado",
+      "alreadyUpdated": "Usuario ya actualizado"
+    },
+    "title": "¡Estás en la lista! 🎉",
+    "description": "Gracias por unirte a nuestra comunidad de creadores. Te mantendremos informado sobre nuestro lanzamiento.",
+    "howYouFoundUs": "¿Cómo te enteraste de nosotros?",
+    "howYouFoundUsDescription": "Selecciona la opción que mejor describe cómo te enteraste de nosotros.",
+    "form": {
+      "title": "Algunas preguntas",
+      "description": "Ayúdanos a entender mejor tus necesidades.",
+      "howYouFoundUs": "¿Cómo te enteraste de nosotros?",
+      "howYouFoundUsDescription": "Selecciona la opción que mejor describe cómo te enteraste de nosotros.",
+      "yourCreatorProfile": "Tu perfil de creador",
+      "yourCreatorProfileDescription": "Selecciona la opción que mejor describe tu perfil de creador.",
+      "next": "¿Qué sigue?",
+      "submit": "Enviar",
+      "submitLoading": "Enviando...",
+      "submitSuccess": "Enviar",
+      "submitError": "Error al enviar",
+      "submitErrorDescription": "Ha ocurrido un error al enviar. Por favor, inténtalo de nuevo más tarde."
+    },
+    "next": {
+      "title": "¿Qué sigue?",
+      "steps": [
+        "Verifica tu correo electrónico para recibir un mensaje de confirmación",
+        "Síguenos en redes sociales para obtener actualizaciones",
+        "Comparte tu experiencia con otros creadores"
+      ]
+    }
   }
 } 

@@ -8,7 +8,7 @@ import { validateEmail } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/client";
 import { usePathname, useRouter } from "next/navigation";
 
-export default function Cta() {
+export default function Cta({ dict }: { dict: any }) {
   const [email, setEmail] = useState('')
 	const [error, setError] = useState('')
 	const [totalUsers, setTotalUsers] = useState(0)
@@ -47,11 +47,11 @@ export default function Cta() {
 		const supabase = await createClient()
 		const { data, error } = await supabase.from('lead_users').select('*').eq('email', email)
 		if (error) {
-			setError('Please enter a valid email address')
+			setError(dict.cta.errors.email.invalid)
 			return false
 		}
 		if (data.length > 0) {
-			setError('Email already exists')
+			setError(dict.cta.errors.email.exists)
 			return false
 		}
 		return true
@@ -101,9 +101,9 @@ export default function Cta() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
           <div className="max-w-xl lg:max-w-lg">
-            <h2 className="text-4xl font-semibold tracking-tight text-white">Join the waitlist</h2>
+            <h2 className="text-4xl font-semibold tracking-tight text-white">{dict.cta.title}</h2>
             <p className="mt-4 text-lg text-gray-300">
-              Insert your email to join the waitlist and be the first to know when we launch.
+              {dict.cta.description}
             </p>
             <form onSubmit={handleSubmit} className="mt-6 flex max-w-md gap-x-4">
               <label htmlFor="email-address" className="sr-only">
@@ -116,7 +116,7 @@ export default function Cta() {
                 onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 required
-                placeholder="Enter your email"
+                placeholder={dict.cta.placeholder}
                 autoComplete="email"
                 className="bg-gray-100/10 backdrop-blur-sm border-gray-100/40 text-white"
               />
@@ -124,7 +124,7 @@ export default function Cta() {
                 type="submit"
                 size="lg"
               >
-                Join Now!
+                {dict.cta.button}
               </Button>
             </form >
           </div>
@@ -133,18 +133,18 @@ export default function Cta() {
               <div className="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
                 <MegaphoneOff aria-hidden="true" className="size-6 text-white" />
               </div>
-              <dt className="mt-4 text-base font-semibold text-white">No spam</dt>
+              <dt className="mt-4 text-base font-semibold text-white">{dict.cta.noSpam}</dt>
               <dd className="mt-2 text-base/7 text-gray-300">
-                We will never spam you. We will only send you updates about the product.
+                {dict.cta.noSpamDescription}
               </dd>
             </div>
             <div className="flex flex-col items-start">
               <div className="rounded-md bg-white/5 p-2 ring-1 ring-white/10">
                 <Hand aria-hidden="true" className="size-6 text-white" />
               </div>
-              <dt className="mt-4 text-base font-semibold text-white">Free forever</dt>
+              <dt className="mt-4 text-base font-semibold text-white">{dict.cta.free}</dt>
               <dd className="mt-2 text-base/7 text-gray-300">
-                We will never charge you for the product. First 50 users get 10k tokens free.
+                {dict.cta.freeDescription}
               </dd>
             </div>
           </dl>

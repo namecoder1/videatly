@@ -106,6 +106,7 @@
   },
   "faq": {
     "title": "Frequently Asked Questions",
+    "description": "Have questions? We're here to help. Check out our frequently asked questions below.",
     "q1": "How can I customize my profile?",
     "a1": "You can customize your profile by adding a photo, editing your personal information, and setting your notification preferences. All these options are accessible through the 'Profile Settings' menu.",
     "q2": "What are the system requirements?",
@@ -911,6 +912,84 @@
           "Generate scripts for your videos"
         ]
       }
-    ]
+    ],
+    "addons": {
+      "subtitle": "Premium Features",
+      "title": "Make your daily routine more enjoyable",
+      "description": "Everything you need to create, optimize, and grow your YouTube channel with AI-powered tools",
+      "button": "Learn more",
+      "features": [
+        {
+          "title": "AI-Powered Analytics",
+          "description": "Get real-time insights and recommendations to optimize your content strategy"
+        },
+        {
+          "title": "Time-Saving Templates",
+          "description": "Pre-built templates and workflows to streamline your video production"
+        },
+        {
+          "title": "Performance Tracking",
+          "description": "Monitor your channel growth with detailed analytics and reports"
+        }
+      ]
+    }
+  },
+  "cta": {
+    "errors": {
+      "error": "An error occurred",
+      "email": {
+        "required": "Email is required",
+        "invalid": "Email is not valid"
+      }
+    },
+    "title": "Join the waitlist",
+    "description": "Enter your email to join the waitlist and be the first to know when we launch.",
+    "button": "Join now!",
+    "placeholder": "Enter your email",
+    "autoComplete": "email",
+    "emailAddress": "Email",
+    "noSpam": "No spam",
+    "noSpamDescription": "We will never send you spam. We will only send you updates about the product.",
+    "free": "Free forever",
+    "freeDescription": "We will never send you spam. We will only send you updates about the product."
+  },
+  "thankYou": {
+    "errors": {
+      "error": "An error occurred",
+      "email": {
+        "required": "Email is required",
+        "invalid": "Email is not valid",
+        "exists": "Email already exists"
+      },
+      "fetchError": "Error loading user",
+      "userNotFound": "User not found",
+      "alreadyUpdated": "User already updated"
+    },
+    "title": "You're on the list! 🎉",
+    "description": "Thank you for joining our community of creators. We will keep you updated on our launch.",
+    "howYouFoundUs": "How did you find us?",
+    "howYouFoundUsDescription": "Select the option that best describes how you found us.",
+    "form": {
+      "title": "Some questions",
+      "description": "Help us understand your needs better.",
+      "howYouFoundUs": "How did you find us?",
+      "howYouFoundUsDescription": "Select the option that best describes how you found us.",
+      "yourCreatorProfile": "Your creator profile",
+      "yourCreatorProfileDescription": "Select the option that best describes your creator profile.",
+      "next": "What's next?",
+      "submit": "Submit",
+      "submitLoading": "Submitting...",
+      "submitSuccess": "Submit",
+      "submitError": "Error submitting",
+      "submitErrorDescription": "An error occurred while submitting. Please try again later."
+    },
+    "next": {
+      "title": "What's next?",
+      "steps": [
+        "Verify your email to receive a confirmation message",
+        "Follow us on social media for updates",
+        "Share your experience with other creators"
+      ]
+    }
   }
 }

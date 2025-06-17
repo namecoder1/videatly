@@ -107,6 +107,7 @@
   },
   "faq": {
     "title": "Questions fréquentes",
+    "description": "Vous avez des questions? Nous avons les réponses. Consultez nos questions fréquentes ci-dessous.",
     "q1": "Comment puis-je personnaliser mon profil?",
     "a1": "Vous pouvez personnaliser votre profil en ajoutant une photo, en modifiant vos informations personnelles et en définissant vos préférences de notifications. Toutes ces options sont accessibles via le menu 'Paramètres du profil'.",
     "q2": "Quels sont les exigences de système?",
@@ -911,6 +912,84 @@
           "Générez des idées pour vos vidéos"
         ]
       }
-    ]
+    ],
+    "addons": {
+      "subtitle": "Fonctionnalités Premium",
+      "title": "Rendez votre routine quotidienne plus amusante",
+      "description": "Tout ce dont vous avez besoin pour créer, optimiser et faire grandir votre chaîne YouTube avec des outils alimentés par l'IA",
+      "button": "En savoir plus",
+      "features": [
+        {
+          "title": "Analyse IA",
+          "description": "Obtenez des insights et des recommandations en temps réel pour optimiser votre stratégie de contenu"
+        },
+        {
+          "title": "Modèles de workflow",
+          "description": "Modèles et workflows pré-construits pour accélérer votre production vidéo"  
+        },
+        {
+          "title": "Suivi des performances",
+          "description": "Suivez le croissance de votre chaîne avec des analyses et des rapports détaillés"
+        }
+      ]
+    }
+  },
+  "cta": {
+    "errors": {
+      "error": "Une erreur s'est produite",
+      "email": {
+        "required": "L'email est obligatoire",
+        "invalid": "L'email n'est pas valide"
+      }
+    },
+    "title": "Rejoignez la liste d'attente",
+    "description": "Entrez votre email pour rejoindre la liste d'attente et être le premier à savoir quand nous lançons.",
+    "button": "Rejoindre maintenant!",
+    "placeholder": "Entrez votre email",
+    "autoComplete": "email",
+    "emailAddress": "Adresse email",
+    "noSpam": "Pas de spam",
+    "noSpamDescription": "Nous ne vous enverrons jamais de spam. Nous vous enverrons uniquement des mises à jour sur le produit.",
+    "free": "Gratuit pour toujours",
+    "freeDescription": "Nous ne vous enverrons jamais de spam. Nous vous enverrons uniquement des mises à jour sur le produit."
+  },
+  "thankYou": {
+    "errors": {
+      "error": "Une erreur s'est produite",
+      "email": {
+        "required": "L'email est obligatoire",
+        "invalid": "L'email n'est pas valide",
+        "exists": "L'email existe déjà"
+      },
+      "fetchError": "Erreur lors du chargement de l'utilisateur",
+      "userNotFound": "Utilisateur non trouvé",
+      "alreadyUpdated": "Utilisateur déjà mis à jour"
+    },
+    "title": "Vous êtes sur la liste! 🎉",
+    "description": "Merci d'avoir rejoint notre communauté de créateurs. Nous vous tiendrons informé de notre lancement.",
+    "howYouFoundUs": "Comment avez-vous trouvé notre site?",
+    "howYouFoundUsDescription": "Sélectionnez l'option qui décrit le mieux comment vous avez trouvé notre site.",
+    "form": {
+      "title": "Quelques questions",
+      "description": "Aidez-nous à mieux comprendre vos besoins.",
+      "howYouFoundUs": "Comment avez-vous trouvé notre site?",
+      "howYouFoundUsDescription": "Sélectionnez l'option qui décrit le mieux comment vous avez trouvé notre site.",
+      "yourCreatorProfile": "Votre profil créateur",
+      "yourCreatorProfileDescription": "Sélectionnez l'option qui décrit le mieux votre profil créateur.",
+      "next": "Qu'est-ce qui suit?",
+      "submit": "Envoyer",
+      "submitLoading": "Envoi...",
+      "submitSuccess": "Envoyer",
+      "submitError": "Erreur lors de l'envoi",
+      "submitErrorDescription": "Une erreur s'est produite lors de l'envoi. Veuillez réessayer plus tard."
+    },
+    "next": {
+      "title": "Qu'est-ce qui suit?",
+      "steps": [
+        "Vérifiez votre email pour recevoir un message de confirmation",
+        "Suivez-nous sur les réseaux sociaux pour obtenir des mises à jour",
+        "Partagez votre expérience avec d'autres créateurs"
+      ]
+    }
   }
 } 

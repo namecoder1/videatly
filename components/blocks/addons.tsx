@@ -3,37 +3,37 @@ import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 
-const Addons = () => {
+const Addons = ({ dict }: { dict: any }) => {
   const addons = [
     {
       icon: <Zap className="size-5 text-primary" />,
-      title: "AI-Powered Analytics",
-      description: "Get real-time insights and recommendations to optimize your content strategy"
+      title: dict.landing.addons.features[0].title,
+      description: dict.landing.addons.features[0].description
     },
     {
       icon: <Clock className="size-5 text-primary" />,
-      title: "Time-Saving Templates",
-      description: "Pre-built templates and workflows to streamline your video production"
+      title: dict.landing.addons.features[1].title,
+      description: dict.landing.addons.features[1].description
     },
     {
       icon: <BarChart3 className="size-5 text-primary" />,
-      title: "Performance Tracking",
-      description: "Monitor your channel growth with detailed analytics and reports"
+      title: dict.landing.addons.features[2].title,
+      description: dict.landing.addons.features[2].description
     }
   ]
 
   return (
-    <section className="w-full py-32 bg-gray-50">
+    <section className="w-full py-32 bg-gray-50" id="features">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-16">
           <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-primary font-medium tracking-wide text-sm mb-4">
-            Premium Features
+            {dict.landing.addons.subtitle}
           </span>
           <h2 className="text-4xl font-bold font-raleway tracking-tight mb-4">
-            Make your daily routine more enjoyable
+            {dict.landing.addons.title}
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Everything you need to create, optimize, and grow your YouTube channel with AI-powered tools
+            {dict.landing.addons.description}
           </p>
         </div>
 
@@ -51,7 +51,7 @@ const Addons = () => {
               </CardHeader>
               <CardContent>
                 <Button variant="ghost" className="group-hover:text-primary p-0 h-auto">
-                  Learn more
+                  {dict.landing.addons.button}
                   <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </CardContent>

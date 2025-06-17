@@ -18,14 +18,14 @@ export default function Home() {
       
       <Features dict={dict} />
 
-      <section className="py-32">
+      <section className="py-32" id="how-it-works">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 bg-primary/10 rounded-full text-primary font-medium tracking-wide text-sm mb-4">
-              How It Works
+              {dict.landing.howItWorks}
             </span>
             <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl max-w-2xl mx-auto font-raleway">
-              All you need for your video production
+              {dict.landing.howTitle}
             </h2>
           </div>
           
@@ -54,11 +54,11 @@ export default function Home() {
         </div>
       </section>
 
-      <Addons />
+      <Addons dict={dict} />
       <Faq dict={dict} />
 
 
-      <Cta />
+      <Cta dict={dict} />
       
     </main>
   );

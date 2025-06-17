@@ -1,16 +1,16 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Github, Linkedin, Instagram, MessageSquareShare, AlertCircle, CheckCircle2, Loader2, Sparkles } from 'lucide-react'
+import { RadioGroup } from '@/components/ui/radio-group'
+import { MessageSquareShare, AlertCircle, CheckCircle2, Loader2, Sparkles } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
-import { Label } from '@/components/ui/label'
 import { createClient } from '@/utils/supabase/client'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { githubIcon, instagramIcon, linkedinIcon, redditIcon } from '@/assets/home'
 import Image from 'next/image'
+import { useDictionary } from '@/app/context/dictionary-context'
+
 
 type ReferenceSource = 'github' | 'linkedin' | 'instagram' | 'reddit';
 
@@ -26,6 +26,8 @@ const whyOptions = [
 const ThankYouPage = ({ searchParams } : {
   searchParams: { email: string }
 }) => {
+  const dict = useDictionary()
+
   // Decode the email parameter to handle URL encoding
   const email = searchParams.email ? decodeURIComponent(searchParams.email) : '';
   
@@ -225,9 +227,9 @@ const ThankYouPage = ({ searchParams } : {
             </div>
           </div>
 
-          <h2 className="text-3xl mt-5 font-semibold text-gray-900 mb-3">You're on the List! 🎉</h2>
+          <h2 className="text-3xl mt-5 font-semibold text-gray-900 mb-3">{dict.thankYou.title}</h2>
           <p className="text-gray-600 mb-8 max-w-md">
-            Thanks for joining our community of creators. We'll keep you updated on our launch progress.
+            {dict.thankYou.description}
           </p>
 
           <div className="w-full max-w-md mx-auto space-y-4">
@@ -238,7 +240,7 @@ const ThankYouPage = ({ searchParams } : {
                     <div className="p-2 bg-gray-100 rounded-xl">
                       <MessageSquareShare className="h-5 w-5 text-gray-600" />
                     </div>
-                    <span className="font-medium text-gray-700">How you found us</span>
+                    <span className="font-medium text-gray-700">{dict.thankYou.howYouFoundUs}</span>
                   </div>
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-white rounded-xl shadow-sm text-gray-700 text-sm transition-all duration-300 hover:scale-105 border border-gray-100">
                     {referenceSource === 'github' && <Image src={githubIcon} alt="GitHub" className="h-5 w-5" />} 
@@ -254,7 +256,7 @@ const ThankYouPage = ({ searchParams } : {
                     <div className="p-2 bg-gray-100 rounded-xl">
                       <CheckCircle2 className="h-5 w-5 text-gray-600" />
                     </div>
-                    <span className="font-medium text-gray-700">Your creator profile</span>
+                    <span className="font-medium text-gray-700">{dict.thankYou.form.yourCreatorProfile}</span>
                   </div>
                   <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-xl shadow-sm text-gray-700 text-sm font-medium transition-all duration-300 hover:scale-105 border border-gray-100">
                     {reasonValue ? reasonValue.charAt(0).toUpperCase() + reasonValue.slice(1) : 'Not specified'}
@@ -264,25 +266,25 @@ const ThankYouPage = ({ searchParams } : {
             </div>
 
             <div className="bg-gray-50 rounded-3xl border border-gray-200 p-6">
-              <h3 className="font-medium text-gray-900 mb-2">What's Next?</h3>
+              <h3 className="font-medium text-gray-900 mb-2">{dict.thankYou.next.title}</h3>
               <ul className="space-y-3 text-left">
                 <li className="flex items-start gap-2">
                   <div className="mt-1">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="text-gray-600 text-sm">Check your email for a confirmation message</span>
+                  <span className="text-gray-600 text-sm">{dict.thankYou.next.steps[0]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="mt-1">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="text-gray-600 text-sm">Follow us on social media for updates</span>
+                  <span className="text-gray-600 text-sm">{dict.thankYou.next.steps[1]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="mt-1">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="text-gray-600 text-sm">Get early access when we launch</span>
+                  <span className="text-gray-600 text-sm">{dict.thankYou.next.steps[2]}</span>
                 </li>
               </ul>
             </div>
@@ -307,14 +309,14 @@ const ThankYouPage = ({ searchParams } : {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="text-left mb-8">
-          <h3 className='font-raleway font-bold text-2xl mb-2'>Some questions</h3>
-          <p className="text-gray-500 text-sm">Help us understand your needs better.</p>
+          <h3 className='font-raleway font-bold text-2xl mb-2'>{dict.thankYou.form.title}</h3>
+          <p className="text-gray-500 text-sm">{dict.thankYou.form.description}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-10">
           <div className="space-y-5">
             <div>
-              <h2 className="text-base font-medium mb-3 text-gray-900">How did you discover Videatly?</h2>
+              <h2 className="text-base font-medium mb-3 text-gray-900">{dict.thankYou.form.howYouFoundUs}</h2>
             </div>
             <RadioGroup
               value={referenceSource}
@@ -355,7 +357,7 @@ const ThankYouPage = ({ searchParams } : {
 
           <div className="space-y-5">
             <div>
-              <h2 className="text-base font-medium mb-3 text-gray-900">What best describes you?</h2>
+              <h2 className="text-base font-medium mb-3 text-gray-900">{dict.thankYou.form.yourCreatorProfile}</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {whyOptions.map((item) => (
@@ -394,16 +396,16 @@ const ThankYouPage = ({ searchParams } : {
               disabled={submitStatus === 'loading' || !userFetched || !userId || alreadyUpdated || !reasonValue}
             >
               {submitStatus === 'loading' ? <Loader2 className="animate-spin h-4 w-4" /> : null}
-              {submitStatus === 'loading' ? 'Submitting...' : alreadyUpdated ? 'Already Submitted' : 'Send'}
+              {submitStatus === 'loading' ? dict.thankYou.form.submitLoading : alreadyUpdated ? dict.thankYou.form.submitSuccess : dict.thankYou.form.submit}
             </Button>
           </div>
           
           {submitStatus === 'error' && (
             <Alert variant="destructive" className="mt-4">
               <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Oops! Something went wrong</AlertTitle>
+              <AlertTitle>{dict.thankYou.form.submitError}</AlertTitle>
               <AlertDescription>
-                Please try submitting again. If the problem persists, contact our support.
+                {dict.thankYou.form.submitErrorDescription}
               </AlertDescription>
             </Alert>
           )}

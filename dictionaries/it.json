@@ -105,6 +105,7 @@
   },
   "faq": {
     "title": "Domande frequenti",
+    "description": "Hai domande? Abbiamo le risposte. Controlla le nostre domande frequenti di seguito.",
     "q1": "Come posso personalizzare il mio profilo?",
     "a1": "Puoi personalizzare il tuo profilo aggiungendo una foto, modificando le tue informazioni personali e impostando le tue preferenze di notifica. Tutte queste opzioni sono accessibili tramite il menu 'Impostazioni del profilo'.",
     "q2": "Quali sono i requisiti di sistema?",
@@ -913,7 +914,82 @@
       
     ],
     "addons": {
-      
+      "subtitle": "Funzionalità Premium",
+      "title": "Rendi la tua routine quotidiana più divertente",
+      "description": "Tutto ciò che ti serve per creare, ottimizzare e far crescere il tuo canale YouTube con strumenti alimentati dall'IA",
+      "button": "Scopri di più",
+      "features": [
+        {
+          "title": "Analisi IA",
+          "description": "Ottieni insights e consigli in tempo reale per ottimizzare la tua strategia di contenuto"
+        },
+        {
+          "title": "Modelli di workflow",
+          "description": "Modelli e flussi di lavoro pre-costruiti per accelerare la tua produzione video"
+        },
+        {
+          "title": "Seguimento delle performance",
+          "description": "Monitora il crescita del tuo canale con analisi e rapporti dettagliati"
+        }
+      ]
+    }
+  },
+  "cta": {
+    "errors": {
+      "error": "Si è verificato un errore",
+      "email": {
+        "required": "L'email è obbligatoria",
+        "invalid": "L'email non è valida"
+      }
+    },
+    "title": "Unisciti alla lista d'attesa",
+    "description": "Inserisci la tua email per unirti alla lista d'attesa e essere il primo a sapere quando lanciamo.",
+    "button": "Unisciti ora!",
+    "placeholder": "Inserisci la tua email",
+    "autoComplete": "email",
+    "emailAddress": "Email address",
+    "noSpam": "Nessun spam",
+    "noSpamDescription": "Non ti invieremo spam. Ti invieremo solo aggiornamenti sul prodotto.",
+    "free": "Gratis per sempre",
+    "freeDescription": "Non ti invieremo spam. Ti invieremo solo aggiornamenti sul prodotto."
+  },
+  "thankYou": {
+    "errors": {
+      "error": "Si è verificato un errore",
+      "email": {
+        "required": "L'email è obbligatoria",
+        "invalid": "L'email non è valida",
+        "exists": "L'email esiste già"
+      },
+      "fetchError": "Errore nel caricamento dell'utente",
+      "userNotFound": "Utente non trovato",
+      "alreadyUpdated": "Utente già aggiornato"
+    },
+    "title": "Sei sulla lista! 🎉",
+    "description": "Grazie per averci unito alla nostra comunità di creatori. Ti manteremo informato sul nostro lancio.",
+    "howYouFoundUs": "Come hai trovato il nostro sito?",
+    "howYouFoundUsDescription": "Seleziona l'opzione che descrive meglio come hai trovato il nostro sito.",
+    "form": {
+      "title": "Alcune domande",
+      "description": "Aiutaci a capire meglio le tue esigenze.",
+      "howYouFoundUs": "Come hai trovato il nostro sito?",
+      "howYouFoundUsDescription": "Seleziona l'opzione che descrive meglio come hai trovato il nostro sito.",
+      "yourCreatorProfile": "Il tuo profilo creatore",
+      "yourCreatorProfileDescription": "Seleziona l'opzione che descrive meglio il tuo profilo creatore.",
+      "next": "Cosa succede dopo?",
+      "submit": "Invia",
+      "submitLoading": "Invia...",
+      "submitSuccess": "Invia",
+      "submitError": "Errore nell'invio",
+      "submitErrorDescription": "Si è verificato un errore durante l'invio. Per favore, riprova più tardi."
+    },
+    "next": {
+      "title": "Cosa succede dopo?",
+      "steps": [
+        "Verifica la tua email per ricevere un messaggio di conferma",
+        "Seguici sui social per ottenere aggiornamenti",
+        "Condividi la tua esperienza con altri creatori"
+      ]
     }
   }
 } 

@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
           process.env.STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID || "NOT_SET",
       },
     },
-    issues: [],
+    issues: [] as string[],
   };
 
   // Identifica problemi

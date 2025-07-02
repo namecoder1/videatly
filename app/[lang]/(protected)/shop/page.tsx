@@ -8,86 +8,124 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import Loader from "@/components/blocks/loader";
 import { useDictionary } from "@/app/context/dictionary-context";
-import { constants } from "@/constants";
+
+interface PriceIds {
+  basicIdeaBucket: string;
+  standardIdeaBucket: string;
+  premiumIdeaBucket: string;
+  basicScriptBucket: string;
+  standardScriptBucket: string;
+  premiumScriptBucket: string;
+}
 
 const ShopPage = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [priceIds, setPriceIds] = useState<PriceIds | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const dict = useDictionary();
 
-  const ideaTokensPlans = [
-    {
-      name: dict?.shopPage?.ideaTokens?.fields[0]?.title || "Basic",
-      price: 9.99,
-      description:
-        dict?.shopPage?.ideaTokens?.fields[0]?.description || "For starters",
-      tokens: 2500,
-      tool: "ideas",
-      isPopular: false,
-      paymentLink: constants.paymentLinks.basicIdeaBucket.linkToPay,
-      priceId: constants.paymentLinks.basicIdeaBucket.priceId,
-    },
-    {
-      name: dict?.shopPage?.ideaTokens?.fields[1]?.title || "Standard",
-      price: 19.99,
-      description:
-        dict?.shopPage?.ideaTokens?.fields[1]?.description ||
-        "For regular creators",
-      tokens: 5000,
-      tool: "ideas",
-      isPopular: true,
-      paymentLink: constants.paymentLinks.standardIdeaBucket.linkToPay,
-      priceId: constants.paymentLinks.standardIdeaBucket.priceId,
-    },
-    {
-      name: dict?.shopPage?.ideaTokens?.fields[2]?.title || "Premium",
-      price: 34.99,
-      description:
-        dict?.shopPage?.ideaTokens?.fields[2]?.description || "For power users",
-      tokens: 25000,
-      tool: "ideas",
-      isPopular: false,
-      paymentLink: constants.paymentLinks.premiumIdeaBucket.linkToPay,
-      priceId: constants.paymentLinks.premiumIdeaBucket.priceId,
-    },
-  ];
+  // Fetch price IDs from API
+  useEffect(() => {
+    const fetchPriceIds = async () => {
+      try {
+        console.log("Fetching price IDs from API...");
+        const response = await fetch("/api/stripe/get-price-ids");
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to fetch price IDs`);
+        }
+        const data = await response.json();
+        console.log("Price IDs received:", data);
+        setPriceIds(data);
+      } catch (err) {
+        console.error("Error fetching price IDs:", err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load price configuration"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  const scriptTokensPlans = [
-    {
-      name: dict?.shopPage?.scriptTokens?.fields[0]?.title || "Basic",
-      price: 14.99,
-      description:
-        dict?.shopPage?.scriptTokens?.fields[0]?.description || "For beginners",
-      tokens: 5000,
-      tool: "scripts",
-      isPopular: false,
-      paymentLink: constants.paymentLinks.basicScriptBucket.linkToPay,
-      priceId: constants.paymentLinks.basicScriptBucket.priceId,
-    },
-    {
-      name: dict?.shopPage?.scriptTokens?.fields[1]?.title || "Standard",
-      price: 39.99,
-      description:
-        dict?.shopPage?.scriptTokens?.fields[1]?.description ||
-        "For content creators",
-      tokens: 15000,
-      tool: "scripts",
-      isPopular: true,
-      paymentLink: constants.paymentLinks.standardScriptBucket.linkToPay,
-      priceId: constants.paymentLinks.standardScriptBucket.priceId,
-    },
-    {
-      name: dict?.shopPage?.scriptTokens?.fields[2]?.title || "Premium",
-      price: 69.99,
-      description:
-        dict?.shopPage?.scriptTokens?.fields[2]?.description ||
-        "For professional users",
-      tokens: 50000,
-      tool: "scripts",
-      isPopular: false,
-      paymentLink: constants.paymentLinks.premiumScriptBucket.linkToPay,
-      priceId: constants.paymentLinks.premiumScriptBucket.priceId,
-    },
-  ];
+    fetchPriceIds();
+  }, []);
+
+  const ideaTokensPlans = priceIds
+    ? [
+        {
+          name: dict?.shopPage?.ideaTokens?.fields[0]?.title || "Basic",
+          price: 9.99,
+          description:
+            dict?.shopPage?.ideaTokens?.fields[0]?.description ||
+            "For starters",
+          tokens: 2500,
+          tool: "ideas",
+          isPopular: false,
+          priceId: priceIds.basicIdeaBucket,
+        },
+        {
+          name: dict?.shopPage?.ideaTokens?.fields[1]?.title || "Standard",
+          price: 19.99,
+          description:
+            dict?.shopPage?.ideaTokens?.fields[1]?.description ||
+            "For regular creators",
+          tokens: 5000,
+          tool: "ideas",
+          isPopular: true,
+          priceId: priceIds.standardIdeaBucket,
+        },
+        {
+          name: dict?.shopPage?.ideaTokens?.fields[2]?.title || "Premium",
+          price: 34.99,
+          description:
+            dict?.shopPage?.ideaTokens?.fields[2]?.description ||
+            "For power users",
+          tokens: 25000,
+          tool: "ideas",
+          isPopular: false,
+          priceId: priceIds.premiumIdeaBucket,
+        },
+      ]
+    : [];
+
+  const scriptTokensPlans = priceIds
+    ? [
+        {
+          name: dict?.shopPage?.scriptTokens?.fields[0]?.title || "Basic",
+          price: 14.99,
+          description:
+            dict?.shopPage?.scriptTokens?.fields[0]?.description ||
+            "For beginners",
+          tokens: 5000,
+          tool: "scripts",
+          isPopular: false,
+          priceId: priceIds.basicScriptBucket,
+        },
+        {
+          name: dict?.shopPage?.scriptTokens?.fields[1]?.title || "Standard",
+          price: 39.99,
+          description:
+            dict?.shopPage?.scriptTokens?.fields[1]?.description ||
+            "For content creators",
+          tokens: 15000,
+          tool: "scripts",
+          isPopular: true,
+          priceId: priceIds.standardScriptBucket,
+        },
+        {
+          name: dict?.shopPage?.scriptTokens?.fields[2]?.title || "Premium",
+          price: 69.99,
+          description:
+            dict?.shopPage?.scriptTokens?.fields[2]?.description ||
+            "For professional users",
+          tokens: 50000,
+          tool: "scripts",
+          isPopular: false,
+          priceId: priceIds.premiumScriptBucket,
+        },
+      ]
+    : [];
 
   const PlanCard = ({ plan }: { plan: (typeof ideaTokensPlans)[0] }) => {
     const { toast } = useToast();
@@ -97,6 +135,18 @@ const ShopPage = () => {
     const handleCheckout = async () => {
       setIsLoading(true);
       try {
+        // Validation: verifica che tutti i dati necessari siano presenti
+        if (!plan.priceId || plan.priceId.trim() === "") {
+          console.error("Missing or empty priceId:", {
+            planName: plan.name,
+            priceId: plan.priceId,
+            tool: plan.tool,
+          });
+          throw new Error(
+            "Price ID mancante. Verifica la configurazione Stripe in produzione."
+          );
+        }
+
         console.log("Checkout data:", {
           planName: plan.name,
           price: plan.price,
@@ -114,7 +164,18 @@ const ShopPage = () => {
             tool: plan.tool,
           }),
         });
-        const { url, error } = await res.json();
+
+        console.log("Response status:", res.status);
+        const responseData = await res.json();
+        console.log("Response data:", responseData);
+
+        if (!res.ok) {
+          throw new Error(
+            responseData.error || `HTTP ${res.status}: Errore API`
+          );
+        }
+
+        const { url, error } = responseData;
         if (url) {
           window.location.href = url;
         } else {
@@ -128,8 +189,10 @@ const ShopPage = () => {
         toast({
           title: dict?.shopPage?.toast?.purchaseError?.title || "Error",
           description:
-            dict?.shopPage?.toast?.purchaseError?.description ||
-            "There was an error processing your payment. Please try again.",
+            error instanceof Error
+              ? error.message
+              : dict?.shopPage?.toast?.purchaseError?.description ||
+                "There was an error processing your payment. Please try again.",
           variant: "destructive",
         });
       } finally {
@@ -182,7 +245,7 @@ const ShopPage = () => {
           className="w-full py-5 text-base font-medium relative"
           variant={plan.isPopular ? "default" : "outline"}
           size="lg"
-          disabled={isLoading}
+          disabled={isLoading || !plan.priceId || plan.priceId.trim() === ""}
           onClick={handleCheckout}
         >
           {isLoading ? (
@@ -195,6 +258,8 @@ const ShopPage = () => {
                 <Loader position="center" />
               </div>
             )
+          ) : !plan.priceId || plan.priceId.trim() === "" ? (
+            "Price ID non configurato"
           ) : (
             `${dict?.shopPage?.button}${dict?.currency}${plan.price}`
           )}
@@ -203,17 +268,63 @@ const ShopPage = () => {
     );
   };
 
-  useEffect(() => {
-    // Simuliamo un caricamento iniziale
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
   if (isLoading) {
     return <Loader position="full" />;
+  }
+
+  if (error) {
+    return (
+      <section>
+        <div className="flex flex-col">
+          <div className="flex items-center gap-3">
+            <CustomIcon icon={<ShoppingCartIcon />} color="red" />
+            <h1 className="text-3xl font-bold tracking-tight">
+              {dict?.shopPage?.title || "Shop"}
+            </h1>
+          </div>
+          <Separator className="my-4" />
+        </div>
+
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            Errore di configurazione
+          </h2>
+          <p className="text-gray-600 max-w-md">{error}</p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="mt-4"
+            variant="outline"
+          >
+            Riprova
+          </Button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!priceIds) {
+    return (
+      <section>
+        <div className="flex flex-col">
+          <div className="flex items-center gap-3">
+            <CustomIcon icon={<ShoppingCartIcon />} color="red" />
+            <h1 className="text-3xl font-bold tracking-tight">
+              {dict?.shopPage?.title || "Shop"}
+            </h1>
+          </div>
+          <Separator className="my-4" />
+        </div>
+
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <h2 className="text-xl font-semibold text-gray-600 mb-2">
+            Prezzi non disponibili
+          </h2>
+          <p className="text-gray-500">
+            I prezzi non sono attualmente disponibili. Riprova più tardi.
+          </p>
+        </div>
+      </section>
+    );
   }
 
   return (

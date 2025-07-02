@@ -1,5 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Nunito, Raleway } from 'next/font/google'
+
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-nunito',
+  weight: ['400', '500', '600', '700', '800', '900'],
+})
+
+const raleway = Raleway({
+  subsets: ['latin'],
+  variable: '--font-raleway',
+  weight: ['400', '500', '600', '700', '800', '900'],
+})
 
 
 export const metadata: Metadata = {
@@ -14,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body className={`${nunito.variable} ${raleway.variable} font-nunito`}>
         {children}
       </body>
     </html>

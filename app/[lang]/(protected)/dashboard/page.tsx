@@ -84,7 +84,7 @@ const DashboardPage = () => {
 			</div>
 
 			<div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4 mb-6">
-				<InfoCard title='YOUR CHANNEL' description={`@${userData.yt_username}`}>
+				<InfoCard title='YOUR CHANNEL' description={`@${userData?.yt_username ? userData?.yt_username : 'No channel connected'}`}>
 					<p className='text-sm text-muted-foreground flex items-center gap-2'>
 						100 
 						<Users />
@@ -110,14 +110,6 @@ const DashboardPage = () => {
 				</InfoCard>
 			</div>
 
-			<BarChartLegend
-				title='Scripts'
-				dates='January - June 2024'
-				trending='Trending up by 5.2% this month'
-				trendingDescription='This month you created 10 scripts'
-				chartData={[]}
-			/>
-
 			
 
 
@@ -125,7 +117,7 @@ const DashboardPage = () => {
 				<Button className='bg-black hover:bg-black/80 w-fit' asChild>
 					<Link href='/ideas/create'>
 						<PlusIcon className="mr-2 h-4 w-4" />
-						New Idea
+						Crea Idea
 					</Link>
 				</Button>
 			</div>

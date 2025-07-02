@@ -21,8 +21,9 @@ const Navbar = ({ dict }: { dict: any }) => {
 	return (
 		<nav className=' bg-background/80 backdrop-blur-sm md:mx-4'>
 			<div className='mx-4 my-4 flex items-center justify-between max-w-3xl md:mx-auto border border-border py-2 px-4 rounded-full bg-white shadow-sm'>
-				<Link href="/" className='shrink-0'>
+				<Link href="/" className='shrink-0 flex items-center gap-2'>
 					<Image src={logo} alt="logo" width={40} height={40} className='w-10 h-10' />
+					<span className='text-xl font-bold font-raleway'>Videatly</span>
 				</Link>
 
 				{/* Desktop Menu */}

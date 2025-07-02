@@ -42,7 +42,7 @@ const DocumentationPage = async ({ params }: DocumentationPageProps) => {
 					<p className="text-neutral-500 tracking-wide leading-relaxed mt-10 mb-3">
 						{content.introduction.core_features.features.title}
 					</p>
-					<div className="grid grid-cols-3 items-start gap-4">
+					<div className="grid grid-cols-1 sm:grid-cols-3 items-start gap-4">
 						<Card className="w-fit">
 							<CardHeader>
 								<CardTitle className="flex items-center gap-2 mb-1">
@@ -114,7 +114,7 @@ const DocumentationPage = async ({ params }: DocumentationPageProps) => {
 									{index === 0 && <Lightbulb className="w-4 h-4 text-blue-500" />}
 									{index === 1 && <NotepadText className="w-4 h-4 text-yellow-500" />}
 									{index === 2 && <Clapperboard className="w-4 h-4 text-red-500" />}
-									{guide.title}: <span className="text-neutral-500">{guide.description}</span>
+									{guide.title}: <span className="text-neutral-500 text-sm">{guide.description}</span>
 								</Link>
 							</li>
 						))}

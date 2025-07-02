@@ -9,6 +9,10 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+			fontFamily: {
+				nunito: ['var(--font-nunito)'],
+				raleway: ['var(--font-raleway)'],
+			},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

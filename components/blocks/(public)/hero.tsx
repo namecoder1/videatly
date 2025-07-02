@@ -38,8 +38,8 @@ const avatars = [
 
 const Hero = ({ creators, dict }: { creators: number, dict: any }) => {
 	return (
-			<div className="w-full flex flex-col items-center justify-center text-center mt-56">
-				<h1 className="text-6xl font-black tracking-tight max-w-3xl sm:mx-auto mx-4">{dict.home.title}</h1>
+			<div className="w-full flex flex-col items-center justify-center text-center mt-40">
+				<h1 className="text-5xl sm:text-6xl font-black tracking-tight max-w-3xl sm:mx-auto mx-4 font-raleway">{dict.home.title}</h1>
 				<p className="my-8 text-lg max-w-lg sm:mx-auto mx-4">
 				{dict.home.description}        
 				</p>
@@ -68,7 +68,7 @@ const Hero = ({ creators, dict }: { creators: number, dict: any }) => {
 					</Button>
 				</div>
 				
-				<div className="flex items-center justify-center space-x-3 w-full max-w-md mb-8">
+				<div className="flex flex-col sm:flex-row gap-y-2 sm:gap-y-0 items-center justify-center space-x-3 w-full max-w-md mb-8">
 					<AvatarStack avatars={avatars} />
 					<p className="text-sm">
 						<span className="font-bold">{creators}</span> {dict.home.creatorsJoined}

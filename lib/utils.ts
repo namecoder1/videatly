@@ -1,5 +1,5 @@
 import { toast } from "@/hooks/use-toast"
-import { ProfileData, Token } from "@/types/types"
+import { CachedVideoData, ProfileData, Token } from "@/types/types"
 import { SupabaseClient } from "@supabase/supabase-js"
 import { clsx, type ClassValue } from "clsx"
 import { format, Locale } from "date-fns"
@@ -373,4 +373,97 @@ export const calculateSubscriptionProgress = ({ userData} : {
   console.log('Calculated progress:', progress);
   
   return progress;
+};
+
+// ---
+
+// Analytics Functions
+
+// Helper function to load cached data
+export const loadCachedData = (userEmail: string, setData: (data: any) => void, setVideoData: (data: any) => void) => {
+  // Try to load cached analytics data
+  const storageKey = `yt_analytics_data_${userEmail}`;
+  const cachedData = localStorage.getItem(storageKey);
+  if (cachedData) {
+    try {
+      const parsedData = JSON.parse(cachedData);
+      // Cache valida per 7 giorni
+      const sevenDays = 1000 * 60 * 60 * 24 * 7;
+      const expired = Date.now() - parsedData.timestamp > sevenDays;
+
+      if (!expired) {
+        setData(parsedData.data);
+      }
+    } catch (e) {
+      console.warn("Cached analytics data corrupted:", e);
+    }
+  }
+
+  // Try to load cached video data
+  const videoStorageKey = `yt_video_data_${userEmail}`;
+  const cachedVideoData = localStorage.getItem(videoStorageKey);
+  if (cachedVideoData) {
+    try {
+      const parsedVideoData = JSON.parse(cachedVideoData) as CachedVideoData;
+      // Cache valida per 7 giorni
+      const sevenDays = 1000 * 60 * 60 * 24 * 7;
+      const expired = Date.now() - parsedVideoData.timestamp > sevenDays;
+
+      if (!expired) {
+        setVideoData(parsedVideoData.videos);
+      }
+    } catch (e) {
+      console.warn("Cached video data corrupted:", e);
+    }
+  }
+};
+
+// Helper function to load Google scripts manually if needed
+export const loadGoogleScripts = (google: any, setData: (data: any) => void, setVideoData: (data: any) => void) => {
+  return new Promise<void>((resolve) => {
+    // Check if scripts are already loaded
+    if (typeof window.gapi !== "undefined" && typeof google !== "undefined") {
+      resolve();
+      return;
+    }
+
+    let scriptsLoaded = 0;
+    const totalScripts = 2;
+
+    const checkAllLoaded = () => {
+      scriptsLoaded++;
+      if (scriptsLoaded === totalScripts) {
+        console.log("📜 Tutti gli script Google caricati manualmente");
+        resolve();
+      }
+    };
+
+    // Load GAPI if not present
+    if (typeof window.gapi === "undefined") {
+      const gapiScript = document.createElement("script");
+      gapiScript.src = "https://apis.google.com/js/api.js";
+      gapiScript.onload = checkAllLoaded;
+      gapiScript.onerror = () => {
+        console.error("Errore caricamento GAPI script");
+        checkAllLoaded();
+      };
+      document.head.appendChild(gapiScript);
+    } else {
+      checkAllLoaded();
+    }
+
+    // Load Google Identity Services if not present
+    if (typeof google === "undefined") {
+      const gisScript = document.createElement("script");
+      gisScript.src = "https://accounts.google.com/gsi/client";
+      gisScript.onload = checkAllLoaded;
+      gisScript.onerror = () => {
+        console.error("Errore caricamento GIS script");
+        checkAllLoaded();
+      };
+      document.head.appendChild(gisScript);
+    } else {
+      checkAllLoaded();
+    }
+  });
 };

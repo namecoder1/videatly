@@ -205,3 +205,30 @@ export interface ProductionData {
   status: string;
   video_url: string;
 }
+
+export interface UserData {
+  name?: string;
+  email?: string;
+  accessToken?: string;
+  tokenExpiry?: number;
+  refreshToken?: string;
+}
+
+export interface VideoData {
+  id: string;
+  title: string;
+  publishedAt: string;
+  thumbnails?: any;
+  analytics?: {
+    views: number;
+    likes: number;
+    comments: number;
+    estimatedMinutesWatched: number;
+    averageViewDuration: number;
+  };
+}
+
+export interface CachedVideoData {
+  videos: VideoData[];
+  timestamp: number;
+}

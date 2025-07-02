@@ -35,6 +35,12 @@ const ShopPage = () => {
         }
         const data = await response.json();
         console.log("Price IDs received:", data);
+
+        // Check if we received an error from the API
+        if (data.error) {
+          throw new Error(data.details || data.error);
+        }
+
         setPriceIds(data);
       } catch (err) {
         console.error("Error fetching price IDs:", err);
@@ -287,9 +293,21 @@ const ShopPage = () => {
 
         <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
           <h2 className="text-xl font-semibold text-red-600 mb-2">
-            Errore di configurazione
+            Errore di configurazione Stripe
           </h2>
-          <p className="text-gray-600 max-w-md">{error}</p>
+          <p className="text-gray-600 max-w-md mb-4">{error}</p>
+
+          {error.includes("Missing price IDs") && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Per gli sviluppatori:</strong> I Price ID di Stripe non
+                sono configurati in produzione. Consulta{" "}
+                <code>STRIPE_PRODUCTION_SETUP.md</code> per le istruzioni
+                complete.
+              </p>
+            </div>
+          )}
+
           <Button
             onClick={() => window.location.reload()}
             className="mt-4"

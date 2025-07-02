@@ -257,11 +257,12 @@ export async function POST(req: NextRequest) {
               type: "one_off",
             }),
       },
-      // Enhanced configuration
+      // Enhanced configuration - billing address only when needed
       billing_address_collection: "auto",
-      automatic_tax: {
-        enabled: true,
-      },
+      // Disable automatic tax by default to avoid configuration issues
+      // automatic_tax: {
+      //   enabled: false,
+      // },
       // Add timeout and retry logic
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes from now
       ...(isSubscription

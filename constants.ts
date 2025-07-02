@@ -15,7 +15,7 @@ export const constants = {
           : process.env.STRIPE_BASIC_IDEA_BUCKET_LINK || "",
       priceId:
         process.env.NODE_ENV === "development"
-          ? "price_1RayI5RXT8zipkHSFVT9I6TH" 
+          ? "price_1RayI5RXT8zipkHSFVT9I6TH"
           : process.env.STRIPE_BASIC_IDEA_BUCKET_PRICE_ID || "",
     },
     standardIdeaBucket: {
@@ -70,3 +70,41 @@ export const constants = {
     },
   },
 };
+
+// Validation function to check for missing production price IDs
+export function validateStripeConfig() {
+  if (process.env.NODE_ENV === "production") {
+    const requiredEnvVars = [
+      "STRIPE_PRO_PLAN_PRICE_ID",
+      "STRIPE_ULTRA_PLAN_PRICE_ID",
+      "STRIPE_BASIC_IDEA_BUCKET_PRICE_ID",
+      "STRIPE_STANDARD_IDEA_BUCKET_PRICE_ID",
+      "STRIPE_PREMIUM_IDEA_BUCKET_PRICE_ID",
+      "STRIPE_BASIC_SCRIPT_BUCKET_PRICE_ID",
+      "STRIPE_STANDARD_SCRIPT_BUCKET_PRICE_ID",
+      "STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID",
+    ];
+
+    const missingVars = requiredEnvVars.filter(
+      (varName) => !process.env[varName]
+    );
+
+    if (missingVars.length > 0) {
+      console.error(
+        "❌ Missing Stripe environment variables in production:",
+        missingVars
+      );
+      return {
+        isValid: false,
+        missingVars,
+      };
+    }
+
+    console.log("✅ All Stripe environment variables are configured");
+  }
+
+  return {
+    isValid: true,
+    missingVars: [],
+  };
+}

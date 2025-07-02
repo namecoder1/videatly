@@ -1,85 +1,128 @@
 import { NextRequest, NextResponse } from "next/server";
-import { constants } from "@/constants";
 
 export async function GET(req: NextRequest) {
-  // Solo per admin/debug in produzione
-  const debugKey = req.nextUrl.searchParams.get("debug_key");
-  if (debugKey !== process.env.NEXT_PUBLIC_CRON_SECRET) {
+  // Verifica autenticazione debug
+  const url = new URL(req.url);
+  const debugKey = url.searchParams.get("debug_key");
+
+  if (!debugKey || debugKey !== process.env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const config = {
-    environment: process.env.NODE_ENV,
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-    stripeConfig: {
-      hasSecretKey: !!process.env.STRIPE_SECRET_KEY,
-      hasTestSecretKey: !!process.env.STRIPE_SECRET_KEY_TEST,
-      hasWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET,
-      hasTestWebhookSecret: !!process.env.STRIPE_WEBHOOK_SECRET_TEST,
+  const env = process.env.NODE_ENV;
+
+  // Configurazione attesa per ogni ambiente
+  const expectedConfig = {
+    development: {
+      stripeSecretKey: "STRIPE_SECRET_KEY_TEST",
+      stripeWebhookSecret: "STRIPE_WEBHOOK_SECRET_TEST",
+      requiredPriceIds: [
+        "STRIPE_PRO_PLAN_PRICE_ID",
+        "STRIPE_ULTRA_PLAN_PRICE_ID",
+        "STRIPE_BASIC_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_STANDARD_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_PREMIUM_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_BASIC_SCRIPT_BUCKET_PRICE_ID",
+        "STRIPE_STANDARD_SCRIPT_BUCKET_PRICE_ID",
+        "STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID",
+      ],
     },
-    priceIds: {
-      proPlan: {
-        value: constants.paymentLinks.proPlan,
-        hasEnvVar: !!process.env.STRIPE_PRO_PLAN_PRICE_ID,
-        envValue: process.env.STRIPE_PRO_PLAN_PRICE_ID || "NOT_SET",
-      },
-      ultraPlan: {
-        value: constants.paymentLinks.ultraPlan,
-        hasEnvVar: !!process.env.STRIPE_ULTRA_PLAN_PRICE_ID,
-        envValue: process.env.STRIPE_ULTRA_PLAN_PRICE_ID || "NOT_SET",
-      },
-      basicIdeaBucket: {
-        value: constants.paymentLinks.basicIdeaBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_BASIC_IDEA_BUCKET_PRICE_ID,
-        envValue: process.env.STRIPE_BASIC_IDEA_BUCKET_PRICE_ID || "NOT_SET",
-      },
-      standardIdeaBucket: {
-        value: constants.paymentLinks.standardIdeaBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_STANDARD_IDEA_BUCKET_PRICE_ID,
-        envValue: process.env.STRIPE_STANDARD_IDEA_BUCKET_PRICE_ID || "NOT_SET",
-      },
-      premiumIdeaBucket: {
-        value: constants.paymentLinks.premiumIdeaBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_PREMIUM_IDEA_BUCKET_PRICE_ID,
-        envValue: process.env.STRIPE_PREMIUM_IDEA_BUCKET_PRICE_ID || "NOT_SET",
-      },
-      basicScriptBucket: {
-        value: constants.paymentLinks.basicScriptBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_BASIC_SCRIPT_BUCKET_PRICE_ID,
-        envValue: process.env.STRIPE_BASIC_SCRIPT_BUCKET_PRICE_ID || "NOT_SET",
-      },
-      standardScriptBucket: {
-        value: constants.paymentLinks.standardScriptBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_STANDARD_SCRIPT_BUCKET_PRICE_ID,
-        envValue:
-          process.env.STRIPE_STANDARD_SCRIPT_BUCKET_PRICE_ID || "NOT_SET",
-      },
-      premiumScriptBucket: {
-        value: constants.paymentLinks.premiumScriptBucket.priceId,
-        hasEnvVar: !!process.env.STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID,
-        envValue:
-          process.env.STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID || "NOT_SET",
-      },
+    production: {
+      stripeSecretKey: "STRIPE_SECRET_KEY",
+      stripeWebhookSecret: "STRIPE_WEBHOOK_SECRET",
+      requiredPriceIds: [
+        "STRIPE_PRO_PLAN_PRICE_ID",
+        "STRIPE_ULTRA_PLAN_PRICE_ID",
+        "STRIPE_BASIC_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_STANDARD_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_PREMIUM_IDEA_BUCKET_PRICE_ID",
+        "STRIPE_BASIC_SCRIPT_BUCKET_PRICE_ID",
+        "STRIPE_STANDARD_SCRIPT_BUCKET_PRICE_ID",
+        "STRIPE_PREMIUM_SCRIPT_BUCKET_PRICE_ID",
+      ],
     },
-    issues: [] as string[],
   };
 
-  // Identifica problemi
-  if (process.env.NODE_ENV !== "development") {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      config.issues.push("Missing STRIPE_SECRET_KEY in production");
-    }
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      config.issues.push("Missing STRIPE_WEBHOOK_SECRET in production");
-    }
-
-    // Controlla price IDs vuoti
-    Object.entries(config.priceIds).forEach(([key, priceConfig]) => {
-      if (!priceConfig.value || priceConfig.value === "") {
-        config.issues.push(`Empty price ID for ${key}`);
-      }
-    });
+  const config = expectedConfig[env as keyof typeof expectedConfig];
+  if (!config) {
+    return NextResponse.json(
+      {
+        error: "Unknown environment",
+        environment: env,
+      },
+      { status: 400 }
+    );
   }
 
-  return NextResponse.json(config);
+  const report = {
+    environment: env,
+    timestamp: new Date().toISOString(),
+    stripe: {
+      secretKey: {
+        configured: !!process.env[config.stripeSecretKey],
+        key: config.stripeSecretKey,
+        value: process.env[config.stripeSecretKey]
+          ? `${process.env[config.stripeSecretKey]?.slice(0, 8)}...`
+          : "NOT_SET",
+      },
+      webhookSecret: {
+        configured: !!process.env[config.stripeWebhookSecret],
+        key: config.stripeWebhookSecret,
+        value: process.env[config.stripeWebhookSecret]
+          ? `${process.env[config.stripeWebhookSecret]?.slice(0, 8)}...`
+          : "NOT_SET",
+      },
+    },
+    priceIds: config.requiredPriceIds.map((priceIdKey) => ({
+      key: priceIdKey,
+      configured: !!process.env[priceIdKey],
+      value: process.env[priceIdKey] || "NOT_SET",
+    })),
+    supabase: {
+      url: {
+        configured: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        value: process.env.NEXT_PUBLIC_SUPABASE_URL
+          ? `${process.env.NEXT_PUBLIC_SUPABASE_URL?.slice(0, 30)}...`
+          : "NOT_SET",
+      },
+      serviceRoleKey: {
+        configured: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+        value: process.env.SUPABASE_SERVICE_ROLE_KEY
+          ? `${process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 8)}...`
+          : "NOT_SET",
+      },
+    },
+    baseUrl: {
+      configured: !!process.env.NEXT_PUBLIC_BASE_URL,
+      value: process.env.NEXT_PUBLIC_BASE_URL || "NOT_SET",
+    },
+  };
+
+  // Calcola lo stato generale
+  const allStripeConfigured =
+    report.stripe.secretKey.configured &&
+    report.stripe.webhookSecret.configured;
+  const allPriceIdsConfigured = report.priceIds.every((p) => p.configured);
+  const allSupabaseConfigured =
+    report.supabase.url.configured && report.supabase.serviceRoleKey.configured;
+
+  const overall = {
+    status:
+      allStripeConfigured && allPriceIdsConfigured && allSupabaseConfigured
+        ? "READY"
+        : "MISSING_CONFIG",
+    stripe: allStripeConfigured ? "OK" : "MISSING",
+    priceIds: allPriceIdsConfigured ? "OK" : "MISSING",
+    supabase: allSupabaseConfigured ? "OK" : "MISSING",
+    missingConfigs: [
+      ...(!allStripeConfigured ? ["Stripe credentials"] : []),
+      ...(!allPriceIdsConfigured ? ["Price IDs"] : []),
+      ...(!allSupabaseConfigured ? ["Supabase credentials"] : []),
+    ],
+  };
+
+  return NextResponse.json({
+    overall,
+    details: report,
+  });
 }

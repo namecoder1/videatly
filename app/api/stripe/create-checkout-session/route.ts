@@ -110,33 +110,62 @@ export async function POST(req: NextRequest) {
   console.log("Validation passed. Starting Stripe operations...");
 
   try {
-    // First, create or retrieve a customer
+    // First, create or retrieve a customer with retry logic
     console.log("Looking for existing Stripe customer with email:", user.email);
     let customer;
-    const customers = await stripe.customers.list({
-      email: user.email,
-      limit: 1,
-    });
 
-    if (customers.data.length > 0) {
-      customer = customers.data[0];
-      console.log("Found existing customer:", customer.id);
-    } else {
-      console.log("Creating new Stripe customer...");
-      customer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          user_id: user.id,
-        },
-      });
-      console.log("Created new customer:", customer.id);
+    // Retry customer creation/retrieval
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const customers = await stripe.customers.list({
+          email: user.email,
+          limit: 1,
+        });
+
+        if (customers.data.length > 0) {
+          customer = customers.data[0];
+          console.log("Found existing customer:", customer.id);
+
+          // Update customer metadata if missing user_id
+          if (!customer.metadata?.user_id) {
+            console.log("Updating customer metadata with user_id");
+            customer = await stripe.customers.update(customer.id, {
+              metadata: {
+                ...customer.metadata,
+                user_id: user.id,
+              },
+            });
+          }
+          break;
+        } else {
+          console.log("Creating new Stripe customer...");
+          customer = await stripe.customers.create({
+            email: user.email,
+            metadata: {
+              user_id: user.id,
+            },
+          });
+          console.log("Created new customer:", customer.id);
+          break;
+        }
+      } catch (customerError) {
+        console.error(
+          `Customer operation failed on attempt ${attempt}:`,
+          customerError
+        );
+        if (attempt === maxRetries) {
+          throw customerError;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+      }
     }
 
     // Per acquisti di token, verifica se esiste già una sessione attiva
     if (!isSubscription) {
       console.log("Checking for active token purchase sessions...");
       const activeSessions = await stripe.checkout.sessions.list({
-        customer: customer.id,
+        customer: customer?.id,
         status: "open",
         limit: 1,
       });
@@ -154,27 +183,45 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Ensure base URL has proper scheme
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    let fullBaseUrl = baseUrl;
-
-    if (
-      baseUrl &&
-      !baseUrl.startsWith("http://") &&
-      !baseUrl.startsWith("https://")
-    ) {
-      fullBaseUrl = `https://${baseUrl}`;
-    }
+    // Ensure base URL has proper scheme with better fallbacks
+    let fullBaseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
     if (!fullBaseUrl) {
       // Fallback to request origin if NEXT_PUBLIC_BASE_URL is not set
       const origin = req.headers.get("origin") || req.headers.get("host");
-      fullBaseUrl = origin?.startsWith("http") ? origin : `https://${origin}`;
+      fullBaseUrl = origin || "";
+    }
+
+    // Ensure proper protocol
+    if (
+      fullBaseUrl &&
+      !fullBaseUrl.startsWith("http://") &&
+      !fullBaseUrl.startsWith("https://")
+    ) {
+      fullBaseUrl = `https://${fullBaseUrl}`;
+    }
+
+    // Final validation
+    if (
+      !fullBaseUrl ||
+      (!fullBaseUrl.startsWith("http://") &&
+        !fullBaseUrl.startsWith("https://"))
+    ) {
+      console.error("Invalid base URL configuration:", {
+        env_var: process.env.NEXT_PUBLIC_BASE_URL,
+        origin: req.headers.get("origin"),
+        host: req.headers.get("host"),
+        computed: fullBaseUrl,
+      });
+      return NextResponse.json(
+        { error: "Server configuration error: invalid base URL" },
+        { status: 500 }
+      );
     }
 
     console.log("Creating checkout session with parameters:", {
       mode: isSubscription ? "subscription" : "payment",
-      customer: customer.id,
+      customer: customer?.id,
       priceId,
       baseUrl: fullBaseUrl,
       metadata: isSubscription
@@ -182,10 +229,10 @@ export async function POST(req: NextRequest) {
         : { tokens: tokens?.toString(), tool, price_id: priceId },
     });
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionConfig = {
       payment_method_types: ["card"],
       mode: isSubscription ? "subscription" : "payment",
-      customer: customer.id,
+      customer: customer?.id,
       line_items: [
         {
           price: priceId,
@@ -196,25 +243,57 @@ export async function POST(req: NextRequest) {
       cancel_url: `${fullBaseUrl}/billing?canceled=1`,
       metadata: {
         user_id: user.id,
+        email: user.email,
+        created_at: new Date().toISOString(),
         ...(isSubscription
-          ? { plan }
+          ? {
+              plan,
+              type: "subscription",
+            }
           : {
               tokens: tokens?.toString(),
               tool,
               price_id: priceId,
+              type: "one_off",
             }),
       },
-      // Aggiungi idempotency key per pagamenti token
+      // Enhanced configuration
+      billing_address_collection: "auto",
+      automatic_tax: {
+        enabled: true,
+      },
+      // Add timeout and retry logic
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // 30 minutes from now
       ...(isSubscription
-        ? {}
+        ? {
+            subscription_data: {
+              metadata: {
+                user_id: user.id,
+                plan,
+                created_via: "checkout",
+              },
+            },
+          }
         : {
             payment_intent_data: {
               metadata: {
-                idempotency_key: `${user.id}_${tool}_${tokens}_${Date.now()}`,
+                user_id: user.id,
+                tokens: tokens?.toString(),
+                tool,
+                type: "one_off",
               },
             },
           }),
+    } as const;
+
+    console.log("Creating checkout session with enhanced config:", {
+      mode: sessionConfig.mode,
+      customer: sessionConfig.customer,
+      priceId,
+      metadata: sessionConfig.metadata,
     });
+
+    const session = await stripe.checkout.sessions.create(sessionConfig as any);
 
     console.log("Created checkout session:", {
       session_id: session.id,

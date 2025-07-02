@@ -154,10 +154,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Ensure base URL has proper scheme
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    let fullBaseUrl = baseUrl;
+
+    if (
+      baseUrl &&
+      !baseUrl.startsWith("http://") &&
+      !baseUrl.startsWith("https://")
+    ) {
+      fullBaseUrl = `https://${baseUrl}`;
+    }
+
+    if (!fullBaseUrl) {
+      // Fallback to request origin if NEXT_PUBLIC_BASE_URL is not set
+      const origin = req.headers.get("origin") || req.headers.get("host");
+      fullBaseUrl = origin?.startsWith("http") ? origin : `https://${origin}`;
+    }
+
     console.log("Creating checkout session with parameters:", {
       mode: isSubscription ? "subscription" : "payment",
       customer: customer.id,
       priceId,
+      baseUrl: fullBaseUrl,
       metadata: isSubscription
         ? { plan }
         : { tokens: tokens?.toString(), tool, price_id: priceId },
@@ -173,8 +192,8 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing?success=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/billing?canceled=1`,
+      success_url: `${fullBaseUrl}/billing?success=1`,
+      cancel_url: `${fullBaseUrl}/billing?canceled=1`,
       metadata: {
         user_id: user.id,
         ...(isSubscription
